@@ -201,9 +201,9 @@ export default class Card extends React.PureComponent {
 
     const description = (
       <div className='status-card__content'>
-        {title}
-        {!(horizontal || compact) && <p className='status-card__description'>{trim(card.get('description') || '', maxDescription)}</p>}
         <span className='status-card__host'>{provider}</span>
+        {title}
+        {<p className='status-card__description'>{trim(card.get('description') || '', 300)}</p>}
       </div>
     );
 
@@ -260,7 +260,7 @@ export default class Card extends React.PureComponent {
       return (
         <div className={className} ref={this.setRef} onClick={revealed ? null : this.handleReveal} role={revealed ? 'button' : null}>
           {embed}
-          {!compact && description}
+          {description}
         </div>
       );
     } else if (card.get('image')) {
