@@ -62,6 +62,8 @@ import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from
 import { textForScreenReader, defaultMediaVisibility } from '../../components/status';
 import Icon from 'mastodon/components/icon';
 import { Helmet } from 'react-helmet';
+import { assignResponsesForStatus } from './utils/assign_responses_for_status';
+import { setResponsesWithLinesData } from './utils/set_lines_for_responses';
 
 const messages = defineMessages({
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -131,7 +133,13 @@ const makeMapStateToProps = () => {
       });
     }
 
-    return Immutable.List(descendantsIds);
+    const statusesWithResponseHierarchy = assignResponsesForStatus(
+      statusId,
+      descendantsIds.map(id => statuses.get(id).toObject()),
+      3,
+    );
+
+    return Immutable.List(setResponsesWithLinesData( statusesWithResponseHierarchy ));
   });
 
   const mapStateToProps = (state, props) => {
@@ -542,6 +550,26 @@ class Status extends ImmutablePureComponent {
     ));
   }
 
+  renderDescendants (list) {
+    return list.map(({ id, children, lines }) => {
+      return (<div key={id} className={classNames('status__thread', { 'status__thread--last-item': lines?.lastChild, 'status__thread--first-item': lines?.firstChild })}>
+        <StatusContainer
+          key={`${id}${lines?.mode}`}
+          id={id}
+          onMoveUp={this.handleMoveUp}
+          onMoveDown={this.handleMoveDown}
+          contextType='thread'
+          lines={lines}
+        />
+        {children.length ? (
+          <>
+            {this.renderDescendants(children)}
+          </>
+        ) : null}
+      </div>);
+    });
+  }
+
   setRef = c => {
     this.node = c;
   };
@@ -598,7 +626,7 @@ class Status extends ImmutablePureComponent {
     }
 
     if (descendantsIds && descendantsIds.size > 0) {
-      descendants = <div>{this.renderChildren(descendantsIds)}</div>;
+      descendants = <div>{this.renderDescendants(descendantsIds)}</div>;
     }
 
     const isLocal = status.getIn(['account', 'acct'], '').indexOf('@') === -1;
