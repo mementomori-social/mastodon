@@ -2,7 +2,6 @@
 @import 'mastodon/variables';
 @import 'fonts/roboto';
 @import 'fonts/roboto-mono';
-
 @import 'mastodon/reset';
 @import 'mastodon/basics';
 @import 'mastodon/branding';
@@ -23,3 +22,8 @@
 @import 'mastodon/dashboard';
 @import 'mastodon/rtl';
 @import 'mastodon/accessibility';
+
+/* Custom for mementomori.social */
+.status__content__text[lang="fi"].translate ~ .status__content__read-more-button {
+  display: none;
+}
