@@ -184,6 +184,7 @@ export default class Card extends React.PureComponent {
   }
 
   render () {
+    // eslint-disable-next-line no-unused-vars
     const { card, maxDescription, compact } = this.props;
     const { width, embedded, revealed } = this.state;
 
