@@ -368,8 +368,19 @@ class Header extends ImmutablePureComponent {
 
                 <div className='account__header__fields'>
                   <dl>
-                    <dt><FormattedMessage id='account.joined_short' defaultMessage='Joined' /></dt>
-                    <dd>{intl.formatDate(account.get('created_at'), { year: 'numeric', month: 'short', day: '2-digit' })}</dd>
+                    {account.get('username') === 'rolle' && (
+                      <React.Fragment>
+                        <dt><FormattedMessage id='account.born' defaultMessage='Born' /></dt>
+                        <dd>Nov 01, 1988</dd>
+                      </React.Fragment>
+                    )}
+
+                    {account.get('username') !== 'rolle' && (                  
+                      <React.Fragment>
+                        <dt><FormattedMessage id='account.joined_short' defaultMessage='Joined' /></dt>
+                        <dd>{intl.formatDate(account.get('created_at'), { year: 'numeric', month: 'short', day: '2-digit' })}</dd>
+                      </React.Fragment>
+                    )}
                   </dl>
 
                   {fields.map((pair, i) => (
