@@ -93,7 +93,7 @@ class LinkFooter extends React.PureComponent {
           {DividingCircle}
           <a href={source_url} rel='noopener noreferrer' target='_blank'><FormattedMessage id='footer.source_code' defaultMessage='View source code' /></a>
           {DividingCircle}
-          v{version}
+          v{version}~mementomori-social-mods + <a href='https://github.com/ronilaukkarinen/mastodon-bird-ui'>Mastodon Bird UI</a>
         </p>
       </div>
     );

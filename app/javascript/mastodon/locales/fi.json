@@ -29,7 +29,7 @@
   "account.featured_tags.last_status_at": "Viimeisin viesti {date}",
   "account.featured_tags.last_status_never": "Ei viestejä",
   "account.featured_tags.title": "Käyttäjän {name} esillä olevat aihetunnisteet",
-  "account.follow": "Seuratut",
+  "account.follow": "Seuraa",
   "account.followers": "Seuraajat",
   "account.followers.empty": "Kukaan ei seuraa tätä käyttäjää vielä.",
   "account.followers_counter": "{count, plural, one {{counter} seuraaja} other {{counter} seuraajaa}}",
