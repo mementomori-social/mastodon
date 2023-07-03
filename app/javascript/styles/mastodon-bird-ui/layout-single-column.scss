@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   1.5.7-mastodon-4.1.2-nightly */
+   1.5.8rc2-nightly-mastodon-4.1.2-nightly */
 
 /* CSS variables */
 :root {
@@ -1449,6 +1449,8 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 }
 
 .layout-single-column .notification.notification-follow .verified-badge,
+.layout-single-column .notification.notification-admin-sign-up .account__contents,
+.layout-single-column .notification.notification-follow .account__contents,
 .layout-single-column .notification.notification-follow .display-name,
 .layout-single-column .notification.notification-admin-sign-up .display-name + span,
 .layout-single-column .notification.notification-follow .display-name + span,
@@ -1496,11 +1498,6 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 .layout-single-column .detailed-status .status__content:has(.status__content__text:empty) + .video-player,
 .layout-single-column .detailed-status .status__content:has(.status__content__text:empty) + .media-gallery {
   margin-top: calc(var(--gap-default) / 2);
-}
-
-.layout-single-column .notification.notification.notification-admin-sign-up .notification__message + .account,
-.layout-single-column .notification.notification-follow .notification__message + .account {
-  padding-bottom: 0;
 }
 
 .layout-single-column .status__prepend {
@@ -1778,11 +1775,6 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
   border-radius: 50%;
   height: 24px;
   transform: translateY(-4px);
-  width: 24px;
-}
-
-.layout-single-column .notification .account__relationship:hover {
-  background-color: rgba(96, 105, 132, .15);
 }
 
 /* Emoji-mart search input */
@@ -1976,7 +1968,8 @@ body.embed .button.logo-button,
 .layout-single-column .notification__report__actions .button,
 .layout-single-column .column-inline-form button,
 .layout-single-column .explore__suggestions .account-card__actions__button button,
-.layout-single-column .account__header__tabs__buttons .button {
+.layout-single-column .account__header__tabs__buttons .button,
+.layout-single-column .notification .account__relationship > .button {
   background-color: transparent;
   border-bottom-left-radius: 9999px;
   border-bottom-right-radius: 9999px;
@@ -1995,7 +1988,8 @@ body.embed .button.logo-button,
 .layout-single-column .column-inline-form button,
 .layout-single-column .explore__suggestions .account-card__actions__button button,
 .layout-single-column .account__header__tabs__buttons .button,
-.layout-single-column .account__header__tabs__buttons .icon-button {
+.layout-single-column .account__header__tabs__buttons .icon-button,
+.layout-single-column .notification .account__relationship > .button {
   border: 1px solid var(--color-outer-space);
 }
 
@@ -2042,7 +2036,9 @@ body.embed .button.logo-button:hover,
 
 .layout-single-column .explore__suggestions .account-card__actions__button button:hover,
 .layout-single-column .account__header__tabs__buttons .button:focus,
-.layout-single-column .account__header__tabs__buttons .button:hover {
+.layout-single-column .account__header__tabs__buttons .button:hover,
+.layout-single-column .notification .account__relationship > .button:hover,
+.layout-single-column .notification .account__relationship > .button:focus {
   background-color: var(--color-profile-button-hover);
 }
 
@@ -2887,6 +2883,10 @@ body.embed .button.logo-button:hover,
 
   .columns-area__panels__pane--navigational .column-link__icon {
     font-size: 24px;
+  }
+
+  .columns-area__panels__pane--navigational .column-link__icon.fa-fw {
+    font-size: 22px;
   }
 
   .columns-area__panels__pane--navigational .column-link__icon.fa-star,

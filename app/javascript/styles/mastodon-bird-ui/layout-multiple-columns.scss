@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   1.5.7-mastodon-4.1.2-nightly */
+   1.5.8rc2-nightly-mastodon-4.1.2-nightly */
 
 /* CSS variables */
 :root {
@@ -1778,11 +1778,6 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
   border-radius: 50%;
   height: 24px;
   transform: translateY(-4px);
-  width: 24px;
-}
-
-.layout-single-column .notification .account__relationship:hover {
-  background-color: rgba(96, 105, 132, .15);
 }
 
 /* Emoji-mart search input */
@@ -2887,6 +2882,10 @@ body.embed .button.logo-button:hover,
 
   .columns-area__panels__pane--navigational .column-link__icon {
     font-size: 24px;
+  }
+
+  .columns-area__panels__pane--navigational .column-link__icon.fa-fw {
+    font-size: 22px;
   }
 
   .columns-area__panels__pane--navigational .column-link__icon.fa-star,
