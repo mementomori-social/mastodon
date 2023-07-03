@@ -1696,6 +1696,7 @@ en:
      mastodon-bird-ui-contrast: Mastodon Bird UI (High contrast)
      mastodon-light: Mastodon (Light)
      mastodon-dark: Mastodon (Dark)
+     hide-finnish: Mastodon Bird UI (Dark, hide translate Finnish link)
   time:
     formats:
       default: "%b %d, %Y, %H:%M"

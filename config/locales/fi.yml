@@ -1616,6 +1616,7 @@ fi:
      mastodon-bird-ui-contrast: Mastodon Bird UI (Korkea kontrasti)
      mastodon-light: Mastodon (Vaalea)
      mastodon-dark: Mastodon (Tumma)
+     hide-finnish: Mastodon Bird UI (Tumma, piilota Käännä suomi-linkit)
   time:
     formats:
       default: "%d.%m.%Y klo %H.%M"
