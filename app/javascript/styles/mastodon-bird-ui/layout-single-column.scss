@@ -1158,6 +1158,7 @@ body.embed .detailed-status,
 }
 
 /* Status update tinted to right */
+.layout-single-column .status__content--collapsed + .status__content__read-more-button,
 .layout-single-column .status:not(.status--in-thread) .status__action-bar,
 .layout-single-column .status:not(.status--in-thread) .attachment-list,
 .layout-single-column .status:not(.status--in-thread) .status__content {
@@ -3047,7 +3048,8 @@ body.embed .button.logo-button:hover,
 .layout-single-column .media-gallery__gifv video,
 .layout-single-column .media-gallery__preview {
   backface-visibility: hidden;
-  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
 }
 
 .layout-single-column .media-gallery__item-thumbnail:has(> img:not([alt])):focus::after,
