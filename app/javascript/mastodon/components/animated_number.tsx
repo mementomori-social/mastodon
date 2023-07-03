@@ -12,7 +12,7 @@ const obfuscatedCount = (count: number) => {
   } else if (count <= 1) {
     return count;
   } else {
-    return '1+';
+    return count;
   }
 };
 
