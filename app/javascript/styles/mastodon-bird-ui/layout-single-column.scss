@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   1.5.8rc5-nightly-mastodon-4.1.2-nightly */
+   1.5.8rc6-nightly-mastodon-4.1.2-nightly */
 
 /* CSS variables */
 :root {
@@ -3067,15 +3067,6 @@ body.embed .button.logo-button:hover,
   border-radius: 16px;
   outline: 1px solid var(--color-border);
   overflow: hidden;
-}
-
-.layout-single-column .media-gallery__item-thumbnail:has(> img:not([alt])):focus::after,
-.layout-single-column .video-player:has(> video:not([title])):focus::after,
-.layout-single-column .media-gallery__gifv:has(> video:not([title])):focus::after,
-.layout-single-column .media-gallery__item-thumbnail:has(> img:not([alt])):hover::after,
-.layout-single-column .video-player:has(> video:not([title])):hover::after,
-.layout-single-column .media-gallery__gifv:has(> video:not([title])):hover::after {
-  background-color: var(--color-red);
 }
 
 /* More distinct focus color for accessibility, instead of just white */
