@@ -73,6 +73,7 @@
   --size-icon-notification: 30px;
   --width-main-panel: 600px;
   --width-side-panel: 260px;
+  --border-radius: 16px;
 
   /* Misc */
   --active-header-box-shadow: 0 1px 0 rgba(140, 141, 255, .3);
@@ -447,7 +448,7 @@ body.layout-single-column {
 .layout-single-column a.status-card,
 .layout-single-column a.status-card.compact {
   background-color: var(--color-bg);
-  border-radius: 16px;
+  border-radius: var(--border-radius);
   display: block;
 }
 
@@ -1293,6 +1294,19 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 /* Icon buttons */
 .layout-single-column .icon-button {
   color: var(--color-dim);
+}
+
+/* Hide/Show media button */
+.layout-single-column .spoiler-button button {
+  background-color: var(--color-bg);
+  border-radius: var(--border-radius);
+  color: var(--color-ghost-button-text);
+  opacity: .5;
+}
+
+.layout-single-column .spoiler-button button:hover,
+.layout-single-column .spoiler-button button:focus {
+  opacity: 1;
 }
 
 .layout-single-column .icon-button:hover {
@@ -3064,7 +3078,7 @@ body.embed .button.logo-button:hover,
 .layout-single-column .video-player video,
 .layout-single-column .media-gallery__gifv video,
 .layout-single-column .media-gallery__preview {
-  border-radius: 16px;
+  border-radius: var(--border-radius);
   outline: 1px solid var(--color-border);
   overflow: hidden;
 }
