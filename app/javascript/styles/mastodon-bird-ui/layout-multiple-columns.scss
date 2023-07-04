@@ -593,13 +593,8 @@ a.status-card.compact .status-card__host {
 }
 
 /* Content warning placeholder */
-<<<<<<< HEAD
-.layout-single-column .compose-form .autosuggest-textarea__textarea::placeholder,
-.layout-single-column .compose-form .spoiler-input__input::placeholder {
-=======
 .layout-multiple-columns .compose-form .autosuggest-textarea__textarea::placeholder,
 .layout-multiple-columns .compose-form .spoiler-input__input::placeholder {
->>>>>>> 74463fecf (Update to 1.5.8rc6-nightly-mastodon-4.1.2-nightly)
   color: var(--color-dim);
 }
 
@@ -1099,7 +1094,6 @@ body.embed .detailed-status,
 .layout-multiple-columns .account-card__title__avatar img,
 .layout-multiple-columns .account__avatar > img,
 .layout-multiple-columns .column > .scrollable .status__avatar img {
-  background-color: var(--color-bg);
   border: 0;
   border-radius: 50%;
   box-shadow: rgb(255 255 255 / 0.03) 0 0 2px inset;
@@ -3198,11 +3192,7 @@ body.embed .entry .detailed-status {
   z-index: -1;
 }
 
-<<<<<<< HEAD
-.layout-single-column .detailed-status {
-=======
 .layout-multiple-columns .detailed-status {
->>>>>>> 74463fecf (Update to 1.5.8rc6-nightly-mastodon-4.1.2-nightly)
   background-color: transparent;
   border-top: 0;
 }
