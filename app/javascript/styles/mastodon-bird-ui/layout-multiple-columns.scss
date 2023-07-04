@@ -1055,6 +1055,7 @@ body.embed .detailed-status,
 .layout-multiple-columns .account-card__title__avatar img,
 .layout-multiple-columns .account__avatar > img,
 .layout-multiple-columns .column > .scrollable .status__avatar img {
+  background-color: var(--color-bg);
   border: 0;
   border-radius: 50%;
   box-shadow: rgb(255 255 255 / 0.03) 0 0 2px inset;
@@ -3146,8 +3147,9 @@ body.embed .entry .detailed-status {
   z-index: -1;
 }
 
-.layout-multiple-columns .detailed-status {
-  background-color: var(--color-bg);
+.layout-single-column .detailed-status {
+  background-color: transparent;
+  border-top: 0;
 }
 
 /* Threaded line, actually */
