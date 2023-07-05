@@ -54,6 +54,7 @@
   --color-light-fuchsia-pink: #ff8cfd;
   --color-hashtag: var(--color-accent);
   --color-mention: var(--color-accent);
+  --color-link: var(--color-accent);
 
   /* In the original UI this color is lighten($ui-base-color, 12%) */
   --color-outer-space: #42485a;
@@ -314,6 +315,10 @@ body.layout-multiple-columns {
   color: var(--color-mention);
 }
 
+.layout-multiple-columns .status-link.mention:not(.hashtag):not(.mention) {
+  color: var(--color-link);
+}
+
 /* Logo */
 .layout-multiple-columns .ui__header__logo,
 .layout-multiple-columns .column-link.column-link--logo {
@@ -340,6 +345,12 @@ body.layout-multiple-columns {
 .layout-multiple-columns .notification__filter-bar a,
 .layout-multiple-columns .notification__filter-bar button {
   font-size: var(--font-size);
+}
+
+/* Things that should have the mid font-size */
+.layout-multiple-columns .compose-form .autosuggest-textarea__textarea,
+.layout-multiple-columns .compose-form .spoiler-input__input {
+  font-size: var(--font-size-mid);
 }
 
 /* Line heights */
