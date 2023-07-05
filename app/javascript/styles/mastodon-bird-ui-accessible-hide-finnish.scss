@@ -4,6 +4,7 @@
 @import 'mastodon-bird-ui/layout-single-column.scss';
 @import 'mastodon-bird-ui/layout-multiple-columns.scss';
 
+body.theme-mastodon-bird-ui-accessible-hide-finnish,
 body.theme-mastodon-bird-ui-accessible {
   --color-accent: #0a9ff9;
   --color-accent-dark: #1a3ff9;
