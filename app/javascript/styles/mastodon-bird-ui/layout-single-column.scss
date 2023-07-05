@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   1.5.8rc8-nightly-mastodon-4.1.2-nightly */
+   1.5.8rc9-nightly-mastodon-4.1.2-nightly */
 
 /* CSS variables */
 :root {
@@ -1270,7 +1270,7 @@ body.embed .detailed-status,
 
 /* Rtl version */
 [dir="rtl"] .layout-single-column .status__action-bar,
-[dir="rtl"] .layout-single-column .attachment-list
+[dir="rtl"] .layout-single-column .attachment-list,
 [dir="rtl"] .layout-single-column .status__content__read-more-button,
 [dir="rtl"] .layout-single-column .status .status__content {
   padding-left: 0;
