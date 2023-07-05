@@ -51,6 +51,9 @@
   --color-ghost-button-text: var(--color-button-text);
   --color-verified: #79bd9a;
   --color-destructive: #df405a;
+  --color-light-fuchsia-pink: #ff8cfd;
+  --color-hashtag: var(--color-accent);
+  --color-mention: var(--color-accent);
 
   /* In the original UI this color is lighten($ui-base-color, 12%) */
   --color-outer-space: #42485a;
@@ -63,6 +66,7 @@
   --font-size-bigger: 17px;
   --font-size-heading: 20px;
   --font-weight-bold: 700;
+  --line-height: 22px;
 
   /* Grids and gaps */
   --gap-default: 12px;
@@ -307,6 +311,15 @@ body.layout-single-column {
   color: var(--color-fg);
 }
 
+/* Link color variants */
+.layout-single-column .status-link.hashtag {
+  color: var(--color-hashtag);
+}
+
+.layout-single-column .status-link.mention:not(.hashtag) {
+  color: var(--color-mention);
+}
+
 /* Logo */
 .layout-single-column .ui__header__logo,
 .layout-single-column .column-link.column-link--logo {
@@ -323,12 +336,22 @@ body.layout-single-column {
   display: none;
 }
 
-/* Things that should have default font-size */
+/* Things that should have the default font-size */
+.layout-single-column .status__prepend,
+.layout-single-column .status__info,
+.layout-single-column .status__relative-time,
+.layout-single-column .status__info .status__display-name,
 .layout-single-column .account__section-headline a,
 .layout-single-column .account__section-headline button,
 .layout-single-column .notification__filter-bar a,
 .layout-single-column .notification__filter-bar button {
   font-size: var(--font-size);
+}
+
+/* Line heights */
+.layout-single-column .reply-indicator__content,
+.layout-single-column .status__content {
+  line-height: var(--line-height);
 }
 
 /* Modal overlay */
