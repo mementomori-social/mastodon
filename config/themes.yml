@@ -5,3 +5,4 @@ mastodon-bird-ui-contrast: styles/mastodon-bird-ui-contrast.scss
 mastodon-dark: styles/application.scss
 mastodon-light: styles/mastodon-light.scss
 contrast: styles/contrast.scss
+mastodon-bird-ui-accessible: styles/mastodon-bird-ui-accessible.scss
