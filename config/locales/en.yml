@@ -1698,6 +1698,7 @@ en:
      mastodon-dark: Mastodon (Dark)
      hide-finnish: Mastodon Bird UI (Dark, hide translate Finnish link)
      mastodon-bird-ui-accessible: Mastodon Bird UI (Ultra accessible)
+     mastodon-bird-ui-accessible-hide-finnish: Mastodon Bird Ui (Ultra accessible, hide translate Finnish link)
   time:
     formats:
       default: "%b %d, %Y, %H:%M"
