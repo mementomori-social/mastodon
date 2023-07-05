@@ -82,7 +82,7 @@ body.theme-mastodon-bird-ui-accessible {
 }
 
 /* Fixes to bottom row when there's a background */
-layout-multiple-columns .compose-form .compose-form__buttons-wrapper,
+.layout-multiple-columns .compose-form .compose-form__buttons-wrapper,
 .layout-single-column .compose-form .compose-form__buttons-wrapper {
   padding-bottom: calc(var(--gap-default) / 2);
 }
