@@ -98,7 +98,7 @@ class LinkFooter extends PureComponent {
           {DividingCircle}
           <a href={source_url} rel='noopener noreferrer' target='_blank'><FormattedMessage id='footer.source_code' defaultMessage='View source code' /></a>
           {DividingCircle}
-          v{version}
+          v{version}~nightly-20230706-mementomori-social-mods + <a href='https://github.com/ronilaukkarinen/mastodon-bird-ui/tree/mastodon-4.1.3-nightly'>Mastodon Bird UI 1.5.8rc9-nightly-mastodon-4.1.3-nightly</a>
         </p>
       </div>
     );
