@@ -55,5 +55,135 @@ export function enableScrollHandler() {
   window.addEventListener('scroll', scrollHandler);
 }
 
+// Get the ancestor post from API
+
+// Poll every two seconds for new posts
+const pollInterval = 2000;
+let pollTimeout = null;
+
+function poll() {
+  // Get all .status that has .status-reply
+  const statusReplies = document.querySelectorAll('.status.status-reply');
+
+  // Check if <div role="region" aria-label="Home" class="column"> is found on the page
+  const homeColumn = document.querySelector('[aria-label].column');
+
+  // If not found, then we are not on the home page, don't continue
+  if (!homeColumn) {
+    // Poll again
+    pollTimeout = setTimeout(poll, pollInterval);
+    return;
+  }
+
+  // Check if exists
+  if (statusReplies.length > 0) {
+
+    // Loop through all visible status-replies
+    for (let i = 0; i < statusReplies.length; i++) {
+      const statusReply = statusReplies[i];
+
+      // Get the id
+      const statusReplyId = statusReply.getAttribute('data-id');
+
+      // Only if not fetched yet
+      if (!statusReply.classList.contains('fetched')) {
+
+      // Mark this post fetched
+      statusReply.classList.add('fetched');
+
+      // Get the ancestor from the API /api/v1/statuses/<id>
+      fetch(`/api/v1/statuses/${statusReplyId}`)
+        .then(response => response.json())
+        .then(data => {
+          // Get the ancestor {"id":"110644810514106278","created_...
+          const ancestor = data;
+
+          // Get the ancestor in_reply_to_id
+          const ancestorId = ancestor.in_reply_to_id;
+
+          // Get the ancestor .status from /api/v1/statuses/<id>
+          fetch(`/api/v1/statuses/${ancestorId}`)
+            .then(response => response.json())
+            .then(data => {
+              // Get the ancestor .status
+              const ancestorStatus = data;
+
+              // Get the content
+              const ancestorContent = ancestorStatus.content;
+
+              // Get link to post /@<username>/<id>
+              const ancestorLink = '/@' + ancestorStatus.account.acct + '/' + ancestorStatus.id;
+
+              // Build HTML
+              const ancestorStatusBody = `
+                <div clas="status__line status__line-dashed" style="
+                    height: 8px;
+                ">
+                  <div style="
+                    height: 4px;
+                    width: 2px;
+                    display: block;
+                    position: absolute;
+                    top: 2px;
+                    left: 0;
+                    inset-inline-start: 38px;
+                    background-color: var(--color-thread-line);
+                "></div>
+                  <div style="
+                    height: 4px;
+                    width: 2px;
+                    display: block;
+                    position: absolute;
+                    top: 10px;
+                    left: 0;
+                    inset-inline-start: 38px;
+                    background-color: var(--color-thread-line);
+                "></div>
+                  <div style="
+                    height: 4px;
+                    width: 2px;
+                    display: block;
+                    position: absolute;
+                    top: 18px;
+                    left: 0;
+                    inset-inline-start: 38px;
+                    background-color: var(--color-thread-line);
+                "></div>
+                </div>
+
+                <div class="status__wrapper status-injected status__wrapper-reply focusable">
+                  <div class="status status-reply fetched status--in-thread" data-id="${ancestorStatus.id}">
+                    <div class="status__line status__line--full"></div>
+
+                    <div class="status__info">
+                      <a href="${ancestorLink}" class="status__display-name" target="_blank" rel="noopener noreferrer">
+                        <div class="status__avatar"><div class="account__avatar" style="width: 46px; height: 46px;"><img src="${ancestorStatus.account.avatar}" alt="${ancestorStatus.account.display_name}"></div></div>
+
+                        <span class="display-name"><bdi><strong class="display-name__html">${ancestorStatus.account.display_name}</strong></bdi> <span class="display-name__account">@${ancestorStatus.account.acct}</span></span>
+                      </a>
+                    </div>
+                  <div class="status__content status__content--with-action" tabindex="0"><div class="status__content__text status__content__text--visible translate" lang="en">
+                    ${ancestorContent}
+                  </div></div>
+                </div>
+              `;
+
+              // Prepend this data before the status-reply
+              statusReply.insertAdjacentHTML('beforebegin', ancestorStatusBody);
+            });
+        });
+      }
+    }
+  }
+
+  // Poll again
+  pollTimeout = setTimeout(poll, pollInterval);
+}
+
+export function enablePoll() {
+  pollTimeout = setTimeout(poll, pollInterval);
+}
+
 // Launch
+enablePoll();
 enableScrollHandler();
