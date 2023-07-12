@@ -31,6 +31,19 @@ body.layout-single-column .tabs-bar__wrapper {
   transition: transform 500ms ease-in-out;
 }
 
+// Notification filter bar sticky on mobile
+body.layout-single-column .notification__filter-bar {
+  background-color: var(--color-bg);
+  transition: all 500ms ease-in-out;
+}
+
+body.layout-single-column .notification__filter-bar.notification__filter-bar--fixed {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 5;
+}
+
 body {
   font-family: $font-sans-serif, sans-serif;
   background: darken($ui-base-color, 7%);
