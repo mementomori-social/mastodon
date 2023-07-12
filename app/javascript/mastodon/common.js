@@ -25,6 +25,10 @@ function scrollHandler() {
 
   // If not mobile, bail
   if (window.innerWidth > 890) {
+    // Remove scroll-up and scroll-down classes
+    document.body.classList.remove('scroll-up');
+    document.body.classList.remove('scroll-down');
+
     return;
   }
 
@@ -48,6 +52,10 @@ function scrollHandler() {
 
   // If scroll position from bottom is less than a certain amount, don't do anything
   if (scrollPositionFromTop < 1200) {
+    // Remove scroll-up and scroll-down classes
+    document.body.classList.remove('scroll-up');
+    document.body.classList.remove('scroll-down');
+
     return;
   }
 
