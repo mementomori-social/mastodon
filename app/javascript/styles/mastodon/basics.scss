@@ -13,18 +13,26 @@ body.layout-single-column.scroll-down .tabs-bar__wrapper {
   transform: translateY(-300%);
 }
 
+/* Also hide the bottom bar when scrolling down */
+body.layout-single-column.scroll-down .columns-area__panels__pane__inner {
+  transform: translateY(100%);
+}
+
+body.layout-single-column.scroll-up .columns-area__panels__pane__inner,
 body.layout-single-column.scroll-up .ui:after,
 body.layout-single-column.scroll-up .ui__header,
 body.layout-single-column.scroll-up .tabs-bar__wrapper {
   transform: translateY(0);
 }
 
+body.layout-single-column.scroll-top .columns-area__panels__pane__inner,
 body.layout-single-column.scroll-top .ui:after,
 body.layout-single-column.scroll-top .ui__header,
 body.layout-single-column.scroll-top .tabs-bar__wrapper {
   transform: translateY(0);
 }
 
+body.layout-single-column .columns-area__panels__pane__inner,
 body.layout-single-column .ui:after,
 body.layout-single-column .ui__header,
 body.layout-single-column .tabs-bar__wrapper {
