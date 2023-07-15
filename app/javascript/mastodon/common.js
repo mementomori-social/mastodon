@@ -56,6 +56,9 @@ export function enableScrollHandler() {
 }
 
 // Get the ancestor post from API
+// NB! THERE ARE TWO REASONS NOT TO USE THIS RIGHT NOW:
+// 1. It's a hack, it's not a good solution - it polls the API every two seconds which can cause rate limiting
+// 2. It's not using the same logic as the Mastodon code, so it's not 100% accurate
 
 // Poll every two seconds for new posts
 const pollInterval = 2000;
@@ -88,6 +91,11 @@ function poll() {
       // Only if not fetched yet
       if (!statusReply.classList.contains('fetched')) {
 
+      // Ensure that the reply is not there, previousElementSibling shouldn't have class status-injected
+      if (statusReply.previousElementSibling && statusReply.previousElementSibling.classList.contains('status-injected')) {
+        return;
+      }
+
       // Mark this post fetched
       statusReply.classList.add('fetched');
 
@@ -116,60 +124,30 @@ function poll() {
 
               // Build HTML
               const ancestorStatusBody = `
-                <div clas="status__line status__line-dashed" style="
-                    height: 8px;
-                ">
-                  <div style="
-                    height: 4px;
-                    width: 2px;
-                    display: block;
-                    position: absolute;
-                    top: 2px;
-                    left: 0;
-                    inset-inline-start: 38px;
-                    background-color: var(--color-thread-line);
-                "></div>
-                  <div style="
-                    height: 4px;
-                    width: 2px;
-                    display: block;
-                    position: absolute;
-                    top: 10px;
-                    left: 0;
-                    inset-inline-start: 38px;
-                    background-color: var(--color-thread-line);
-                "></div>
-                  <div style="
-                    height: 4px;
-                    width: 2px;
-                    display: block;
-                    position: absolute;
-                    top: 18px;
-                    left: 0;
-                    inset-inline-start: 38px;
-                    background-color: var(--color-thread-line);
-                "></div>
-                </div>
-
                 <div class="status__wrapper status-injected status__wrapper-reply focusable">
-                  <div class="status status-reply fetched status--in-thread" data-id="${ancestorStatus.id}">
-                    <div class="status__line status__line--full"></div>
+                    <div class="status status-reply fetched status--in-thread" data-id="${ancestorStatus.id}">
+                      <div class="status__line status__line--full status__line--first"></div>
 
-                    <div class="status__info">
-                      <a href="${ancestorLink}" class="status__display-name" target="_blank" rel="noopener noreferrer">
-                        <div class="status__avatar"><div class="account__avatar" style="width: 46px; height: 46px;"><img src="${ancestorStatus.account.avatar}" alt="${ancestorStatus.account.display_name}"></div></div>
-
-                        <span class="display-name"><bdi><strong class="display-name__html">${ancestorStatus.account.display_name}</strong></bdi> <span class="display-name__account">@${ancestorStatus.account.acct}</span></span>
-                      </a>
+                      <div class="status__info">
+                        <a href="${ancestorLink}" class="status__display-name" rel="noopener noreferrer">
+                          <div class="status__avatar"><div class="account__avatar" style="width: 46px; height: 46px;"><img src="${ancestorStatus.account.avatar}" alt="${ancestorStatus.account.display_name}"></div></div>
+                          <span class="display-name"><bdi><strong class="display-name__html">${ancestorStatus.account.display_name}</strong></bdi> <span class="display-name__account">@${ancestorStatus.account.acct}</span></span>
+                        </a>
+                      </div>
+                      <div class="status__content status__content--with-action" tabindex="0">
+                        <div class="status__content__text status__content__text--visible translate" lang="en">
+                        ${ancestorContent}
+                        </div>
+                      </div>
                     </div>
-                  <div class="status__content status__content--with-action" tabindex="0"><div class="status__content__text status__content__text--visible translate" lang="en">
-                    ${ancestorContent}
-                  </div></div>
                 </div>
               `;
 
-              // Prepend this data before the status-reply
-              statusReply.insertAdjacentHTML('beforebegin', ancestorStatusBody);
+              // Check if the ancestor is a reply to another post
+              if (ancestorStatus.in_reply_to_id) {
+                // Prepend this data before the status-reply
+                statusReply.insertAdjacentHTML('beforebegin', ancestorStatusBody);
+              }
             });
         });
       }
