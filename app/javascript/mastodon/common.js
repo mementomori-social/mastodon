@@ -51,7 +51,7 @@ function scrollHandler() {
   }
 
   // If scroll position from bottom is less than a certain amount, don't do anything
-  if (scrollPositionFromTop < 1200) {
+  if (scrollPositionFromTop < 500) {
     // Remove scroll-up and scroll-down classes
     document.body.classList.remove('scroll-up');
     document.body.classList.remove('scroll-down');
