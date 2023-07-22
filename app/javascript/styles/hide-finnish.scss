@@ -3,6 +3,6 @@
 @import 'mastodon-bird-ui/layout-multiple-columns.scss';
 
 /* Hide translate Finnish link */
-.status__content__text[lang="fi"].translate ~ .status__content__read-more-button {
+.status__content__text[lang="fi"].translate ~ .status__content__translate-button {
   display: none;
 }
