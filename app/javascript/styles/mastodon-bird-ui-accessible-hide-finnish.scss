@@ -73,7 +73,7 @@ body.theme-mastodon-bird-ui-accessible {
 }
 
 /* Hide translate Finnish link */
-.status__content__text[lang="fi"].translate ~ .status__content__read-more-button {
+.status__content__text[lang="fi"].translate ~ .status__content__translate-button {
   display: none;
 }
 
