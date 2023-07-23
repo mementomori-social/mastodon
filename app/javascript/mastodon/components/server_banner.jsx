@@ -88,9 +88,7 @@ class ServerBanner extends PureComponent {
             <h4>Mastodon stats:</h4>
             <strong className='server-banner__number'>13.6M</strong>
             <br />
-            <span className='server-banner__number-label'>
-              <a style='color: var(--color-light-purple); text-decoration: none;' href='https://mastodon.social/@mastodonusercount'>Mastodon users</a>
-            </span>
+            <span className='server-banner__number-label'>Mastodon users</span>
           </div>
         </div>
 
