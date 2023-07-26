@@ -1693,12 +1693,15 @@ en:
      contrast: Mastodon (High contrast)
      default: Mastodon Bird UI (Dark)
      mastodon-bird-ui-light: Mastodon Bird UI (Light)
+     mastodon-bird-ui-light-hide-finnish: Mastodon Bird UI (Light, hide Translate link for Finnish)
+     mastodon-bird-ui-light-hide-translate-links: Mastodon Bird UI (Light, hide all Translate links)
      mastodon-bird-ui-contrast: Mastodon Bird UI (High contrast)
      mastodon-light: Mastodon (Light)
      mastodon-dark: Mastodon (Dark)
      hide-finnish: Mastodon Bird UI (Dark, hide translate Finnish link)
+     hide-translate-links: Mastodon Bird UI (Dark, hide all Translate links)
      mastodon-bird-ui-accessible: Mastodon Bird UI (Ultra accessible)
-     mastodon-bird-ui-accessible-hide-finnish: Mastodon Bird Ui (Ultra accessible, hide translate Finnish link)
+     mastodon-bird-ui-accessible-hide-finnish: Mastodon Bird Ui (Ultra accessible, hide translate link for Finnish)
   time:
     formats:
       default: "%b %d, %Y, %H:%M"
