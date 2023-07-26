@@ -180,7 +180,7 @@ body.theme-mastodon-bird-ui-contrast.layout-single-column {
 }
 
 /* Light theme */
-body.theme-mastodon-bird-ui-light.layout-single-column {
+body[class*='theme-mastodon-bird-ui-light'].layout-single-column {
   --color-bg: #fff;
   --color-fg: #000;
   --color-border: #e6e1ed;
