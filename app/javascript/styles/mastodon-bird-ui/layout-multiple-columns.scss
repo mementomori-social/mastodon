@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   1.6.8rc6-nightly */
+   1.6.9rc2-nightly */
 
 /* CSS variables */
 :root {
@@ -61,7 +61,6 @@
   --color-outer-space: #42485a;
 
   /* Font related */
-  --font-stack: system-ui, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, Inter, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --font-size: 15px;
   --font-size-smaller: 13px;
   --font-size-12: 12px;
@@ -299,7 +298,6 @@ body[class*='theme-mastodon-bird-ui-light'].layout-multiple-columns {
 body.layout-multiple-columns {
   background-color: var(--color-bg);
   color: var(--color-fg);
-  font-family: var(--font-stack);
 }
 
 .layout-multiple-columns .ui {
@@ -1115,6 +1113,7 @@ body.embed .status__content a,
 /* Status action bar */
 .layout-multiple-columns .status__action-bar {
   margin-top: 12px;
+  max-height: 27px;
 }
 
 /* Display name */
