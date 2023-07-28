@@ -71,18 +71,20 @@ class AccountSearchService < BaseService
   end
 
   def from_elasticsearch
-    return [] if account && options[:following] && following_ids.empty?
+    must_clauses   = must_clause
+    should_clauses = should_clause
 
-    query = SearchQueryTransformer
-            .new
-            .apply(SearchQueryParser.new.parse(@query))
-            .accounts_query(
-              likely_acct?,
-              Rails.configuration.x.account_search_scope,
-              !account.nil?,
-              options[:following],
-              following_ids
-            )
+    if account
+      return [] if options[:following] && following_ids.empty?
+
+      if options[:following]
+        must_clauses << { terms: { id: following_ids } }
+      elsif following_ids.any?
+        should_clauses << { terms: { id: following_ids, boost: 100 } }
+      end
+    end
+
+    query     = { bool: { must: must_clauses, should: should_clauses } }
     functions = [reputation_score_function, followers_score_function, time_distance_function]
 
     records = AccountsIndex.query(function_score: { query: query, functions: functions })
