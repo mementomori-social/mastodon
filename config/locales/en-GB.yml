@@ -1152,7 +1152,7 @@ en-GB:
       title: Security verification failed
     '429': Too many requests
     '500':
-      content: We're sorry, but something went wrong on our end.
+      content: We're sorry, but something went wrong on our end. / OR we are having a maintenance break. Check back soon! In the meantime you can check the status of our services at <a href="https://status.mementomori.social">status.
       title: This page is not correct
     '503': The page could not be served due to a temporary server failure.
     noscript_html: To use the Mastodon web application, please enable JavaScript. Alternatively, try one of the <a href="%{apps_path}">native apps</a> for Mastodon for your platform.
