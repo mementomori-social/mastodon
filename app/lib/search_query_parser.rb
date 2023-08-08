@@ -1,15 +1,20 @@
 # frozen_string_literal: true
 
 class SearchQueryParser < Parslet::Parser
-  rule(:term)      { match('[^\s":]').repeat(1).as(:term) }
+  rule(:term)      { match('[^\s"]').repeat(1).as(:term) }
   rule(:quote)     { str('"') }
   rule(:colon)     { str(':') }
+  rule(:hash)      { str('#') }
   rule(:space)     { match('\s').repeat(1) }
   rule(:operator)  { (str('+') | str('-')).as(:operator) }
-  rule(:prefix)    { (term >> colon).as(:prefix) }
-  rule(:shortcode) { (colon >> term >> colon.maybe).as(:shortcode) }
-  rule(:phrase)    { (quote >> (term >> space.maybe).repeat >> quote).as(:phrase) }
-  rule(:clause)    { (prefix.maybe >> operator.maybe >> (phrase | term | shortcode)).as(:clause) }
+  # See SearchQueryTransformer::PrefixClause::initialize for list of legal prefix operators.
+  # These are explictly enumerated here so they don't get mistaken for URLs.
+  rule(:prefix)    { ((str('domain') | str('is') | str('has') | str('lang') | str('before') | str('after') | str('from') | str('mentions') | str('to') | str('scope') | str('sort')).as(:prefix) >> colon) }
+  # See CustomEmoji::SHORTCODE_RE_FRAGMENT and SCAN_RE for emoji grammar.
+  rule(:shortcode) { (colon >> match('[a-zA-Z0-9_]').repeat(2).as(:shortcode) >> colon) }
+  rule(:hashtag)   { (hash >> match('[^\s#]').repeat(1).as(:hashtag)) }
+  rule(:phrase)    { (quote >> match('[^"]').repeat(1).as(:phrase) >> quote) }
+  rule(:clause)    { (operator.maybe >> prefix.maybe >> (phrase | shortcode | hashtag | term)).as(:clause) }
   rule(:query)     { (clause >> space.maybe).repeat.as(:query) }
   root(:query)
 end
