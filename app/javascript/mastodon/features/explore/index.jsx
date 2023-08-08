@@ -103,7 +103,6 @@ class Explore extends PureComponent {
 
               <Helmet>
                 <title>{intl.formatMessage(messages.title)}</title>
-                <meta name='robots' content={isSearching ? 'noindex' : 'all'} />
               </Helmet>
             </>
           )}
