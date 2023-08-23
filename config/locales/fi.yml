@@ -1676,9 +1676,18 @@ fi:
   tags:
     does_not_match_previous_name: ei vastaa edellistä nimeä
   themes:
-    contrast: Mastodon (Korkea kontrasti)
-    default: Mastodon (Tumma)
-    mastodon-light: Mastodon (Vaalea)
+     contrast: Mastodon (Korkea kontrasti)
+     default: Mastodon Bird UI (Tumma)
+     mastodon-bird-ui-light: Mastodon Bird UI (Vaalea)
+     mastodon-bird-ui-light-hide-finnish: Mastodon Bird UI (Vaalea, piilota Käännä-linkit suomen kielelle)
+     mastodon-bird-ui-light-hide-translate-links: Mastodon Bird UI (Vaalea, piilota kaikki käännöslinkit)
+     mastodon-bird-ui-contrast: Mastodon Bird UI (Korkea kontrasti)
+     mastodon-light: Mastodon (Vaalea)
+     mastodon-dark: Mastodon (Tumma)
+     hide-finnish: Mastodon Bird UI (Tumma, piilota Käännä-linkit suomen kielelle)
+     hide-translate-links: Mastodon Bird UI (Tumma, piilota kaikki käännöslinkit)
+     mastodon-bird-ui-accessible: Mastodon Bird UI (Saavutettavuus huomioitu)
+     mastodon-bird-ui-accessible-hide-finnish: Mastodon Bird Ui (Saavutettavuus huomioitu, piilota Käännä-linkit suomelle)
   time:
     formats:
       default: "%d.%m.%Y klo %H.%M"
