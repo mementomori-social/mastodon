@@ -52,6 +52,13 @@ body.layout-single-column .notification__filter-bar.notification__filter-bar--fi
   z-index: 5;
 }
 
+// For PWA on Safari
+@supports(padding-bottom: env(safe-area-inset-bottom, 20px)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+}
+
 body {
   font-family: $font-sans-serif, sans-serif;
   background: darken($ui-base-color, 7%);
