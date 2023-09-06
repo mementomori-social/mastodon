@@ -1,0 +1,10 @@
+@import 'mastodon-light/variables';
+@import 'application';
+@import 'mastodon-light/diff';
+@import 'mastodon-bird-ui/layout-single-column.scss';
+@import 'mastodon-bird-ui/layout-multiple-columns.scss';
+
+/* Hide translate links */
+.status__content__text[lang].translate ~ .status__content__translate-button {
+  display: none;
+}
