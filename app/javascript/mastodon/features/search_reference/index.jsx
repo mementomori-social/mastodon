@@ -113,6 +113,10 @@ class SearchReference extends ImmutablePureComponent {
                   <td><kbd>scope:following</kbd></td>
                   <td><FormattedMessage id='search_reference.search_operators.scope.following' defaultMessage='limit search to users that you follow and posts from them' /></td>
                 </tr>
+                <tr>
+                  <td><kbd>in:library</kbd></td>
+                  <td><FormattedMessage id='search_reference.search_operators.in.library' defaultMessage='for searching only in posts you have written or interacted with' /></td>
+                </tr>
               </tbody>
             }
 
@@ -138,6 +142,10 @@ class SearchReference extends ImmutablePureComponent {
                   <td><FormattedMessage id='search_reference.search_operators.from' defaultMessage='posts authored by a given user' /></td>
                 </tr>
                 <tr>
+                  <td><kbd>from:me</kbd></td>
+                  <td><FormattedMessage id='search_reference.search_operators.from.me' defaultMessage='posts authored by me' /></td>
+                </tr>
+                <tr>
                   <td><kbd>mentions:@username@domain</kbd></td>
                   <td><FormattedMessage id='search_reference.search_operators.mentions' defaultMessage='posts mentioning a given user' /></td>
                 </tr>
@@ -150,7 +158,7 @@ class SearchReference extends ImmutablePureComponent {
                   <td><FormattedMessage id='search_reference.search_operators.is.sensitive' defaultMessage='posts that include sensitive media' /></td>
                 </tr>
                 <tr>
-                  <td><kbd>lang:es</kbd></td>
+                  <td><kbd>language:es</kbd></td>
                   <td><FormattedMessage id='search_reference.search_operators.lang' defaultMessage='posts in the given language' /></td>
                 </tr>
                 <tr>
@@ -176,6 +184,10 @@ class SearchReference extends ImmutablePureComponent {
                 <tr>
                   <td><kbd>after:2022-12-17</kbd></td>
                   <td><FormattedMessage id='search_reference.search_operators.date.after' defaultMessage='search after a given date' /></td>
+                </tr>
+                <tr>
+                  <td><kbd>during:2022-12-17</kbd></td>
+                  <td><FormattedMessage id='search_reference.search_operators.date.during' defaultMessage='search during a given date' /></td>
                 </tr>
                 <tr>
                   <td><kbd>sort:newest</kbd></td>
