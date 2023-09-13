@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   1.7.3-nightly */
+   1.7.4rc3-nightly */
 
 /* CSS variables */
 :root {
@@ -157,6 +157,15 @@
   --icon-star: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="%23717c9b" stroke-width="5.5" viewBox="0 0 68 68"%3E%3Cpath d="M31.4 3.8c-.7.4-2.5 5-4.1 10.2l-2.9 9.5-9.9.5c-5.5.3-10.6.9-11.3 1.3-.6.5-1.2 1.9-1.2 3.3 0 2 1.5 3.4 8 7.5 4.4 2.8 8 5.5 8 6s-1.3 4.5-3 9.1c-3.6 9.7-3.7 11.4-.9 12.8 2.7 1.5 3.5 1.1 12.4-5.6l7.5-5.6 8.2 6.1c8.4 6.3 11.2 7.1 13.2 3.9.8-1.4.3-3.9-2.2-11-1.8-5.1-3.2-9.6-3.2-9.9 0-.4 3.6-3 8-5.8 6.5-4.1 8-5.5 8-7.5 0-1.4-.6-2.8-1.2-3.3-.7-.4-5.8-1-11.3-1.3l-9.9-.5-2.9-9.5C37.8 4.6 36.9 3 34 3c-.8 0-2 .4-2.6.8z"/%3E%3C/svg%3E%0A');
   --icon-star-hover: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="%23ffac33" stroke-width="5.5" viewBox="0 0 68 68"%3E%3Cpath d="M31.4 3.8c-.7.4-2.5 5-4.1 10.2l-2.9 9.5-9.9.5c-5.5.3-10.6.9-11.3 1.3-.6.5-1.2 1.9-1.2 3.3 0 2 1.5 3.4 8 7.5 4.4 2.8 8 5.5 8 6s-1.3 4.5-3 9.1c-3.6 9.7-3.7 11.4-.9 12.8 2.7 1.5 3.5 1.1 12.4-5.6l7.5-5.6 8.2 6.1c8.4 6.3 11.2 7.1 13.2 3.9.8-1.4.3-3.9-2.2-11-1.8-5.1-3.2-9.6-3.2-9.9 0-.4 3.6-3 8-5.8 6.5-4.1 8-5.5 8-7.5 0-1.4-.6-2.8-1.2-3.3-.7-.4-5.8-1-11.3-1.3l-9.9-.5-2.9-9.5C37.8 4.6 36.9 3 34 3c-.8 0-2 .4-2.6.8z"/%3E%3C/svg%3E%0A');
   --icon-search: url("data:image/svg+xml;charset=utf-8, %3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23535C76' aria-hidden='true' viewBox='0 0 24 24'%3E%3Cpath d='M10.25 3.75a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-8.5 6.5a8.5 8.5 0 1 1 15.176 5.262l4.781 4.781-1.414 1.414-4.781-4.781A8.5 8.5 0 0 1 1.75 10.25z'/%3E%3C/svg%3E");
+
+  /* Profile icons */
+  --icon-github: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23717c9b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"%3E%3Cpath d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"%3E%3C/path%3E%3C/svg%3E');
+  --icon-youtube: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23717c9b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-youtube"%3E%3Cpath d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"%3E%3C/path%3E%3Cpolygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"%3E%3C/polygon%3E%3C/svg%3E');
+  --icon-link: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="%23717c9b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link-2"%3E%3Cpath d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"%3E%3C/path%3E%3Cline x1="8" y1="12" x2="16" y2="12"%3E%3C/line%3E%3C/svg%3E');
+  --icon-twitter: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512"%3E%3Cpath fill="%23717c9b" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/%3E%3C/svg%3E');
+  --icon-twitch: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23717c9b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitch"%3E%3Cpath d="M21 2H3v16h5v4l4-4h5l4-4V2zm-10 9V7m5 4V7"%3E%3C/path%3E%3C/svg%3E');
+  --icon-verified: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" width="22" height="22" %3E%3Cpath fill="%236364ff" d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z"%3E%3C/path%3E%3C/svg%3E');
+  --icon-verified-smaller: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" width="19" height="19 "%3E%3Cpath fill="%236364ff" d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z"%3E%3C/path%3E%3C/svg%3E');
 }
 
 /* High Contrast theme */
@@ -178,6 +187,13 @@ body.theme-mastodon-bird-ui-contrast.layout-single-column {
   --icon-home-notification: url('data:image/svg+xml, %0A%3Csvg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"%3E%3Ctitle%3EHome%3C/title%3E%3Cpath d="M80 212v236a16 16 0 0016 16h96V328a24 24 0 0124-24h80a24 24 0 0124 24v136h96a16 16 0 0016-16V212" fill="none" stroke="%23b8b3c0" stroke-linecap="round" stroke-linejoin="round" stroke-width="38"/%3E%3Cpath d="M480 256L266.89 52c-5-5.28-16.69-5.34-21.78 0L32 256M400 179V64h-48v69" fill="none" stroke="%23b8b3c0" stroke-linecap="round" stroke-linejoin="round" stroke-width="38"/%3E%3C/svg%3E');
   --icon-star: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="%23b8b3c0" stroke-width="5.5" viewBox="0 0 68 68"%3E%3Cpath d="M31.4 3.8c-.7.4-2.5 5-4.1 10.2l-2.9 9.5-9.9.5c-5.5.3-10.6.9-11.3 1.3-.6.5-1.2 1.9-1.2 3.3 0 2 1.5 3.4 8 7.5 4.4 2.8 8 5.5 8 6s-1.3 4.5-3 9.1c-3.6 9.7-3.7 11.4-.9 12.8 2.7 1.5 3.5 1.1 12.4-5.6l7.5-5.6 8.2 6.1c8.4 6.3 11.2 7.1 13.2 3.9.8-1.4.3-3.9-2.2-11-1.8-5.1-3.2-9.6-3.2-9.9 0-.4 3.6-3 8-5.8 6.5-4.1 8-5.5 8-7.5 0-1.4-.6-2.8-1.2-3.3-.7-.4-5.8-1-11.3-1.3l-9.9-.5-2.9-9.5C37.8 4.6 36.9 3 34 3c-.8 0-2 .4-2.6.8z"/%3E%3C/svg%3E%0A');
   --icon-bookmark: url('data:image/svg+xml, %0A%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23b8b3c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bookmark"%3E%3Cpath d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"%3E%3C/path%3E%3C/svg%3E');
+
+  /* Profile icons */
+  --icon-github: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23b8b3c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"%3E%3Cpath d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"%3E%3C/path%3E%3C/svg%3E');
+  --icon-youtube: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23b8b3c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-youtube"%3E%3Cpath d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"%3E%3C/path%3E%3Cpolygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"%3E%3C/polygon%3E%3C/svg%3E');
+  --icon-link: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="%23b8b3c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link-2"%3E%3Cpath d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"%3E%3C/path%3E%3Cline x1="8" y1="12" x2="16" y2="12"%3E%3C/line%3E%3C/svg%3E');
+  --icon-twitter: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512"%3E%3Cpath fill="%23b8b3c0" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/%3E%3C/svg%3E');
+  --icon-twitch: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23b8b3c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitch"%3E%3Cpath d="M21 2H3v16h5v4l4-4h5l4-4V2zm-10 9V7m5 4V7"%3E%3C/path%3E%3C/svg%3E');
 }
 
 /* Light theme */
@@ -262,6 +278,13 @@ body[class*='theme-mastodon-bird-ui-light'].layout-single-column {
   --icon-hashtag: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%231f1b23" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-hash"%3E%3Cline x1="4" y1="9" x2="20" y2="9"%3E%3C/line%3E%3Cline x1="4" y1="15" x2="20" y2="15"%3E%3C/line%3E%3Cline x1="10" y1="3" x2="8" y2="21"%3E%3C/line%3E%3Cline x1="16" y1="3" x2="14" y2="21"%3E%3C/line%3E%3C/svg%3E');
   --icon-hashtag-active: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%231f1b23" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-hash"%3E%3Cline x1="4" y1="9" x2="20" y2="9"%3E%3C/line%3E%3Cline x1="4" y1="15" x2="20" y2="15"%3E%3C/line%3E%3Cline x1="10" y1="3" x2="8" y2="21"%3E%3C/line%3E%3Cline x1="16" y1="3" x2="14" y2="21"%3E%3C/line%3E%3C/svg%3E');
   --icon-search: url("data:image/svg+xml;charset=utf-8, %3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239FA4BB' aria-hidden='true' viewBox='0 0 24 24'%3E%3Cpath d='M10.25 3.75a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-8.5 6.5a8.5 8.5 0 1 1 15.176 5.262l4.781 4.781-1.414 1.414-4.781-4.781A8.5 8.5 0 0 1 1.75 10.25z'/%3E%3C/svg%3E");
+
+  /* Profile icons */
+  --icon-github: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%239FA4BB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"%3E%3Cpath d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"%3E%3C/path%3E%3C/svg%3E');
+  --icon-youtube: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%239FA4BB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-youtube"%3E%3Cpath d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"%3E%3C/path%3E%3Cpolygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"%3E%3C/polygon%3E%3C/svg%3E');
+  --icon-link: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="%239FA4BB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link-2"%3E%3Cpath d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"%3E%3C/path%3E%3Cline x1="8" y1="12" x2="16" y2="12"%3E%3C/line%3E%3C/svg%3E');
+  --icon-twitter: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512"%3E%3Cpath fill="%239FA4BB" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/%3E%3C/svg%3E');
+  --icon-twitch: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%239FA4BB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitch"%3E%3Cpath d="M21 2H3v16h5v4l4-4h5l4-4V2zm-10 9V7m5 4V7"%3E%3C/path%3E%3C/svg%3E');
 }
 
 /* Vars on iPad, landscape */
@@ -1933,10 +1956,19 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 
 /* Notification badge on side panel */
 .layout-single-column .icon-with-badge__badge {
-  border-radius: 50%;
+  align-items: center;
+  border-radius: 1em;
+  box-sizing: border-box;
+  display: flex;
   font-size: 11px;
+  height: 1.7em;
+  justify-content: center;
   left: 12px;
-  top: -6px;
+  line-height: 1;
+  min-width: max-content;
+  padding: 0 0.4em;
+  top: -7px;
+  width: 1.7em;
 }
 
 .layout-single-column .column-link--transparent.active {
@@ -2160,9 +2192,115 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
   padding: 0;
 }
 
-/* Hide label */
+.layout-single-column .account__header__bio .account__header__fields dl::after {
+  content: '|';
+  order: 2;
+}
+
 .layout-single-column .account__header__bio .account__header__fields dt {
+  order: 1;
+}
+
+.layout-single-column .account__header__bio .account__header__fields dd {
+  order: 3;
+}
+
+/* Hide the character in between Joined label */
+.layout-single-column .account__header__bio .account__header__fields dl:first-of-type::after {
   display: none;
+}
+
+/* Make full width... */
+.layout-single-column .account__header__bio .account__header__fields dl {
+  width: 100%;
+}
+
+/* ...except on those that have label with GitHub, github, YouTube or similar */
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="GitHub"], dt[title*="github"], dt[title*="YouTube"], dt[title*="youtube"], dt[title*="Website"], dt[title*="website"], dt[title*="Twitch"], dt[title*="twitch"], dt[title*="twitter"], dt[title*="Twitter"], dt[title="X"], dt[title="x"]) {
+
+  /* Move to last */
+  order: 9999;
+  width: auto;
+}
+
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="GitHub"], dt[title*="github"])::after {
+  content: var(--icon-github);
+  height: 18.5px;
+  width: 18.5px;
+}
+
+/* Hide labels that show "Website", "YouTube", etc. */
+.layout-single-column .account__header__bio .account__header__fields dl:first-of-type::before,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="GitHub"], dt[title*="github"])::before,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="GitHub"], dt[title*="github"]) dt,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="Website"], dt[title*="website"]) dt,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="Website"], dt[title*="website"])::after,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="YouTube"], dt[title*="youtube"])::before,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="YouTube"], dt[title*="youtube"]) dt,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="Twitch"], dt[title*="twitch"])::before,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="Twitch"], dt[title*="twitch"]) dt,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="Twitter"], dt[title*="twitter"])::before,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="Twitter"], dt[title*="twitter"]) dt,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title="X"], dt[title="X"])::before,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title="X"], dt[title="X"]) dt {
+  display: none;
+}
+
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="YouTube"], dt[title*="youtube"])::after {
+  content: var(--icon-youtube);
+  height: 18.5px;
+  width: 18.5px;
+}
+
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="Twitch"], dt[title*="twitch"])::after {
+  content: var(--icon-twitch);
+  height: 18.5px;
+  width: 18.5px;
+}
+
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title="X"], dt[title="x"])::after,
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="Twitter"], dt[title*="twitter"])::after {
+  content: var(--icon-twitter);
+  height: 18.5px;
+  width: 18.5px;
+}
+
+/* Default link icon */
+.layout-single-column .account__header__bio .account__header__fields dl::before {
+  content: var(--icon-link);
+  height: 18.5px;
+  width: 18.5px;
+}
+
+/* Verified colors for Firefox before :has */
+.layout-single-column .account__header__bar .account__header__fields .verified__mark,
+.layout-single-column .account__header__bar .account__header__fields .verified a,
+.layout-single-column .account__header__bar .account__header__bio .account__header__fields .verified a,
+.layout-single-column .account__header__bar .account__header__bio .account__header__fields .verified dd {
+  color: var(--color-verified);
+  font-weight: var(--font-weight-regular);
+}
+
+/* Reset verified colors */
+.layout-single-column .account__header__bar:has(.account__header__fields .verified) .account__header__fields .verified__mark,
+.layout-single-column .account__header__bar:has(.account__header__fields .verified) .account__header__fields .verified a,
+.layout-single-column .account__header__bar:has(.account__header__fields .verified) .account__header__bio .account__header__fields .verified a,
+.layout-single-column .account__header__bar:has(.account__header__fields .verified) .account__header__bio .account__header__fields .verified dd {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-regular);
+}
+
+/* Hide verified__mark */
+.layout-single-column .account__header__bar:has(.account__header__fields .verified) .account__header__fields .verified__mark {
+  display: none;
+}
+
+/* New verified badge */
+.account__header__bar:has(.account__header__fields .verified) .account__header__tabs__name h1 > span::after {
+  content: var(--icon-verified);
+  margin-left: 4px;
+  position: relative;
+  top: 5px;
 }
 
 /* Joined label */
@@ -2190,6 +2328,8 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 .layout-single-column .account__header__bio .account__header__fields dt {
   color: var(--color-dim);
   font-size: var(--font-size);
+  font-weight: var(--font-weight-regular);
+  text-transform: unset;
 }
 
 .layout-single-column .account__header__bio .account__header__fields dl {
@@ -3368,6 +3508,14 @@ body.embed .button.logo-button:hover,
   }
 }
 
+/* Fixes for iPhone Safari + iPhone Safari PWA */
+@media screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait), /* iPhone 12, iPhone 12 Pro, iPhone 13, iPhone 13 Pro, and iPhone 14 */ screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait), /* iPhone 14 Pro */ screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait), /* iPhone XR and iPhone 11 */ screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait), /* iPhone Xs Max and iPhone 11 Pro Max */ screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait), /* iPhone 12 Pro Max, iPhone 13 Pro Max, and iPhone 14 Plus */ screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait), /* iPhone 14 Pro Max */ screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) {
+  /* Fix top header overlapping in /publish on iPhone */
+  .layout-single-column .columns-area--mobile:has(.compose-form) {
+    top: 34px;
+  }
+}
+
 /* Retweet animation */
 /* stylelint-disable-next-line selector-not-notation */
 .layout-single-column.no-reduce-motion .icon-button.active:not([aria-label="Unboost"]):not([aria-label="Peru tehostus"]) .fa-retweet {
@@ -3435,14 +3583,6 @@ body.embed .entry .detailed-status {
   /* stylelint-disable-next-line */
   border-radius: 0 !important;
   overflow: hidden;
-}
-
-/* Verified */
-.layout-single-column .account__header__fields .verified a,
-.layout-single-column .account__header__bio .account__header__fields .verified a,
-.layout-single-column .account__header__bio .account__header__fields .verified dd,
-.layout-single-column .account__header__bio .account__header__fields .verified dt {
-  color: var(--color-verified);
 }
 
 /* Destructive colors (For you -suggestions, users when focused to the follow button */
