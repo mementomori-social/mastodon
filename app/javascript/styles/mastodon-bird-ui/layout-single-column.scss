@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   1.7.4rc3-nightly */
+   1.7.4rc4-nightly */
 
 /* CSS variables */
 :root {
@@ -2212,10 +2212,11 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 }
 
 /* Make full width... */
-/* stylelint-disable-next-line no-duplicate-selectors */
+/* stylelint-disable no-duplicate-selectors */
 .layout-single-column .account__header__bio .account__header__fields dl {
   width: 100%;
 }
+/* stylelint-enable no-duplicate-selectors */
 
 /* ...except on those that have label with GitHub, github, YouTube or similar */
 .layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="GitHub"], dt[title*="github"], dt[title*="YouTube"], dt[title*="youtube"], dt[title*="Website"], dt[title*="website"], dt[title*="Twitch"], dt[title*="twitch"], dt[title*="twitter"], dt[title*="Twitter"], dt[title="X"], dt[title="x"]) {
@@ -2223,6 +2224,13 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
   /* Move to last */
   order: 9999;
   width: auto;
+}
+
+/* If GitHub etc. move even further from links */
+.layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="GitHub"], dt[title*="github"], dt[title*="YouTube"], dt[title*="youtube"], dt[title*="Twitch"], dt[title*="twitch"], dt[title*="twitter"], dt[title*="Twitter"], dt[title="X"], dt[title="x"]) {
+
+  /* Move to last-last */
+  order: 99999;
 }
 
 .layout-single-column .account__header__bio .account__header__fields dl:has(dt[title*="GitHub"], dt[title*="github"])::after {
@@ -2333,6 +2341,7 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
   text-transform: unset;
 }
 
+/* stylelint-disable no-duplicate-selectors */
 .layout-single-column .account__header__bio .account__header__fields dl {
   background-color: transparent;
   border: 0;
@@ -2344,6 +2353,7 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
   padding: 0;
 }
 
+/* stylelint-enable no-duplicate-selectors */
 .layout-single-column .getting-started__trends h4 {
   border: 0;
   font-size: var(--font-size-heading);
@@ -3509,6 +3519,7 @@ body.embed .button.logo-button:hover,
   }
 }
 
+/* stylelint-disable media-feature-name-no-vendor-prefix */
 /* Fixes for iPhone Safari + iPhone Safari PWA */
 @media screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait), /* iPhone 12, iPhone 12 Pro, iPhone 13, iPhone 13 Pro, and iPhone 14 */ screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait), /* iPhone 14 Pro */ screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait), /* iPhone XR and iPhone 11 */ screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait), /* iPhone Xs Max and iPhone 11 Pro Max */ screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait), /* iPhone 12 Pro Max, iPhone 13 Pro Max, and iPhone 14 Plus */ screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait), /* iPhone 14 Pro Max */ screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) {
   /* Fix top header overlapping in /publish on iPhone */
@@ -3516,6 +3527,7 @@ body.embed .button.logo-button:hover,
     top: 34px;
   }
 }
+/* stylelint-enable media-feature-name-no-vendor-prefix */
 
 /* Retweet animation */
 /* stylelint-disable-next-line selector-not-notation */
