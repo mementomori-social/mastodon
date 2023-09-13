@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   1.7.4rc4-nightly */
+   1.7.4rc5-nightly */
 
 /* CSS variables */
 :root {
@@ -181,7 +181,7 @@ body.theme-mastodon-bird-ui-contrast.layout-multiple-columns {
 }
 
 /* Light theme */
-body.theme-mastodon-light.layout-multiple-columns {
+body[class*='theme-mastodon-bird-ui-light'].layout-multiple-columns {
   --color-bg: #fff;
   --color-fg: #000;
   --color-border: #e6e1ed;
