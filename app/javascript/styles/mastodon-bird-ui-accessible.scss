@@ -100,8 +100,12 @@ body.theme-mastodon-bird-ui-accessible {
   margin-bottom: 16px;
 }
 
-.status .status__info {
-  justify-content: space-between;
+.notification .status__info .display-name {
+  display: none !important;
+}
+
+.status__info {
+  justify-content: space-between !important;
 }
 
 .status__info::before {
