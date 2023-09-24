@@ -87,7 +87,7 @@ body.theme-mastodon-bird-ui-accessible {
   padding-bottom: calc(var(--gap-default) / 2);
 }
 
-/* Advanced view accessibility improvements */
+/* Advanced view accessibility improvements based no the feedback by @mustikkasoppa@mementomori.social */
 /* Move form back to start */
 .layout-multiple-columns .drawer {
   border-right: 1px solid var(--color-border) !important;
