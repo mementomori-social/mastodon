@@ -96,7 +96,8 @@ body.theme-mastodon-bird-ui-accessible {
 
 /* Show full name */
 .status__info .display-name {
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
 .status__info {
