@@ -96,12 +96,7 @@ body.theme-mastodon-bird-ui-accessible {
 
 /* Show full name */
 .status__info .display-name {
-  display: block !important;
   margin-bottom: 16px;
-}
-
-.notification .status__info .display-name {
-  display: none !important;
 }
 
 .status__info {
