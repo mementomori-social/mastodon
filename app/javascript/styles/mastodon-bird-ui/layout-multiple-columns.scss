@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   1.7.9rc1 */
+   1.7.9rc5 */
 
 /* CSS variables */
 :root {
@@ -701,6 +701,7 @@ body.layout-multiple-columns {
   border-bottom: 1px solid var(--color-border);
 }
 
+.layout-multiple-columns .column-header__collapsible,
 .layout-multiple-columns .column-header__collapsible.collapsed {
   opacity: 1;
 }
@@ -754,6 +755,7 @@ body.layout-multiple-columns {
 }
 
 /* Border colors */
+.layout-multiple-columns .search-results__section__header,
 .layout-multiple-columns .account__header__bar,
 .layout-multiple-columns .about__meta__divider,
 .layout-multiple-columns .poll__footer,
@@ -1265,6 +1267,8 @@ body.embed .status__content a,
 }
 
 /* Panels and things that should be transparent */
+.layout-multiple-columns .search-results__section__header,
+.layout-multiple-columns .explore__search-results,
 .layout-multiple-columns .status__wrapper-direct,
 .layout-multiple-columns .focusable:focus .detailed-status,
 .layout-multiple-columns .focusable:focus .detailed-status__action-bar,
