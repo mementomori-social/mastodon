@@ -9,6 +9,14 @@ class REST::FilterSerializer < ActiveModel::Serializer
     object.id.to_s
   end
 
+  def filter_action
+    object.action
+  end
+
+  def title
+    object.phrase
+  end
+
   def rules_requested?
     instance_options[:rules_requested]
   end
