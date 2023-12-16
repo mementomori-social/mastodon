@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { createRef } from 'react';
 
 import { defineMessages, injectIntl } from 'react-intl';
 
@@ -79,6 +80,11 @@ class ComposeForm extends ImmutablePureComponent {
     highlighted: false,
   };
 
+  constructor(props) {
+    super(props);
+    this.textareaRef = createRef(null);
+  }
+
   handleChange = (e) => {
     this.props.onChange(e.target.value);
   };
@@ -98,14 +104,14 @@ class ComposeForm extends ImmutablePureComponent {
     const fulltext = this.getFulltextForCharacterCounting();
     const isOnlyWhitespace = fulltext.length !== 0 && fulltext.trim().length === 0;
 
-    return !(isSubmitting || isUploading || isChangingUpload || length(fulltext) > 10000 || (isOnlyWhitespace && !anyMedia));
+    return !(isSubmitting || isUploading || isChangingUpload || length(fulltext) > 500 || (isOnlyWhitespace && !anyMedia));
   };
 
   handleSubmit = (e) => {
-    if (this.props.text !== this.autosuggestTextarea.textarea.value) {
+    if (this.props.text !== this.textareaRef.current.value) {
       // Something changed the text inside the textarea (e.g. browser extensions like Grammarly)
       // Update the state to match the current text
-      this.props.onChange(this.autosuggestTextarea.textarea.value);
+      this.props.onChange(this.textareaRef.current.value);
     }
 
     if (!this.canSubmit()) {
@@ -184,24 +190,20 @@ class ComposeForm extends ImmutablePureComponent {
       // immediately selectable, we have to wait for observers to run, as
       // described in https://github.com/WICG/inert#performance-and-gotchas
       Promise.resolve().then(() => {
-        this.autosuggestTextarea.textarea.setSelectionRange(selectionStart, selectionEnd);
-        this.autosuggestTextarea.textarea.focus();
+        this.textareaRef.current.setSelectionRange(selectionStart, selectionEnd);
+        this.textareaRef.current.focus();
         this.setState({ highlighted: true });
         this.timeout = setTimeout(() => this.setState({ highlighted: false }), 700);
       }).catch(console.error);
     } else if(prevProps.isSubmitting && !this.props.isSubmitting) {
-      this.autosuggestTextarea.textarea.focus();
+      this.textareaRef.current.focus();
     } else if (this.props.spoiler !== prevProps.spoiler) {
       if (this.props.spoiler) {
         this.spoilerText.input.focus();
       } else if (prevProps.spoiler) {
-        this.autosuggestTextarea.textarea.focus();
+        this.textareaRef.current.focus();
       }
     }
-  };
-
-  setAutosuggestTextarea = (c) => {
-    this.autosuggestTextarea = c;
   };
 
   setSpoilerText = (c) => {
@@ -263,7 +265,7 @@ class ComposeForm extends ImmutablePureComponent {
 
         <div className={classNames('compose-form__highlightable', { active: highlighted })}>
           <AutosuggestTextarea
-            ref={this.setAutosuggestTextarea}
+            ref={this.textareaRef}
             placeholder={intl.formatMessage(messages.placeholder)}
             disabled={disabled}
             value={this.props.text}
@@ -295,7 +297,7 @@ class ComposeForm extends ImmutablePureComponent {
             </div>
 
             <div className='character-counter__wrapper'>
-              <CharacterCounter max={10000} text={this.getFulltextForCharacterCounting()} />
+              <CharacterCounter max={500} text={this.getFulltextForCharacterCounting()} />
             </div>
           </div>
         </div>
