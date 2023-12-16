@@ -154,7 +154,7 @@ class CommunityTimeline extends PureComponent {
 
         <Helmet>
           <title>{intl.formatMessage(messages.title)}</title>
-          <meta name='robots' content='noindex' />
+          <meta name='robots' content='index' />
         </Helmet>
       </Column>
     );
