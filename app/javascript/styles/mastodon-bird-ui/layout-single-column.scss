@@ -507,8 +507,12 @@ body.layout-single-column {
   gap: 6px;
 }
 
-.layout-single-column .media-modal__navigation .icon-times {
-  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgb(247 249 249)' aria-hidden='true' class='r-jwli3a r-4qtqp9 r-yyyyoo r-z80fyv r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-19wmn03'%3E%3Cg%3E%3Cpath d='M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+/* Improve modal icon size and accessibility */
+.layout-single-column .image-loader .icon,
+.layout-single-column .media-modal__navigation .icon {
+  color: var(--color-light-text);
+  height: 32px;
+  width: 32px;
 }
 
 /* List adder input */
@@ -3992,6 +3996,21 @@ div[tabindex="-1"] + div[tabindex="-1"] > .status__wrapper > .status-reply.statu
 .layout-single-column .drawer__inner::-webkit-scrollbar-track:hover,
 .layout-single-column .drawer__inner::-webkit-scrollbar-track:active {
   background-color: var(--color-dark);
+}
+
+/* New onboarding in /start in v4.3.0-alpha.0+mementomods-2023-12-16 */
+.layout-single-column .onboarding__steps__item,
+.layout-single-column .onboarding__link {
+  background-color: var(--color-dark);
+  margin-bottom: 10px;
+}
+
+.layout-single-column .onboarding__steps__item__progress > svg > path {
+  fill: var(--color-dark);
+}
+
+.layout-single-column .onboarding__links > * {
+  margin-bottom: 10px;
 }
 
 /*
