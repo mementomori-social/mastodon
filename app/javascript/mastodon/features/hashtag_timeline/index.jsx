@@ -217,7 +217,6 @@ class HashtagTimeline extends PureComponent {
 
         <Helmet>
           <title>#{id}</title>
-          <meta name='robots' content='noindex' />
         </Helmet>
       </Column>
     );
