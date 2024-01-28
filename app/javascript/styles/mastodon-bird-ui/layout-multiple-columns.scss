@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   2.0.0rc6 */
+   2.0.0rc7 */
 
 /* CSS variables */
 :root {
@@ -2257,10 +2257,14 @@ body.embed .detailed-status__meta .detailed-status__link .icon-retweet,
   background-size: 20px;
   display: inline-block;
   height: 24px;
+  width: 24px;
+}
+
+.layout-multiple-columns .search .search__icon .icon {
   inset-inline-start: unset;
+  position: absolute;
   right: 14px;
   top: 9px;
-  width: 24px;
 }
 
 .layout-multiple-columns .search .search__icon .icon-search path {
@@ -2966,13 +2970,6 @@ body.embed .button.logo-button:hover,
   .layout-multiple-columns .navigation-bar + .compose-form {
     padding-top: 10px;
   }
-
-  .layout-multiple-columns .compose-form__highlightable .emoji-picker-dropdown,
-  .layout-multiple-columns .compose-form .emoji-picker-dropdown {
-    inset-inline-end: 8px;
-    position: absolute;
-    top: 8px;
-  }
 }
 
 @media (min-width: 889px) and (max-height: 1000px) {
@@ -3255,6 +3252,7 @@ body.embed .button.logo-button:hover,
 }
 
 /* ...except for these icons, we kinda like them as they are */
+.layout-multiple-columns .icon-user-plus.column-link__icon,
 .layout-multiple-columns .icon.icon-undefined path,
 .layout-multiple-columns .icon.icon-users path,
 .layout-multiple-columns .account__header__tabs__buttons .icon.icon-user-plus path,
