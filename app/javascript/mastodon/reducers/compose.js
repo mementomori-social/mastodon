@@ -285,7 +285,7 @@ const updatePoll = (state, index, value) => state.updateIn(['poll', 'options'], 
 
   if (tmp.size === 0) {
     return tmp.push('').push('');
-  } else if (tmp.size < 4) {
+  } else if (tmp.size < 15) {
     return tmp.push('');
   }
 
