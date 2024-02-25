@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   2.0.0rc16 */
+   2.0.0rc17 */
 
 /* CSS variables */
 :root {
@@ -1800,7 +1800,7 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 
 /* Hidden things */
 /* stylelint-disable-next-line */
-.layout-single-column .column-header .column-header__icon:not(.icon-hashtag):not(.icon-user-plus):not(.icon-user-times) {
+.layout-single-column .column-header .column-header__icon:not(.icon-user-plus):not(.icon-user-times) {
   display: none;
 }
 
@@ -3479,10 +3479,12 @@ body.embed .button.logo-button:hover,
 }
 
 /* Explore icon */
+.layout-single-column .column-link .icon-explore,
 .layout-single-column .column-link .icon-hashtag {
   background-image: var(--icon-hashtag);
 }
 
+.layout-single-column .column-link.active .icon-explore,
 .layout-single-column .column-link.active .icon-hashtag {
   background-image: var(--icon-hashtag-active);
 }
@@ -4256,7 +4258,7 @@ div[tabindex="-1"] + div[tabindex="-1"] > .status__wrapper > .status-reply.statu
 
   /* Offset in numbered item */
   .layout-single-column.no-reduce-motion .status__action-bar .icon-button.icon-button--with-counter.active:focus .icon-retweet {
-    left: -84px;
+    left: -82px;
   }
 
   .layout-single-column.no-reduce-motion .status__action-bar .icon-button.icon-button--with-counter.activate .icon-button__counter,
@@ -4382,11 +4384,11 @@ div[tabindex="-1"] + div[tabindex="-1"] > .status__wrapper > .status-reply.statu
   /* stylelint-disable-next-line */
   content: '' !important;
   height: 100px;
-  left: -37px;
+  left: -38px;
   pointer-events: none;
   position: absolute;
   top: -40px;
-  transform: scale(.55);
+  transform: scale(.6);
   width: 100px;
 }
 
