@@ -98,6 +98,8 @@ class LinkFooter extends PureComponent {
           {DividingCircle}
           <Link to='/keyboard-shortcuts'><FormattedMessage id='footer.keyboard_shortcuts' defaultMessage='Keyboard shortcuts' /></Link>
           {DividingCircle}
+          <Link to='/search-reference'><FormattedMessage id='footer.search_reference' defaultMessage='Search reference' /></Link>
+          {DividingCircle}
           <a href={source_url} rel='noopener noreferrer' target='_blank'><FormattedMessage id='footer.source_code' defaultMessage='View source code' /></a>
           {DividingCircle}
           <span className='version'>v{version}</span>
