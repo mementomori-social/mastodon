@@ -3725,9 +3725,14 @@ $ui-header-logo-wordmark-width: 99px;
   }
 }
 
-.keyboard-shortcuts {
+.keyboard-shortcuts,
+.search-reference {
   padding: 8px 0 0;
   overflow: hidden;
+
+  p {
+    padding: 0 10px 8px;
+  }
 
   thead {
     position: absolute;
@@ -3736,6 +3741,12 @@ $ui-header-logo-wordmark-width: 99px;
 
   td {
     padding: 0 10px 8px;
+  }
+
+  th {
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: bold;
   }
 
   kbd {
@@ -9424,10 +9435,6 @@ noscript {
   p {
     color: $dark-text-color;
     margin-bottom: 20px;
-
-    .version {
-      white-space: nowrap;
-    }
 
     strong {
       font-weight: 500;
