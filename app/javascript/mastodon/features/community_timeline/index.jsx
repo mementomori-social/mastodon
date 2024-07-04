@@ -146,11 +146,12 @@ class CommunityTimeline extends PureComponent {
           onLoadMore={this.handleLoadMore}
           emptyMessage={<FormattedMessage id='empty_column.community' defaultMessage='The local timeline is empty. Write something publicly to get the ball rolling!' />}
           bindToDocument={!multiColumn}
+          withCounters
         />
 
         <Helmet>
           <title>{intl.formatMessage(messages.title)}</title>
-          <meta name='robots' content='noindex' />
+          <meta name='robots' content='index' />
         </Helmet>
       </Column>
     );
