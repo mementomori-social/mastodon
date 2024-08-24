@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   2.0.0rc46 */
+   2.0.0rc47 */
 
 /* CSS variables */
 :root {
@@ -1039,24 +1039,35 @@ body .status__wrapper.status__wrapper--filtered {
   width: calc(100% - calc(var(--gap-default) * 2));
 }
 
+body .columns-area__panels__pane--compositional .compose-form .spoiler-input__input,
 body .content-warning {
   background-color: var(--color-focusable-toot);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
   color: var(--color-light-purple);
-  display: flex;
+  display: grid;
   font-size: var(--font-size-mid);
-  justify-content: space-between;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
   padding: 10px 16px;
-  text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: unset;
+}
+
+body .compose-form__highlightable:has(.spoiler-input__input) {
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+}
+
+body .compose-form:has(.spoiler-input__input) .spoiler-input .autosuggest-input {
+  border-bottom: 0;
+  border-radius: var(--border-radius);
 }
 
 body .content-warning .link-button {
+  align-self: flex-start;
   color: var(--color-fg);
   font-size: var(--font-size-mid);
   font-weight: var(--font-weight-semibold);
+  justify-self: flex-end;
 }
 
 /* New content warnings in 4.3.0.beta.1-mementomods-2024-08-23 */
@@ -1067,14 +1078,10 @@ body .status:not(.status--in-thread) .content-warning {
 }
 
 body .content-warning p {
-  margin-bottom: 0px;
-  max-width: 78%;
-  overflow: hidden;
-  text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  margin-bottom: 0;
 }
 
+body .spoiler-input__border,
 body .content-warning::after,
 body .content-warning::before {
   display: none;
