@@ -77,16 +77,6 @@ class ColumnSettings extends PureComponent {
           </div>
         </section>
 
-        <section role='group' aria-labelledby='notifications-beta'>
-          <h3 id='notifications-beta'>
-            <FormattedMessage id='notifications.column_settings.beta.category' defaultMessage='Experimental features' />
-          </h3>
-
-          <div className='column-settings__row'>
-            <SettingToggle id='unread-notification-markers' prefix='notifications' settings={settings} settingPath={['groupingBeta']} onChange={onChange} label={groupingShowStr} />
-          </div>
-        </section>
-
         <section role='group' aria-labelledby='notifications-unread-markers'>
           <h3 id='notifications-unread-markers'>
             <FormattedMessage id='notifications.column_settings.unread_notifications.category' defaultMessage='Unread notifications' />
