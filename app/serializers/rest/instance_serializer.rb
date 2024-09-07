@@ -12,7 +12,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   attributes :domain, :title, :version, :source_url, :description,
              :usage, :thumbnail, :icon, :languages, :configuration,
-             :registrations, :api_versions
+             :registrations, :api_versions, :max_toot_chars
 
   has_one :contact, serializer: ContactSerializer
   has_many :rules, serializer: REST::RuleSerializer
@@ -111,6 +111,10 @@ class REST::InstanceSerializer < ActiveModel::Serializer
     {
       mastodon: 1,
     }
+  end
+
+  def max_toot_chars
+    10_000
   end
 
   private
