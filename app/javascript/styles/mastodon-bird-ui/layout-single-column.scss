@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   2.0.0rc50 */
+   2.0.0rc52 */
 
 /* CSS variables */
 :root {
@@ -905,7 +905,7 @@ body.layout-single-column {
   flex-grow: 1;
   height: 100vh;
   max-width: 350px;
-  min-height: 880px;
+  min-height: 500px;
   position: sticky;
   top: 0;
 }
@@ -1130,6 +1130,7 @@ body .content-warning::before {
 }
 
 /* Unread message */
+.layout-single-column .notification-ungrouped--unread,
 .layout-single-column .conversation--unread,
 .layout-single-column .notification.unread:hover,
 .layout-single-column .notification.unread,
@@ -1409,6 +1410,7 @@ body.embed .activity-stream .entry,
 .layout-single-column .column-inline-form,
 .layout-single-column .scrollable .account-card,
 .layout-single-column .scrollable .account-card__title__avatar .account__avatar,
+.account__avatar,
 .layout-single-column .scrollable .account-card__title__avatar img,
 .layout-single-column .explore__search-header,
 .layout-single-column .empty-column-indicator,
@@ -2171,6 +2173,7 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 /* Right side panel */
 .layout-single-column .navigation-panel {
   box-sizing: border-box;
+  display: block;
   margin-top: 0;
   overflow-y: auto;
   padding: 10px;
@@ -2179,11 +2182,6 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 .layout-single-column .navigation-panel hr {
   /* Hide but reserve space */
   visibility: hidden;
-}
-
-.columns-area__panels__pane--navigational .navigation-panel {
-  border: 0;
-  height: 100%;
 }
 
 .layout-single-column .navigation-panel__logo hr {
@@ -2198,6 +2196,7 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 
 /* Hide scrollbars for .navigation-panel for Chrome and Safari */
 .dropdown-menu__container__list--scrollable::-webkit-scrollbar,
+.layout-single-column .navigation-panel__menu::-webkit-scrollbar,
 .layout-single-column .navigation-panel::-webkit-scrollbar {
   display: none;
   width: 4px;
@@ -2206,7 +2205,6 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
 .layout-single-column .column-link {
   align-items: center;
   color: var(--color-light-text);
-  display: inline-flex;
   font-size: var(--font-size-heading);
   gap: var(--gap-column-link);
   overflow: visible;
@@ -3221,6 +3219,10 @@ body.embed .button.logo-button:hover,
   z-index: 5;
 }
 
+.link-footer p .version {
+  white-space: normal;
+}
+
 .layout-single-column .compose-form__footer {
   gap: 4px;
   padding-bottom: 6px;
@@ -3364,6 +3366,16 @@ body.embed .button.logo-button:hover,
   transform: translateX(-4px) translateY(0);
 }
 
+.layout-single-column .navigation-panel__logo {
+  order: 1;
+}
+
+.layout-single-column .navigation-panel__menu {
+  display: flex;
+  flex-wrap: wrap;
+  order: 2;
+}
+
 @media screen and (min-width: 890px) {
   /* Hide the space between Lists and the actual lists */
   .layout-single-column .list-panel > hr,
@@ -3382,15 +3394,11 @@ body.embed .button.logo-button:hover,
   .layout-single-column .list-panel:hover,
   .layout-single-column .column-link[href="/lists"]:focus ~ .list-panel,
   .layout-single-column .column-link[href="/lists"]:hover ~ .list-panel {
-    display: block;
+    display: grid;
     opacity: 1;
   }
 
   /* Order of the side nav items */
-  .layout-single-column .navigation-panel__logo {
-    order: 1;
-  }
-
   .layout-single-column .column-link[href="/home"] {
     order: 2;
   }
@@ -3432,7 +3440,7 @@ body.embed .button.logo-button:hover,
   }
 
   .layout-single-column .column-link[href="/lists"] {
-    order: 13;
+    order: 16;
   }
 
   .layout-single-column .column-link[href="/admin/dashboard"] {
@@ -3445,7 +3453,7 @@ body.embed .button.logo-button:hover,
 
   /* stylelint-disable-next-line no-duplicate-selectors */
   .layout-single-column .list-panel {
-    order: 13;
+    order: 22;
   }
 
   .layout-single-column .column-link[href="/settings/preferences"] {
@@ -3939,6 +3947,8 @@ body.embed .button.logo-button:hover,
 
 /* Mobile */
 @media screen and (max-width: 889px) {
+
+
   /* Better blur overlay for ui-header */
   .layout-single-column .ui::after {
     backdrop-filter: blur(12px);
@@ -3993,10 +4003,7 @@ body.embed .button.logo-button:hover,
   }
 
   .layout-single-column .columns-area__panels__pane--navigational .navigation-panel {
-    flex-direction: row;
-    gap: 0;
-    height: 100%;
-    overflow-x: auto;
+    display: block;
     padding: 0;
   }
 
@@ -4004,7 +4011,19 @@ body.embed .button.logo-button:hover,
     display: none;
   }
 
+  .layout-single-column .columns-area__panels__pane--navigational .navigation-panel__menu {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0;
+  }
+
   .layout-single-column .column-link {
+    align-items: center;
+    height: 56px;
     justify-content: center;
     margin-right: unset;
     padding-bottom: 0;
@@ -4012,6 +4031,10 @@ body.embed .button.logo-button:hover,
     padding-right: var(--gap-column-link);
     padding-top: 0;
     width: 38px;
+  }
+
+  .navigation-panel__legal hr {
+    display: none;
   }
 
   .layout-single-column .item-list .column-link {
