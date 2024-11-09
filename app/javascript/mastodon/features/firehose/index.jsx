@@ -187,6 +187,7 @@ const Firehose = ({ feedType, multiColumn }) => {
         scrollKey='firehose'
         emptyMessage={emptyMessage}
         bindToDocument={!multiColumn}
+        withCounters
       />
 
       <Helmet>

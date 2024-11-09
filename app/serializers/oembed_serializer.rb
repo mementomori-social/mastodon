@@ -3,13 +3,9 @@
 class OEmbedSerializer < ActiveModel::Serializer
   INLINE_STYLES = {
     blockquote: <<~CSS.squish,
-      background: #FCF8FF;
       border-radius: 8px;
-      border: 1px solid #C9C4DA;
+      border: 0;
       margin: 0;
-      max-width: 540px;
-      min-width: 270px;
-      overflow: hidden;
       padding: 0;
     CSS
     status_link: <<~CSS.squish,
