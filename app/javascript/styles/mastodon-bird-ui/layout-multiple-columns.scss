@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   2.0.4 */
+   2.0.6rc */
 
 /* CSS variables */
 :root {
@@ -781,6 +781,12 @@ body.layout-multiple-columns {
   background-color: var(--color-dark);
   border-color: var(--color-dark);
   color: var(--color-light-text);
+}
+
+/* Setting boxes */
+.layout-multiple-columns .column-header__collapsible-inner {
+  background-color: var(--color-bg);
+  border-color: var(--color-border);
 }
 
 /* Column-header border */
@@ -1672,8 +1678,7 @@ body.embed .detailed-status,
 
 .layout-multiple-columns .media-gallery > .media-gallery__item:nth-of-type(odd),
 .layout-multiple-columns .media-gallery > .media-gallery__item:nth-of-type(odd) > a,
-.layout-multiple-columns .media-gallery__preview:nth-of-type(odd),
- {
+.layout-multiple-columns .media-gallery__preview:nth-of-type(odd) {
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
 }
@@ -3450,6 +3455,13 @@ body .compose-form .compose-form__uploads {
   background-image: var(--icon-sliders);
 }
 
+.layout-multiple-columns .column-header__button.active .icon-sliders {
+  /* Use contrast icon */
+  background-image: var(--icon-sliders-contrast);
+  /* Disable rotate */
+  transform: none;
+}
+
 /* Administration icon */
 .layout-multiple-columns .column-link .icon-tachometer {
   --size-icon: 24px;
@@ -4043,7 +4055,6 @@ body.embed .entry .detailed-status {
 /* Threaded line, actually */
 .layout-multiple-columns .status__line {
   border-inline-start: 2px solid var(--color-thread-line);
-  -webkit-border-start: 2px solid var(--color-thread-line);
 }
 
 .layout-multiple-columns .status__line--full::before {
