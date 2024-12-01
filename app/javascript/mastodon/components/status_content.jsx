@@ -275,4 +275,6 @@ class StatusContent extends PureComponent {
 
 }
 
-export default withRouter(withIdentity(connect(mapStateToProps)(injectIntl(StatusContent))));
+const WrappedStatusContent = withRouter(withIdentity(connect(mapStateToProps)(injectIntl(StatusContent))));
+export { WrappedStatusContent as StatusContent };
+export default WrappedStatusContent;
