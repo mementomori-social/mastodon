@@ -225,3 +225,7 @@ export function ListEdit () {
 export function ListMembers () {
   return import(/* webpackChunkName: "features/lists" */'../../lists/members');
 }
+
+export function AlgorithmPreferences() {
+  return import(/* webpackChunkName: "features/algorithm_preferences" */'../../algorithm_preferences');
+}

@@ -16,6 +16,8 @@ class FeedInsertWorker
       when :list
         @list     = List.find(id)
         @follower = @list.account
+      when :for_you
+        @follower = Account.find(id)
       end
     end
 

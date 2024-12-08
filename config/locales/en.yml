@@ -1064,6 +1064,13 @@ en:
       new_trending_tags:
         title: Trending hashtags
       subject: New trends up for review on %{instance}
+  algorithm_preferences:
+    title: "For You feed preferences"
+    boost_weight: "Boost weight"
+    reply_weight: "Reply weight"
+    media_weight: "Media weight"
+    favorite_weight: "Favorite weight"
+    updated: "Feed preferences updated"
   aliases:
     add_new: Create alias
     created_msg: Successfully created a new alias. You can now initiate the move from the old account.

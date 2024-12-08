@@ -331,6 +331,26 @@ class FeedManager
     nil
   end
 
+  def push_to_for_you(account, status)
+    return false unless add_to_feed(:for_you, account.id, status)
+
+    trim(:for_you, account.id)
+    PushUpdateWorker.perform_async(account.id, status.id, "for_you:#{account.id}")
+    true
+  end
+
+  def populate_for_you(account)
+    # Similar to populate_home but with Fedialgo ranking
+    redis.del(key(:for_you, account.id))
+
+    statuses = Status.as_for_you_timeline(account)
+    ranked_statuses = FedialgoRankingService.new(account).rank_statuses(statuses)
+
+    ranked_statuses.each do |status|
+      add_to_feed(:for_you, account.id, status)
+    end
+  end
+
   private
 
   # Trim a feed to maximum size by removing older items

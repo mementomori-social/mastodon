@@ -240,4 +240,10 @@ Rails.application.routes.draw do
 
   match '/', via: [:post, :put, :patch, :delete], to: 'application#raise_not_found', format: false
   match '*unmatched_route', via: :all, to: 'application#raise_not_found', format: false
+
+  namespace :api do
+    namespace :v1 do
+      resource :algorithm_preferences, only: [:show, :update]
+    end
+  end
 end

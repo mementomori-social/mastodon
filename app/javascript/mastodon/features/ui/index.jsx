@@ -72,6 +72,7 @@ import {
   Explore,
   About,
   PrivacyPolicy,
+  AlgorithmPreferences,
 } from './util/async-components';
 import { ColumnsContextProvider } from './util/columns_context';
 import { WrappedSwitch, WrappedRoute } from './util/react_router_helpers';
@@ -251,6 +252,8 @@ class SwitchingColumnsArea extends PureComponent {
             <WrappedRoute path='/followed_tags' component={FollowedTags} content={children} />
             <WrappedRoute path='/mutes' component={Mutes} content={children} />
             <WrappedRoute path='/lists' component={Lists} content={children} />
+
+            <WrappedRoute path='/preferences/algorithm' component={AlgorithmPreferences} />
 
             <Route component={BundleColumnError} />
           </WrappedSwitch>

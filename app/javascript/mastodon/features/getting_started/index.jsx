@@ -22,6 +22,7 @@ import PersonAddIcon from '@/material-icons/400-24px/person_add.svg?react';
 import PublicIcon from '@/material-icons/400-24px/public.svg?react';
 import SettingsIcon from '@/material-icons/400-24px/settings-fill.svg?react';
 import StarIcon from '@/material-icons/400-24px/star.svg?react';
+import SlidersIcon from '@/material-icons/400-24px/tune.svg?react';
 import { fetchFollowRequests } from 'mastodon/actions/accounts';
 import Column from 'mastodon/components/column';
 import ColumnHeader from 'mastodon/components/column_header';
@@ -59,6 +60,7 @@ const messages = defineMessages({
   personal: { id: 'navigation_bar.personal', defaultMessage: 'Personal' },
   security: { id: 'navigation_bar.security', defaultMessage: 'Security' },
   menu: { id: 'getting_started.heading', defaultMessage: 'Getting started' },
+  algorithm_preferences: { id: 'navigation_bar.algorithm_preferences', defaultMessage: 'Algorithm preferences' },
 });
 
 const mapStateToProps = state => ({
@@ -131,6 +133,13 @@ class GettingStarted extends ImmutablePureComponent {
         <ColumnLink key='bookmark' icon='bookmarks' iconComponent={BookmarksIcon} text={intl.formatMessage(messages.bookmarks)} to='/bookmarks' />,
         <ColumnLink key='favourites' icon='star' iconComponent={StarIcon} text={intl.formatMessage(messages.favourites)} to='/favourites' />,
         <ColumnLink key='lists' icon='list-ul' iconComponent={ListAltIcon} text={intl.formatMessage(messages.lists)} to='/lists' />,
+        <ColumnLink
+          key='algorithm_preferences'
+          icon='sliders'
+          iconComponent={SlidersIcon}
+          text={intl.formatMessage(messages.algorithm_preferences)}
+          to='/preferences/algorithm'
+        />,
       );
 
       if (myAccount.get('locked') || unreadFollowRequests > 0) {
