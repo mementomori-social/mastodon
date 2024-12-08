@@ -1,5 +1,5 @@
 !!! 5
-%html{ lang: I18n.locale }
+%html{ lang: I18n.locale, class: 'theme-mastodon-bird-ui' }
   %head
     %meta{ charset: 'utf-8' }/
     %meta{ name: 'robots', content: 'noindex' }/
@@ -11,12 +11,12 @@
     - if storage_host?
       %link{ rel: 'dns-prefetch', href: storage_host }/
 
-    = theme_style_tags Setting.theme # Use the admin-configured theme here, even if logged in
+    = stylesheet_pack_tag 'default', media: 'all', crossorigin: 'anonymous'
     = javascript_pack_tag 'common', integrity: true, crossorigin: 'anonymous'
     = preload_pack_asset "locale/#{I18n.locale}-json.js"
     = render_initial_state
     = javascript_pack_tag 'embed', integrity: true, crossorigin: 'anonymous'
-  %body.embed
+  %body.embed.app-body.theme-default.no-reduce-motion.layout-single-column
     = yield
 
     .logo-resources{ 'tabindex' => '-1', 'inert' => true, 'aria-hidden' => 'true' }
