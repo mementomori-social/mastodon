@@ -2382,6 +2382,12 @@ body.embed .detailed-status__meta .detailed-status__link .icon-retweet,
   opacity: 1;
 }
 
+/* Search icon fix for 4.4.0-alpha.1+mementomods-2024-12-15 changes */
+.layout-multiple-columns .search__icon {
+  right: 0;
+  top: 0;
+}
+
 /* Search */
 .layout-multiple-columns .search .search__icon .icon-search {
   background-image: var(--icon-search);
