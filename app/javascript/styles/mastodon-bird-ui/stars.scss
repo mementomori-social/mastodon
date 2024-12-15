@@ -58,8 +58,6 @@
   background-position: center;
   color: var(--color-yellow);
   left: unset !important;
-  position: relative;
-  top: 0;
   transform: none;
   width: unset;
 }
@@ -142,8 +140,6 @@
 .layout-single-column .status button.icon-button:hover .icon-star {
   background-image: var(--icon-star-detailed-status-action-bar-active) !important;
   color: var(--color-yellow);
-  position: relative;
-  top: 0;
 }
 
 .layout-single-column .detailed-status__action-bar .icon-button:focus .icon-star,
