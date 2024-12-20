@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   2.1.2rc2 */
+   2.1.2rc3 */
 
 /* CSS variables */
 :root {
@@ -203,7 +203,7 @@
 }
 
 /* High Contrast theme */
-body.theme-mastodon-bird-ui-contrast.layout-multiple-columns {
+body.theme-contrast.layout-multiple-columns {
   --color-dim: #b8b3c0;
 
   /* Icons */
@@ -251,7 +251,7 @@ body.theme-mastodon-bird-ui-contrast.layout-multiple-columns {
 }
 
 /* Light theme */
-body[class*='theme-mastodon-bird-ui-light'].layout-multiple-columns {
+body.theme-mastodon-light.layout-multiple-columns {
   --color-bg: #fff;
   --color-fg: #000;
   --color-border: #e6e1ed;
@@ -1656,6 +1656,11 @@ body.embed .detailed-status,
   margin-left: unset !important;
   /* stylelint-disable-next-line */
   max-height: unset !important;
+  /* stylelint-disable-next-line */
+  width: 100% !important;
+}
+
+.layout-multiple-columns .media-gallery:has(.spoiler-button) .media-gallery__preview {
   /* stylelint-disable-next-line */
   width: 100% !important;
 }
