@@ -159,29 +159,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const ctx = canvas.getContext('2d');
 
-    if (isNewYearsEve) {
-      const confetti = [];
-      const maxConfetti = window.innerWidth <= 800 ? 35 : 70;
-      animateConfetti(ctx, confetti, canvas, maxConfetti);
-    } else {
-      const snowflakes = [];
-      const maxFlakes = getMaxFlakes();
-      animate(ctx, snowflakes, canvas, maxFlakes);
-    }
-
     // Adjust max flakes based on viewport width
     const getMaxFlakes = () => {
       return window.innerWidth <= 800 ? 25 : 50;
     };
 
+    // Declare arrays in higher scope
+    let snowflakes = [];
+    let confetti = [];
+
+    if (isNewYearsEve) {
+      const maxConfetti = window.innerWidth <= 800 ? 35 : 70;
+      animateConfetti(ctx, confetti, canvas, maxConfetti);
+    } else {
+      const maxFlakes = getMaxFlakes();
+      animate(ctx, snowflakes, canvas, maxFlakes);
+    }
+
     // Update maxFlakes on resize
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth * 2;
       canvas.height = 160;
-      maxFlakes = getMaxFlakes();
+      const maxFlakes = getMaxFlakes();
 
-      // Remove excess snowflakes if viewport becomes smaller
-      if (snowflakes.length > maxFlakes) {
+      // Now snowflakes is accessible here
+      if (!isNewYearsEve && snowflakes.length > maxFlakes) {
         snowflakes.length = maxFlakes;
       }
     });
