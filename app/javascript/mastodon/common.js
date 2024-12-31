@@ -53,13 +53,87 @@ function animate(ctx, snowflakes, canvas, maxFlakes) {
   requestAnimationFrame(() => animate(ctx, snowflakes, canvas, maxFlakes));
 }
 
+function animateConfetti(ctx, confetti, canvas, maxPieces) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Add new confetti if we haven't reached the maximum
+  if (confetti.length < maxPieces && Math.random() < 0.05) {
+    const colors = ['#ff4444', '#44ff44', '#4444ff', '#ffff44', '#ff44ff', '#44ffff'];  // Brighter colors
+    confetti.push({
+      x: Math.random() * canvas.width,
+      y: 0,
+      width: Math.random() * 10 + 8,
+      height: Math.random() * 6 + 2,
+      rotation: Math.random() * Math.PI * 2,
+      rotationSpeed: (Math.random() - 0.5) * 0.15,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speed: Math.random() * 2 + 0.4,
+      opacity: Math.random() * 0.4 + 0.6,
+      wobble: Math.random() * 2 * Math.PI
+    });
+  }
+
+  confetti.forEach(piece => {
+    ctx.save();
+    ctx.translate(piece.x, piece.y);
+    ctx.rotate(piece.rotation);
+
+    // Add 3D-like effect with gradient
+    const gradient = ctx.createLinearGradient(-piece.width/2, 0, piece.width/2, 0);
+    gradient.addColorStop(0, piece.color);
+    gradient.addColorStop(0.5, piece.color);
+    gradient.addColorStop(1, shadeColor(piece.color, -20));  // Darker shade
+
+    ctx.fillStyle = gradient;
+    ctx.globalAlpha = piece.opacity;
+
+    // Draw rectangular confetti
+    ctx.fillRect(-piece.width/2, -piece.height/2, piece.width, piece.height);
+
+    ctx.restore();
+
+    // More dynamic movement
+    piece.wobble += 0.05;
+    piece.x += Math.sin(piece.wobble) * 1.5;  // Wider side-to-side
+    piece.y += piece.speed;
+    piece.rotation += piece.rotationSpeed;
+
+    // Reset when out of view
+    if (piece.y > canvas.height) {
+      piece.y = -20;  // Start slightly above viewport
+      piece.x = Math.random() * canvas.width;
+      piece.wobble = Math.random() * 2 * Math.PI;
+    }
+  });
+
+  requestAnimationFrame(() => animateConfetti(ctx, confetti, canvas, maxPieces));
+}
+
+// Helper function to darken colors for 3D effect
+function shadeColor(color, percent) {
+  const num = parseInt(color.replace('#', ''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = (num >> 16) + amt;
+  const G = (num >> 8 & 0x00FF) + amt;
+  const B = (num & 0x0000FF) + amt;
+  return '#' + (0x1000000 +
+    (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+    (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+    (B < 255 ? (B < 1 ? 0 : B) : 255)
+  ).toString(16).slice(1);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Check if reduced motion is enabled
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return; // Don't create snow effect if reduced motion is preferred
   }
 
-  if (new Date().getMonth() === 11 && new Date().getDate() >= 23 && new Date().getDate() <= 31) {
+  const currentDate = new Date();
+  const isNewYearsEve = currentDate.getMonth() === 11 && currentDate.getDate() === 31;
+  const isChristmasSeason = currentDate.getMonth() === 11 && currentDate.getDate() >= 23 && currentDate.getDate() <= 31;
+
+  if (isChristmasSeason || isNewYearsEve) {
     const wrapper = document.createElement('div');
     wrapper.classList.add('snow');
     wrapper.style.position = 'fixed';
@@ -84,16 +158,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(wrapper);
 
     const ctx = canvas.getContext('2d');
-    const snowflakes = [];  // Start with empty array
+
+    if (isNewYearsEve) {
+      const confetti = [];
+      const maxConfetti = window.innerWidth <= 800 ? 35 : 70;
+      animateConfetti(ctx, confetti, canvas, maxConfetti);
+    } else {
+      const snowflakes = [];
+      const maxFlakes = getMaxFlakes();
+      animate(ctx, snowflakes, canvas, maxFlakes);
+    }
 
     // Adjust max flakes based on viewport width
     const getMaxFlakes = () => {
       return window.innerWidth <= 800 ? 25 : 50;
     };
-
-    let maxFlakes = getMaxFlakes();
-
-    animate(ctx, snowflakes, canvas, maxFlakes);
 
     // Update maxFlakes on resize
     window.addEventListener('resize', () => {
