@@ -51,6 +51,7 @@ body.theme-mastodon-bird-ui-accessible {
 
 /* Define font sizes for those where missing */
 body.theme-mastodon-bird-ui-accessible-plus {
+  [role="dialog"] textarea,
   time:not(.invisible),
   span:not(.invisible),
   li:not(.invisible) {
