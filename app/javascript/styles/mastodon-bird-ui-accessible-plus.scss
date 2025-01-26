@@ -58,6 +58,14 @@ body.theme-mastodon-bird-ui-accessible-plus {
   }
 }
 
+/* Improve alt text readability */
+.media-gallery__alt__popover p {
+  font-size: var(--font-size);
+  line-height: 1.2;
+  white-space: pre-line;
+  color: var(--color-fg);
+}
+
 /* Fix columns in content warnings with bigger fonts */
 body .columns-area__panels__pane--compositional .compose-form .spoiler-input__input,
 body .content-warning {
