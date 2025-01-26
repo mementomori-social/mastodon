@@ -51,9 +51,9 @@ body.theme-mastodon-bird-ui-accessible {
 
 /* Define font sizes for those where missing */
 body.theme-mastodon-bird-ui-accessible-plus {
-  time,
-  span,
-  li {
+  time:not(.invisible),
+  span:not(.invisible),
+  li:not(.invisible) {
     font-size: var(--font-size);
   }
 
@@ -78,6 +78,11 @@ body.theme-mastodon-bird-ui-accessible-plus {
     padding: 8px 10px;
     border-radius: 8px;
   }
+
+  /* Define headings or larger font sizes*/
+  .account__header__tabs__name {
+    font-size: var(--font-size-heading);
+  }
 }
 
 /* Fix columns in content warnings with bigger fonts */
@@ -92,6 +97,7 @@ body .content-warning {
 }
 
 /* Define smaller font sizes */
+.account__domain-pill,
 .link-footer,
 .link-footer *,
 .navigation-bar .account__display-name .display-name__account,
