@@ -92,11 +92,14 @@ body .content-warning {
 }
 
 /* Define smaller font sizes */
+.link-footer,
+.link-footer *,
 .navigation-bar .account__display-name .display-name__account,
 .trends__item__name > span,
 .account__header__account-note textarea,
 .dropdown-button {
   font-size: var(--font-size-smaller) !important;
+  line-height: 1.2;
 }
 
 /* Define mid font sizes */
