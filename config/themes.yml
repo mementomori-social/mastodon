@@ -13,3 +13,4 @@ mastodon-light: styles/mastodon-light.scss
 contrast: styles/contrast.scss
 mastodon-bird-ui-accessible: styles/mastodon-bird-ui-accessible.scss
 mastodon-bird-ui-accessible-hide-finnish: styles/mastodon-bird-ui-accessible-hide-finnish.scss
+mastodon-bird-ui-accessible-plus: styles/mastodon-bird-ui-accessible-plus.scss

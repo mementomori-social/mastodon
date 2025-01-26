@@ -1890,6 +1890,7 @@ fi:
      hide-translate-links: Mastodon Bird UI (tumma, piilota kaikki käännöslinkit)
      mastodon-bird-ui-accessible: Mastodon Bird UI (saavutettavuus huomioitu)
      mastodon-bird-ui-accessible-hide-finnish: Mastodon Bird Ui (saavutettavuus huomioitu, piilota Käännä-linkit suomelle)
+     mastodon-bird-ui-accessible-plus: Mastodon Bird UI (saavutettavuus Plus, fontit vielä isommalla)
   time:
     formats:
       default: "%d.%m.%Y klo %H.%M"
