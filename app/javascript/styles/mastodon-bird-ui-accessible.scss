@@ -56,14 +56,28 @@ body.theme-mastodon-bird-ui-accessible-plus {
   li {
     font-size: var(--font-size);
   }
-}
 
-/* Improve alt text readability */
-.media-gallery__alt__popover p {
-  font-size: var(--font-size);
-  line-height: 1.2;
-  white-space: pre-line;
-  color: var(--color-fg);
+  article div,
+  .notification-group__main div {
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+  }
+
+    /* Improve alt text readability */
+  .media-gallery__alt__popover p {
+    font-size: var(--font-size);
+    line-height: 1.2;
+    white-space: pre-line;
+    color: var(--color-fg);
+  }
+
+  .media-gallery__alt__label {
+    background-color: var(--color-bg-90);
+    color: var(--color-fg);
+    font-size: var(--font-size-smaller);
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
 }
 
 /* Fix columns in content warnings with bigger fonts */
@@ -96,8 +110,8 @@ body .content-warning {
 }
 
 @media (max-width: 700px) {
-  body.theme-mastodon-bird-ui-accessible {
-    --font-size: 22px;
+  body.theme-mastodon-bird-ui-accessible-plus {
+    --font-size: 24px;
     --line-height: 30px;
   }
 }
