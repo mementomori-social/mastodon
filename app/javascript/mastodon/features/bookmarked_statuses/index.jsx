@@ -100,6 +100,7 @@ class Bookmarks extends ImmutablePureComponent {
           emptyMessage={emptyMessage}
           bindToDocument={!multiColumn}
           timelineId='bookmarks'
+          withCounters
         />
 
         <Helmet>

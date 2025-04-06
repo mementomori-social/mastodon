@@ -100,6 +100,7 @@ class Favourites extends ImmutablePureComponent {
           emptyMessage={emptyMessage}
           bindToDocument={!multiColumn}
           timelineId='favourites'
+          withCounters
         />
 
         <Helmet>
