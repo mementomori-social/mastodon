@@ -1,6 +1,6 @@
-@import 'application';
-@import 'mastodon-bird-ui/layout-single-column.scss';
-@import 'mastodon-bird-ui/layout-multiple-columns.scss';
+@use 'application';
+@use 'mastodon-bird-ui/layout-single-column';
+@use 'mastodon-bird-ui/layout-multiple-columns';
 
 /* Hide translate Finnish link */
 .status__content__text[lang="fi"].translate ~ .status__content__translate-button {
