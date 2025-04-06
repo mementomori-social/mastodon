@@ -1,5 +1,5 @@
-@import 'mastodon-light/variables';
-@import 'application';
-@import 'mastodon-light/diff';
-@import 'mastodon-bird-ui/layout-single-column.scss';
-@import 'mastodon-bird-ui/layout-multiple-columns.scss';
+@use 'mastodon-light/variables';
+@use 'application';
+@use 'mastodon-light/diff';
+@use 'mastodon-bird-ui/layout-single-column';
+@use 'mastodon-bird-ui/layout-multiple-columns';

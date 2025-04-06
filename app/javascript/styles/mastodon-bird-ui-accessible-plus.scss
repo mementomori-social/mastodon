@@ -1,8 +1,8 @@
-@import 'contrast/variables';
-@import 'application';
-@import 'contrast/diff';
-@import 'mastodon-bird-ui/layout-single-column.scss';
-@import 'mastodon-bird-ui/layout-multiple-columns.scss';
+@use 'contrast/variables';
+@use 'application';
+@use 'contrast/diff';
+@use 'mastodon-bird-ui/layout-single-column';
+@use 'mastodon-bird-ui/layout-multiple-columns';
 
 body.theme-mastodon-bird-ui-accessible-plus {
   --color-accent: #0a9ff9;
@@ -85,7 +85,7 @@ body.theme-mastodon-bird-ui-accessible-plus {
     border-radius: 8px;
   }
 
-  /* Define headings or larger font sizes*/
+  /* Define headings or larger font sizes */
   .account__header__tabs__name {
     font-size: var(--font-size-heading);
   }
@@ -127,7 +127,7 @@ body .content-warning {
   line-height: var(--line-height-mid) !important;
 }
 
-@media (max-width: 700px) {
+@media (width <= 700px) {
   body.theme-mastodon-bird-ui-accessible-plus {
     --font-size: 24px;
     --line-height: 30px;
@@ -168,6 +168,7 @@ body .content-warning {
 }
 
 /* Advanced view accessibility improvements based no the feedback by @mustikkasoppa@mementomori.social */
+
 /* Move form back to start */
 .layout-multiple-columns .drawer {
   border-right: 1px solid var(--color-border) !important;
