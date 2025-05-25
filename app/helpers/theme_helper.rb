@@ -8,7 +8,8 @@ module ThemeHelper
         tags << vite_stylesheet_tag('styles/application.scss', media: '(prefers-color-scheme: dark)', crossorigin: 'anonymous')
       end
     elsif theme == 'default'
-      vite_stylesheet_tag 'styles/application.scss', media: 'all', crossorigin: 'anonymous'
+      default_theme = YAML.load_file(Rails.root.join('config', 'themes.yml'))['default']
+      vite_stylesheet_tag default_theme, media: 'all', crossorigin: 'anonymous'
     else
       vite_stylesheet_tag "styles/#{theme}.scss", media: 'all', crossorigin: 'anonymous'
     end
