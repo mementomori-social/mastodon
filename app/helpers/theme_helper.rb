@@ -5,7 +5,7 @@ module ThemeHelper
     if theme == 'system'
       ''.html_safe.tap do |tags|
         tags << vite_stylesheet_tag('styles/mastodon-light.scss', media: 'not all and (prefers-color-scheme: dark)', crossorigin: 'anonymous')
-        tags << vite_stylesheet_tag('styles/application.scss', media: '(prefers-color-scheme: dark)', crossorigin: 'anonymous')
+        tags << vite_stylesheet_tag('styles/mastodon-bird-ui-dark.scss', media: '(prefers-color-scheme: dark)', crossorigin: 'anonymous')
       end
     else
       # Load theme path from themes.yml or use fallback
