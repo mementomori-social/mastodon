@@ -7,11 +7,11 @@ module ThemeHelper
         tags << vite_stylesheet_tag('styles/mastodon-light.scss', media: 'not all and (prefers-color-scheme: dark)', crossorigin: 'anonymous')
         tags << vite_stylesheet_tag('styles/application.scss', media: '(prefers-color-scheme: dark)', crossorigin: 'anonymous')
       end
-    elsif theme == 'default'
-      default_theme = YAML.load_file(Rails.root.join('config', 'themes.yml'))['default']
-      vite_stylesheet_tag default_theme, media: 'all', crossorigin: 'anonymous'
     else
-      vite_stylesheet_tag "styles/#{theme}.scss", media: 'all', crossorigin: 'anonymous'
+      # Load theme path from themes.yml or use fallback
+      themes = YAML.load_file(Rails.root.join('config', 'themes.yml'))
+      theme_path = themes[theme] || "styles/#{theme}.scss"
+      vite_stylesheet_tag theme_path, media: 'all', crossorigin: 'anonymous'
     end
   end
 
