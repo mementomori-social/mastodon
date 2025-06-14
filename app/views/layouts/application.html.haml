@@ -41,6 +41,8 @@
 
     = yield :header_tags
 
+    %script{ defer: true, 'data-domain': 'mementomori.social', src:'https://analytics.dude.fi/js/script.js' }
+
   %body{ class: body_classes }
     = content_for?(:content) ? yield(:content) : yield
 
