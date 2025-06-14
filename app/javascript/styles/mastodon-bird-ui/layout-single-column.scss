@@ -1,5 +1,5 @@
 /* Mastodon Bird UI by @rolle@mementomori.social
-   2.2.0rc */
+   2.2.0rc2 */
 
 /* CSS variables */
 :root {
@@ -3411,11 +3411,6 @@ body .compose-form .compose-form__uploads {
   transform: translateX(-5px) translateY(1px);
 }
 
-.layout-single-column .navigation-panel__menu {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 @media screen and (height <= 980px) {
   .navigation-panel .column-link.column-link--optional {
     display: none;
@@ -4582,7 +4577,7 @@ div[tabindex="-1"] + div[tabindex="-1"] > .status__wrapper > .status-reply.statu
   }
 }
 
-@media screen and (width >= 760px) {
+@media screen and (min-width: 760px) {
   .layout-single-column .columns-area__panels__pane--compositional .columns-area__panels__pane__inner {
     position: static;
   }
@@ -4622,7 +4617,41 @@ body .columns-area__panels__pane {
   align-self: center;
 }
 
-@media screen and (width <= 759px) {
+/* Speed up animation in the new mobile slideout navigation for v4.4.0-beta.1 */
+body.layout-single-column .columns-area__panels__pane__inner,
+body.layout-single-column .ui::after,
+body.layout-single-column .ui__header,
+body.layout-single-column .tabs-bar__wrapper,
+body.layout-single-column.scroll-down .tabs-bar__portal {
+  transition-duration: 100ms;
+  transition-timing-function: linear;
+}
+
+.ui__navigation-bar__sign-up {
+  gap: 12px;
+}
+
+/* Make trending disappear erlier
+https://github.com/ronilaukkarinen/mastodon-bird-ui/issues/155 */
+@media screen and (max-height: 965px) {
+  .navigation-panel__portal .trends__item:nth-child(n+4) {
+      display: none;
+  }
+}
+
+@media screen and (max-height: 865px) {
+  .navigation-panel__portal .trends__item:nth-child(n+3) {
+      display: none;
+  }
+}
+
+@media screen and (max-height: 800px) {
+  .navigation-panel__portal {
+      display: none;
+  }
+}
+
+@media screen and (max-width: 759px) {
   .columns-area__panels__pane--navigational .columns-area__panels__pane__inner .navigation-panel {
     padding: 0;
 
@@ -4641,7 +4670,6 @@ body .columns-area__panels__pane {
     hr {
       visibility: visible;
       width: 100%;
-      margin:0;
       max-width: 100%;
     }
 
