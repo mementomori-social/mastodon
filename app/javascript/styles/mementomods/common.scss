@@ -2,17 +2,20 @@
 body.layout-single-column.scroll-down .ui::after,
 body.layout-single-column.scroll-down .ui__header,
 body.layout-single-column.scroll-down .tabs-bar__wrapper,
+body.layout-single-column.scroll-down .ui__navigation-bar,
 body.layout-single-column.scroll-down .tabs-bar__portal {
   opacity: 0;
   transform: translateY(-300%);
 }
 
 // Also hide the bottom bar when scrolling down
+body.layout-single-column.scroll-down .ui__navigation-bar,
 body.layout-single-column.scroll-down .columns-area__panels__pane__inner {
   opacity: 0;
   transform: translateY(100%);
 }
 
+body.layout-single-column.scroll-up .ui__navigation-bar,
 body.layout-single-column.scroll-up .columns-area__panels__pane__inner,
 body.layout-single-column.scroll-up .ui::after,
 body.layout-single-column.scroll-up .ui__header,
@@ -22,6 +25,7 @@ body.layout-single-column.scroll-down .tabs-bar__portal {
   transform: translateY(0);
 }
 
+body.layout-single-column.scroll-top .ui__navigation-bar,
 body.layout-single-column.scroll-top .columns-area__panels__pane__inner,
 body.layout-single-column.scroll-top .ui::after,
 body.layout-single-column.scroll-top .ui__header,
@@ -31,11 +35,12 @@ body.layout-single-column.scroll-down .tabs-bar__portal {
   transform: translateY(0);
 }
 
+body.layout-single-column .ui__navigation-bar,
 body.layout-single-column .columns-area__panels__pane__inner,
 body.layout-single-column .ui::after,
 body.layout-single-column .ui__header,
 body.layout-single-column .tabs-bar__wrapper,
-body.layout-single-column.scroll-down .tabs-bar__portal {
+body.layout-single-column .tabs-bar__portal {
   transition:
     opacity 500ms ease-in-out,
     transform 500ms ease-in-out;
