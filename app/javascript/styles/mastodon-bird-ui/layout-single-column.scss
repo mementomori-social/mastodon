@@ -1929,6 +1929,12 @@ body.embed .detailed-status__meta .detailed-status__link .fa-retweet,
   }
 }
 
+@media (max-width: 1175px) {
+  .layout-single-column .columns-area__panels__main > div {
+    border-right: 0;
+  }
+}
+
 /* Hidden things */
 /* stylelint-disable-next-line */
 .layout-single-column .column-header .column-header__icon:not(.icon-user-plus):not(.icon-user-times) {
@@ -4630,6 +4636,10 @@ div[data-popper-placement] {
 /* New navigation bar for mobile in v4.4.0-beta.1+mementomods-2025-06-14 */
 body .columns-area__panels__pane {
   z-index: 22;
+}
+
+body .ui__navigation-bar {
+  background-color: var(--color-bg);
 }
 
 .layout-single-column .ui__navigation-bar {
