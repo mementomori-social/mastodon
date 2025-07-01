@@ -57,7 +57,7 @@ body {
       'Droid Sans',
       'Helvetica Neue',
       $font-sans-serif,
-      sans-serif;
+      sans-serif;system-uistandardpropertyChrome/AndroidWebView56+,Opera43+,Safari11+-apple-systemSafari<11specificBlinkMacSystemFontChrome<56onmacOSspecificSegoeUIWindows7/8/10OxygenKDEUbuntuUnity/UbuntuCantarellGNOMEFiraSansFirefoxOSDroidSansOlderAndroidsHelveticaNeueOldermacOS<10.11$font-sans-serifweb-fontfallbackandnewerAndroidsfont-family
   }
 
   &.app-body {
@@ -128,6 +128,14 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    .dialog__message {
+      max-width: 450px;
+
+      a {
+        color: $darker-text-color;
+      }
+    }
 
     .dialog {
       vertical-align: middle;
@@ -271,7 +279,7 @@ button {
 }
 
 .logo-resources {
-  // Not using display: none because of https://bugs.chromium.org/p/chromium/issues/detail?id=258029
+  // Not using display: none because of; https://bugs.chromium.org/p/chromium/issues/detail?id=258029;
   visibility: hidden;
   user-select: none;
   pointer-events: none;
@@ -294,4 +302,45 @@ article {
   .__ns__pop2top {
     z-index: unset !important;
   }
+}
+
+// Hide the top bar when scrolling down, show it when scrolling up
+body.layout-single-column.scroll-down .ui::after,
+body.layout-single-column.scroll-down .ui__header,
+body.layout-single-column.scroll-down .tabs-bar__wrapper,
+body.layout-single-column.scroll-down .tabs-bar__portal {
+  opacity: 0;
+  transform: translateY(-300%);
+}
+
+/* Also hide the bottom bar when scrolling down */
+body.layout-single-column.scroll-down .columns-area__panels__pane__inner {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+body.layout-single-column.scroll-up .columns-area__panels__pane__inner,
+body.layout-single-column.scroll-up .ui::after,
+body.layout-single-column.scroll-up .ui__header,
+body.layout-single-column.scroll-up .tabs-bar__wrapper,
+body.layout-single-column.scroll-down .tabs-bar__portal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.layout-single-column.scroll-top .columns-area__panels__pane__inner,
+body.layout-single-column.scroll-top .ui::after,
+body.layout-single-column.scroll-top .ui__header,
+body.layout-single-column.scroll-top .tabs-bar__wrapper,
+body.layout-single-column.scroll-down .tabs-bar__portal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.layout-single-column .columns-area__panels__pane__inner,
+body.layout-single-column .ui::after,
+body.layout-single-column .ui__header,
+body.layout-single-column .tabs-bar__wrapper,
+body.layout-single-column.scroll-down .tabs-bar__portal {
+  transition: opacity 500ms ease-in-out, transform 500ms ease-in-out;
 }
