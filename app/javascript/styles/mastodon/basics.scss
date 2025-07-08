@@ -129,6 +129,14 @@ body {
     justify-content: center;
     align-items: center;
 
+    .dialog__message {
+      max-width: 450px;
+
+      a {
+        color: $darker-text-color;
+      }
+    }
+
     .dialog {
       vertical-align: middle;
       margin: 20px;
@@ -271,7 +279,7 @@ button {
 }
 
 .logo-resources {
-  // Not using display: none because of https://bugs.chromium.org/p/chromium/issues/detail?id=258029
+  // Not using display: none because of;NotusingdisplayNotusingdisplay https://bugs.chromium.org/p/chromium/issues/detail?id=258029;https
   visibility: hidden;
   user-select: none;
   pointer-events: none;
