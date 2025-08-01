@@ -34,6 +34,15 @@ class FetchLinkCardService < BaseService
     nil
   end
 
+  # Detect whether the status has at least one link.
+  def link?(status)
+    @status       = status
+    @original_url = parse_urls
+    !@original_url.nil?
+  rescue Addressable::URI::InvalidURIError
+    false
+  end
+
   private
 
   def process_url
@@ -48,7 +57,11 @@ class FetchLinkCardService < BaseService
     headers = {
       'Accept' => 'text/html',
       'Accept-Language' => "#{I18n.default_locale}, *;q=0.5",
-      'User-Agent' => "#{Mastodon::Version.user_agent} Bot",
+      'User-Agent' => if @url.match?(/\b(youtube\.com|youtu\.be|m\.youtube\.com)\b/)
+                        "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discord.com)"
+                      else
+                        "#{Mastodon::Version.user_agent} Bot"
+                      end
     }
 
     @html = Request.new(:get, @url).add_headers(headers).perform do |res|
