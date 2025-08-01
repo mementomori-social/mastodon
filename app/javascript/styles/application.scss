@@ -25,3 +25,7 @@
 @use 'mastodon/rtl';
 @use 'mastodon/accessibility';
 @use 'mastodon/rich_text';
+
+// Custom mementomods styles
+@use 'mastodon-bird-ui/error';
+@use 'mementomods/common';
