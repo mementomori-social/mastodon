@@ -46,7 +46,7 @@ const EmbedModal: React.FC<{
           () =>
             window.requestAnimationFrame(() => {
               if (iframeRef.current) {
-                iframeRef.current.width = `${iframeDocument.body.scrollWidth}px`;
+                // Don't set width - let CSS handle responsive width
                 iframeRef.current.height = `${iframeDocument.body.scrollHeight}px`;
               }
             }),
