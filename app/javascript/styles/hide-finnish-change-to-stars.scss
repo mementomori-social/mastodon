@@ -1,0 +1,9 @@
+@use 'application';
+@use 'mastodon-bird-ui/layout-single-column';
+@use 'mastodon-bird-ui/layout-multiple-columns';
+@use 'mastodon-bird-ui/stars';
+
+/* Hide translate Finnish link */
+.status__content__text[lang="fi"].translate ~ .status__content__translate-button {
+  display: none;
+}
