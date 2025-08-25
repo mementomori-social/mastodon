@@ -1,5 +1,5 @@
 !!! 5
-%html{ lang: I18n.locale }
+%html{ lang: I18n.locale, class: 'theme-mastodon-bird-ui' }
   %head
     %meta{ charset: 'utf-8' }/
     %meta{ name: 'robots', content: 'noindex' }/
@@ -14,11 +14,11 @@
     = vite_client_tag
     = vite_react_refresh_tag
     = vite_polyfills_tag
-    = theme_style_tags 'mastodon-light'
+    = theme_style_tags 'default'
     = vite_preload_file_tag "mastodon/locales/#{I18n.locale}.json"
     = render_initial_state
     = vite_typescript_tag 'embed.tsx', integrity: true, crossorigin: 'anonymous'
-  %body.embed
+  %body.embed.app-body.theme-default.no-reduce-motion.layout-single-column
     = yield
 
     .logo-resources{ 'tabindex' => '-1', 'inert' => true, 'aria-hidden' => 'true' }
