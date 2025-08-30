@@ -87,7 +87,7 @@ export const hasMultiColumnPath = initialPath === '/'
 const getMeta = (prop) => initialState?.meta && initialState.meta[prop];
 
 export const activityApiEnabled = getMeta('activity_api_enabled');
-export const autoPlayGif = getMeta('auto_play_gif');
+export const autoPlayGif = getMeta('auto_play_gif') ?? true;
 export const boostModal = getMeta('boost_modal');
 export const deleteModal = getMeta('delete_modal');
 export const missingAltTextModal = getMeta('missing_alt_text_modal');
@@ -105,7 +105,7 @@ export const me = getMeta('me');
 export const movedToAccountId = getMeta('moved_to_account_id');
 export const owner = getMeta('owner');
 export const profile_directory = getMeta('profile_directory');
-export const reduceMotion = getMeta('reduce_motion');
+export const reduceMotion = getMeta('reduce_motion') ?? false;
 export const registrationsOpen = getMeta('registrations_open');
 export const repository = getMeta('repository');
 export const searchEnabled = getMeta('search_enabled');
@@ -116,8 +116,8 @@ export const source_url = getMeta('source_url');
 export const timelinePreview = getMeta('timeline_preview');
 export const title = getMeta('title');
 export const trendsAsLanding = getMeta('trends_as_landing_page');
-export const useBlurhash = getMeta('use_blurhash');
-export const usePendingItems = getMeta('use_pending_items');
+export const useBlurhash = getMeta('use_blurhash') ?? true;
+export const usePendingItems = getMeta('use_pending_items') ?? false;
 export const version = getMeta('version');
 export const criticalUpdatesPending = initialState?.critical_updates_pending;
 export const statusPageUrl = getMeta('status_page_url');
