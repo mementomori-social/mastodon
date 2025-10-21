@@ -871,7 +871,7 @@
   "status.block": "Estä @{name}",
   "status.bookmark": "Lisää kirjanmerkki",
   "status.cancel_reblog_private": "Peru tehostus",
-  "status.cannot_quote": "Sinulla ei ole oikeutta lainata tätä julkaisua",
+  "status.cannot_quote": "Ei sallittu",
   "status.cannot_reblog": "Tätä julkaisua ei voi tehostaa",
   "status.contains_quote": "Sisältää lainauksen",
   "status.context.loading": "Ladataan lisää vastauksia",
