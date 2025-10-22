@@ -33,6 +33,8 @@ defaults: &defaults
   backups_retention_period: 7
   captcha_enabled: false
   allow_referrer_origin: false
+  auto_play_gif: true
+  reduce_motion: false
 
 development:
   <<: *defaults
