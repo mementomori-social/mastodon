@@ -106,6 +106,9 @@ body.theme-mastodon-bird-ui-accessible {
   color: var(--color-hashtag) !important;
 }
 
+.status__content__translate-button,
 .status__content a[href]:not(.mention, .hashtag) * {
+  --font-size: 22px;
+
   color: var(--color-link) !important;
 }
