@@ -63,7 +63,8 @@ body.theme-mastodon-bird-ui-accessible {
 }
 
 /* Custom for mementomori.social */
-.status__content__text[lang="fi"].translate ~ .status__content__read-more-button {
+.status__content__text[lang='fi'].translate
+  ~ .status__content__read-more-button {
   display: none;
 }
 
@@ -73,7 +74,8 @@ body.theme-mastodon-bird-ui-accessible {
 }
 
 /* Hide translate Finnish link */
-.status__content__text[lang="fi"].translate ~ .status__content__translate-button {
+.status__content__text[lang='fi'].translate
+  ~ .status__content__translate-button {
   display: none;
 }
 
@@ -92,4 +94,18 @@ body.theme-mastodon-bird-ui-accessible {
 .layout-multiple-columns .compose-form .compose-form__buttons-wrapper,
 .layout-single-column .compose-form .compose-form__buttons-wrapper {
   padding-bottom: calc(var(--gap-default) / 2);
+}
+
+.status__content .mention,
+.status__content .mention * {
+  color: var(--color-mention) !important;
+}
+
+.status__content .hashtag,
+.status__content .hashtag * {
+  color: var(--color-hashtag) !important;
+}
+
+.status__content a[href]:not(.mention, .hashtag) * {
+  color: var(--color-link) !important;
 }

@@ -51,12 +51,14 @@ body.theme-mastodon-bird-ui-accessible-plus {
 
 /* Define font sizes for those where missing */
 body.theme-mastodon-bird-ui-accessible-plus {
-  .edit-indicator__content .emojione, .reply-indicator__content .emojione, .status__content .emojione {
+  .edit-indicator__content .emojione,
+  .reply-indicator__content .emojione,
+  .status__content .emojione {
     height: 32px;
     width: 32px;
   }
 
-  [role="dialog"] textarea,
+  [role='dialog'] textarea,
   time:not(.invisible),
   span:not(.invisible),
   li:not(.invisible) {
@@ -69,7 +71,7 @@ body.theme-mastodon-bird-ui-accessible-plus {
     line-height: var(--line-height);
   }
 
-    /* Improve alt text readability */
+  /* Improve alt text readability */
   .media-gallery__alt__popover p {
     font-size: var(--font-size);
     line-height: 1.2;
@@ -92,7 +94,10 @@ body.theme-mastodon-bird-ui-accessible-plus {
 }
 
 /* Fix columns in content warnings with bigger fonts */
-body .columns-area__panels__pane--compositional .compose-form .spoiler-input__input,
+body
+  .columns-area__panels__pane--compositional
+  .compose-form
+  .spoiler-input__input,
 body .content-warning {
   grid-template-columns: minmax(0, 3fr) minmax(90px, 180px) !important;
 }
@@ -141,7 +146,8 @@ body .content-warning {
 }
 
 /* Custom for mementomori.social */
-.status__content__text[lang="fi"].translate ~ .status__content__read-more-button {
+.status__content__text[lang='fi'].translate
+  ~ .status__content__read-more-button {
   display: none;
 }
 
@@ -190,7 +196,7 @@ body .content-warning {
 }
 
 .status__info .display-name .display-name__account {
-  opacity: .8;
+  opacity: 0.8;
 }
 
 .status .status__info {
@@ -211,8 +217,12 @@ body .content-warning {
 }
 
 /* Fix unfollow wrapping */
-.layout-multiple-columns .notification.notification-follow .account__relationship,
-.layout-multiple-columns .notification.notification.notification-admin-sign-up .account__relationship {
+.layout-multiple-columns
+  .notification.notification-follow
+  .account__relationship,
+.layout-multiple-columns
+  .notification.notification.notification-admin-sign-up
+  .account__relationship {
   transform: translateY(-34px);
 }
 
@@ -233,4 +243,18 @@ body .content-warning {
 .notification .account__relationship > .button,
 .notification__report__actions .button {
   border-color: var(--color-light-text) !important;
+}
+
+.status__content .mention,
+.status__content .mention * {
+  color: var(--color-mention) !important;
+}
+
+.status__content .hashtag,
+.status__content .hashtag * {
+  color: var(--color-hashtag) !important;
+}
+
+.status__content a[href]:not(.mention, .hashtag) * {
+  color: var(--color-link) !important;
 }
