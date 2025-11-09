@@ -85,6 +85,13 @@ class ServerBanner extends PureComponent {
               </>
             )}
           </div>
+
+          <div className='server-banner__meta__column'>
+            <h4>Fediverse stats:</h4>
+            <strong className='server-banner__number'>10M</strong>
+            <br />
+            <span className='server-banner__number-label'>users</span>
+          </div>
         </div>
       </div>
     );
