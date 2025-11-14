@@ -6,6 +6,14 @@ export function start() {
   } catch {
     // If called twice
   }
+
+  // Initialize snow/confetti effect when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSeasonalEffects);
+  } else {
+    // DOM is already loaded, initialize immediately
+    initializeSeasonalEffects();
+  }
 }
 
 function animate(ctx, snowflakes, canvas, maxFlakes) {
@@ -121,7 +129,7 @@ function shadeColor(color, percent) {
   ).toString(16).slice(1);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initializeSeasonalEffects() {
   // Check if reduced motion is enabled
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return; // Don't create snow effect if reduced motion is preferred
@@ -196,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-});
+}
 
 // Hide the top bar when scrolling down, show it when scrolling up
 let lastScrollTop = 0;
