@@ -136,6 +136,7 @@ function initializeSeasonalEffects() {
   }
 
   const currentDate = new Date();
+  // Note: JavaScript months are 0-indexed, so 11 = December
   const isNewYearsEve = currentDate.getMonth() === 11 && currentDate.getDate() === 31;
   const isChristmasSeason = currentDate.getMonth() === 11 && currentDate.getDate() >= 23 && currentDate.getDate() <= 31;
 
