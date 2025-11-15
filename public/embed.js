@@ -106,13 +106,16 @@
       if (allowedPrefixes.every((allowedPrefix) => !embedUrl.toString().startsWith(allowedPrefix))) return;
 
       iframe.src = embedUrl.toString();
-      iframe.width = container.clientWidth;
+      iframe.width = '100%';
       iframe.height = 0;
       iframe.allow = 'fullscreen';
       iframe.sandbox = 'allow-scripts allow-same-origin allow-popups';
       iframe.style.border = 0;
       iframe.style.overflow = 'hidden';
       iframe.style.display = 'block';
+      iframe.style.width = '100%';
+      iframe.style.maxWidth = '100%';
+      iframe.style.borderRadius = '6px';
 
       iframe.onload = function () {
         iframe.contentWindow.postMessage({
