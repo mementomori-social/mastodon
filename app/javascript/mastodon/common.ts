@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const currentDate = new Date();
   const isNewYearsEve = currentDate.getMonth() === 11 && currentDate.getDate() === 31;
-  const isChristmasSeason = currentDate.getMonth() === 11 && currentDate.getDate() >= 23 && currentDate.getDate() <= 31;
+  const isChristmasSeason = currentDate.getMonth() === 11 && currentDate.getDate() >= 8 && currentDate.getDate() <= 31;
 
   if (isChristmasSeason || isNewYearsEve) {
     const wrapper = document.createElement('div');
