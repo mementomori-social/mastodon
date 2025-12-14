@@ -14,7 +14,7 @@ export async function importEmojiData(localeString: string, path?: string) {
   const locale = toSupportedLocale(localeString);
 
   // Validate the provided path.
-  if (path && !/^[/a-z]*\/packs\/assets\/compact-\w+\.json$/.test(path)) {
+  if (path && !/^[/a-z]*\/packs(-dev)?\/assets\/compact-\w+\.json$/.test(path)) {
     throw new Error('Invalid path for emoji data');
   } else {
     // Otherwise get the path if not provided.
