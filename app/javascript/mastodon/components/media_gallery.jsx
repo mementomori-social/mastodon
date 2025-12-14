@@ -15,7 +15,7 @@ import { Blurhash } from 'mastodon/components/blurhash';
 import { SpoilerButton } from 'mastodon/components/spoiler_button';
 import { formatTime } from 'mastodon/features/video';
 
-import { autoPlayGif, displayMedia, useBlurhash } from '../initial_state';
+import { autoPlayGif, displayMedia, reduceMotion, useBlurhash } from '../initial_state';
 
 class Item extends PureComponent {
 
@@ -56,7 +56,7 @@ class Item extends PureComponent {
   };
 
   getAutoPlay() {
-    return this.props.autoplay || autoPlayGif;
+    return this.props.autoplay || autoPlayGif || !reduceMotion;
   }
 
   hoverToPlay () {
