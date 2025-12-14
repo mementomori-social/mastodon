@@ -2009,24 +2009,10 @@ fi:
     review_link: Käy käyttöehdot läpi
     title: Palvelimen %{domain} käyttöehdot muuttuvat
   themes:
-     system: Automaattinen (käytä järjestelmän teemaa)
-     contrast: Mastodon (suuri kontrasti)
-     default: Mastodon Bird UI (tumma)
-     default-change-to-stars: Mastodon Bird UI (tumma, tähdet)
-     mastodon-bird-ui-light: Mastodon Bird UI (vaalea)
-     mastodon-bird-ui-light-change-to-stars: Mastodon Bird UI (vaalea, tähdet)
-     mastodon-bird-ui-light-hide-finnish: Mastodon Bird UI (vaalea, piilota Käännä-linkit suomen kielelle)
-     mastodon-bird-ui-light-hide-finnish-change-to-stars: Mastodon Bird UI (vaalea, Tähdet, piilota Käännä-linkit suomen kielelle)
-     mastodon-bird-ui-light-hide-translate-links: Mastodon Bird UI (vaalea, piilota kaikki käännöslinkit)
-     mastodon-bird-ui-contrast: Mastodon Bird UI (suuri kontrasti)
-     mastodon-light: Mastodon (vaalea)
-     mastodon-dark: Mastodon (tumma)
-     hide-finnish: Mastodon Bird UI (tumma, piilota Käännä-linkit suomen kielelle)
-     hide-finnish-change-to-stars: Mastodon Bird UI (tumma, Tähdet, piilota Käännä-linkit suomen kielelle)
-     hide-translate-links: Mastodon Bird UI (tumma, piilota kaikki käännöslinkit)
-     mastodon-bird-ui-accessible: Mastodon Bird UI (saavutettavuus huomioitu)
-     mastodon-bird-ui-accessible-hide-finnish: Mastodon Bird Ui (saavutettavuus huomioitu, piilota Käännä-linkit suomelle)
-     mastodon-bird-ui-accessible-plus: Mastodon Bird UI (saavutettavuus Plus, fontit vielä isommalla)
+    contrast: Mastodon (suuri kontrasti)
+    default: Mastodon (tumma)
+    mastodon-light: Mastodon (vaalea)
+    system: Automaattinen (käytä järjestelmän teemaa)
   time:
     formats:
       default: "%d.%m.%Y klo %H.%M"
