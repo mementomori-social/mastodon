@@ -2012,10 +2012,24 @@ en:
     review_link: Review terms of service
     title: The terms of service of %{domain} are changing
   themes:
-    contrast: Mastodon (High contrast)
-    default: Mastodon (Dark)
-    mastodon-light: Mastodon (Light)
-    system: Automatic (use system theme)
+     system: Automatic (use system theme)
+     contrast: Mastodon (High contrast)
+     default: Mastodon Bird UI (Dark)
+     default-change-to-stars: Mastodon Bird UI (Dark, Stars)
+     mastodon-bird-ui-light: Mastodon Bird UI (Light)
+     mastodon-bird-ui-light-change-to-stars: Mastodon Bird UI (Light, Stars)
+     mastodon-bird-ui-light-hide-finnish: Mastodon Bird UI (Light, hide Translate link for Finnish)
+     mastodon-bird-ui-light-hide-finnish-change-to-stars: Mastodon Bird UI (Light, Stars, hide Translate link for Finnish)
+     mastodon-bird-ui-light-hide-translate-links: Mastodon Bird UI (Light, hide all Translate links)
+     mastodon-bird-ui-contrast: Mastodon Bird UI (High contrast)
+     mastodon-light: Mastodon (Light)
+     mastodon-dark: Mastodon (Dark)
+     hide-finnish: Mastodon Bird UI (Dark, hide translate Finnish link)
+     hide-finnish-change-to-stars: Mastodon Bird UI (Dark, Stars, hide translate Finnish link)
+     hide-translate-links: Mastodon Bird UI (Dark, hide all Translate links)
+     mastodon-bird-ui-accessible: Mastodon Bird UI (Ultra accessible)
+     mastodon-bird-ui-accessible-hide-finnish: Mastodon Bird Ui (Ultra accessible, hide translate link for Finnish)
+     mastodon-bird-ui-accessible-plus: Mastodon Bird UI (Ultra accessible Plus+)
   time:
     formats:
       default: "%b %d, %Y, %H:%M"
