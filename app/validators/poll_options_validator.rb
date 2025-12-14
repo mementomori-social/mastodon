@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PollOptionsValidator < ActiveModel::Validator
-  MAX_OPTIONS      = 4
-  MAX_OPTION_CHARS = 50
+  MAX_OPTIONS      = 15
+  MAX_OPTION_CHARS = 150
 
   def validate(poll)
     poll.errors.add(:options, I18n.t('polls.errors.too_few_options')) unless poll.options.size > 1
