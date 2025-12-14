@@ -12,7 +12,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   attributes :domain, :title, :version, :source_url, :description,
              :usage, :thumbnail, :icon, :languages, :configuration,
-             :registrations, :api_versions, :wrapstodon, :max_toot_chars
+             :registrations, :api_versions, :wrapstodon
 
   has_one :contact, serializer: ContactSerializer
   has_many :rules, serializer: REST::RuleSerializer
@@ -136,9 +136,6 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   def wrapstodon
     AnnualReport.current_campaign
-
-  def max_toot_chars
-    10_000
   end
 
   private
