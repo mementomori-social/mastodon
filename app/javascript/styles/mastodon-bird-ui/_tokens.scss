@@ -4,6 +4,7 @@
 
 // Dark theme tokens (only for dark Bird UI themes)
 html:has(body:not(.admin)).theme-dark,
+html.theme-mastodon-bird-ui,
 html:has(body:not(.admin)):where(
   [data-user-theme="default"],
   [data-user-theme="mastodon-bird-ui-dark"],

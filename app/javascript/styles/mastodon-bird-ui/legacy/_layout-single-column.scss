@@ -1,5 +1,6 @@
 // Mastodon Bird UI by @rolle@mementomori.social
 // CSS variables (only for Bird UI themes and system theme)
+html.theme-mastodon-bird-ui,
 html:has(body:not(.admin)):where(
   [data-user-theme="default"],
   [data-user-theme="system"],
