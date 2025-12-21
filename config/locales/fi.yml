@@ -2026,7 +2026,7 @@ fi:
     mastodon-bird-ui-dark-change-to-stars: Mastodon Bird UI (tumma, tähdet)
     mastodon-dark: Mastodon (tumma)
     contrast: Mastodon (suuri kontrasti)
-    default: Mastodon (tumma)
+    default: Mastodon Bird UI (tumma)
     mastodon-light: Mastodon (vaalea)
     system: Automaattinen (käytä järjestelmän teemaa)
   time:
