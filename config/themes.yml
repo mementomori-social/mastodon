@@ -1,4 +1,4 @@
-default: styles/application.scss
+default: styles/mastodon-bird-ui-dark.scss
 contrast: styles/contrast.scss
 mastodon-light: styles/mastodon-light.scss
 mastodon-bird-ui-dark: styles/mastodon-bird-ui-dark.scss
@@ -14,3 +14,4 @@ mastodon-bird-ui-contrast: styles/mastodon-bird-ui-contrast.scss
 mastodon-bird-ui-accessible: styles/mastodon-bird-ui-accessible.scss
 mastodon-bird-ui-accessible-hide-finnish: styles/mastodon-bird-ui-accessible-hide-finnish.scss
 mastodon-bird-ui-accessible-plus: styles/mastodon-bird-ui-accessible-plus.scss
+mastodon-dark: styles/application.scss
