@@ -2034,7 +2034,7 @@ en:
     mastodon-bird-ui-dark-change-to-stars: Mastodon Bird UI (Dark, Stars)
     mastodon-dark: Mastodon (Dark)
     contrast: Mastodon (High contrast)
-    default: Mastodon (Dark)
+    default: Mastodon Bird UI (Dark)
     mastodon-light: Mastodon (Light)
     system: Automatic (use system theme)
   time:
