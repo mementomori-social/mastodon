@@ -2009,6 +2009,19 @@ fi:
     review_link: Käy käyttöehdot läpi
     title: Palvelimen %{domain} käyttöehdot muuttuvat
   themes:
+    mastodon-bird-ui-accessible-plus: Mastodon Bird UI (saavutettavuus Plus, fontit vielä isommalla)
+    mastodon-bird-ui-accessible-hide-finnish: Mastodon Bird UI (saavutettavuus huomioitu, piilota Käännä-linkit suomelle)
+    mastodon-bird-ui-accessible: Mastodon Bird UI (saavutettavuus huomioitu)
+    mastodon-bird-ui-contrast: Mastodon Bird UI (suuri kontrasti)
+    mastodon-bird-ui-light-hide-translate-links: Mastodon Bird UI (vaalea, piilota kaikki käännöslinkit)
+    mastodon-bird-ui-light-hide-finnish-change-to-stars: Mastodon Bird UI (vaalea, Tähdet, piilota Käännä-linkit suomen kielelle)
+    mastodon-bird-ui-light-hide-finnish: Mastodon Bird UI (vaalea, piilota Käännä-linkit suomen kielelle)
+    mastodon-bird-ui-light: Mastodon Bird UI (vaalea)
+    hide-translate-links: Mastodon Bird UI (tumma, piilota kaikki käännöslinkit)
+    hide-finnish-change-to-stars: Mastodon Bird UI (tumma, Tähdet, piilota Käännä-linkit suomen kielelle)
+    hide-finnish: Mastodon Bird UI (tumma, piilota Käännä-linkit suomen kielelle)
+    mastodon-bird-ui-dark-change-to-stars: Mastodon Bird UI (tumma, tähdet)
+    mastodon-bird-ui-dark: Mastodon Bird UI (tumma)
     contrast: Mastodon (suuri kontrasti)
     default: Mastodon (tumma)
     mastodon-light: Mastodon (vaalea)

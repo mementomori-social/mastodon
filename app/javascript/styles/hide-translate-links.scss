@@ -1,0 +1,6 @@
+@use 'common';
+@use 'mastodon-bird-ui';
+
+.status__content[lang] + .translate-button {
+  display: none;
+}
