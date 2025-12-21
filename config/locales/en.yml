@@ -2020,6 +2020,7 @@ en:
     review_link: Review terms of service
     title: The terms of service of %{domain} are changing
   themes:
+    mastodon-dark: Mastodon (Dark)
     mastodon-bird-ui-accessible-plus: Mastodon Bird UI (Ultra accessible Plus+)
     mastodon-bird-ui-accessible-hide-finnish: Mastodon Bird UI (Ultra accessible, hide translate link for Finnish)
     mastodon-bird-ui-accessible: Mastodon Bird UI (Ultra accessible)
