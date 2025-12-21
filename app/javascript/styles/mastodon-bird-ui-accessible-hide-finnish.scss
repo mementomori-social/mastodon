@@ -1,8 +1,0 @@
-@use 'common';
-@use 'mastodon/high-contrast';
-@use 'mastodon-bird-ui';
-@use 'mastodon-bird-ui/variants/accessible';
-
-.status__content[lang="fi"] + .translate-button {
-  display: none;
-}

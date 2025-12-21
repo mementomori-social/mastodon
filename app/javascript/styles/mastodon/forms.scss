@@ -663,9 +663,6 @@ code {
     padding-inline-end: 30px;
     height: 41px;
 
-    // Fix dropdown options being white-on-white in dark mode (issue #37332)
-    color-scheme: inherit;
-
     @media screen and (width <= 600px) {
       font-size: 16px;
     }
