@@ -1,12 +1,12 @@
 import { useHovering } from 'mastodon/hooks/useHovering';
-import { autoPlayGif } from 'mastodon/initial_state';
+import { autoPlayGif, reduceMotion } from 'mastodon/initial_state';
 
 export const GIF: React.FC<{
   src: string;
   staticSrc: string;
   className: string;
   animate?: boolean;
-}> = ({ src, staticSrc, className, animate = autoPlayGif }) => {
+}> = ({ src, staticSrc, className, animate = autoPlayGif || !reduceMotion }) => {
   const { hovering, handleMouseEnter, handleMouseLeave } = useHovering(animate);
 
   return (
