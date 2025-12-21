@@ -191,8 +191,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_091936) do
     t.boolean "hide_collections"
     t.integer "avatar_storage_schema_version"
     t.integer "header_storage_schema_version"
-    t.datetime "sensitized_at", precision: nil
     t.integer "suspension_origin"
+    t.datetime "sensitized_at", precision: nil
     t.boolean "trendable"
     t.datetime "reviewed_at", precision: nil
     t.datetime "requested_review_at", precision: nil
@@ -656,12 +656,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_091936) do
   end
 
   create_table "ip_blocks", force: :cascade do |t|
-    t.inet "ip", default: "0.0.0.0", null: false
-    t.integer "severity", default: 0, null: false
-    t.datetime "expires_at", precision: nil
-    t.text "comment", default: "", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.datetime "expires_at", precision: nil
+    t.inet "ip", default: "0.0.0.0", null: false
+    t.integer "severity", default: 0, null: false
+    t.text "comment", default: "", null: false
     t.index ["ip"], name: "index_ip_blocks_on_ip", unique: true
   end
 
@@ -1123,6 +1123,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_091936) do
     t.text "media_descriptions", array: true
     t.string "poll_options", array: true
     t.boolean "sensitive"
+    t.string "content_type"
     t.bigint "quote_id"
     t.index ["account_id"], name: "index_status_edits_on_account_id"
     t.index ["status_id"], name: "index_status_edits_on_status_id"
@@ -1184,6 +1185,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_091936) do
     t.datetime "edited_at", precision: nil
     t.boolean "trendable"
     t.bigint "ordered_media_attachment_ids", array: true
+    t.boolean "local_only"
+    t.string "content_type"
     t.datetime "fetched_replies_at"
     t.integer "quote_approval_policy", default: 0, null: false
     t.index ["account_id", "id", "visibility", "updated_at"], name: "index_statuses_20190820", order: { id: :desc }, where: "(deleted_at IS NULL)"
