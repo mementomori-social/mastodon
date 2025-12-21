@@ -276,7 +276,7 @@
   }
 }
 
-@media (max-width: 888px) {
+@media (width <= 888px) {
   .layout-single-column
     .status__action-bar
     button.icon-button.icon-button--with-counter.star-icon.activate.star-icon::after {
