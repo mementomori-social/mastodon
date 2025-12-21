@@ -1,5 +1,6 @@
 html[data-user-theme="mastodon-bird-ui-accessible"],
-html.mastodon-bird-ui[data-user-theme="mastodon-bird-ui-accessible"] {
+html.mastodon-bird-ui[data-user-theme="mastodon-bird-ui-accessible"],
+html:has(body:not(.admin))[data-user-theme="mastodon-bird-ui-accessible"] {
   // Override Mastodon 4.6.0+ semantic tokens for accessible theme
   --color-bg-primary: #000;
   --color-text-brand: #0a9ff9;
@@ -56,7 +57,8 @@ html.mastodon-bird-ui[data-user-theme="mastodon-bird-ui-accessible"] {
 
 //  Define font sizes for those where missing
 html[data-user-theme="mastodon-bird-ui-accessible-plus"],
-html.mastodon-bird-ui[data-user-theme="mastodon-bird-ui-accessible-plus"] {
+html.mastodon-bird-ui[data-user-theme="mastodon-bird-ui-accessible-plus"],
+html:has(body:not(.admin))[data-user-theme="mastodon-bird-ui-accessible-plus"] {
   ._annual_report_announcement__wrapper h2,
   ._annual_report_announcement__wrapper p,
   [role="dialog"] textarea,
@@ -136,7 +138,8 @@ body .content-warning {
 
 @media (width <= 700px) {
   html[data-user-theme="mastodon-bird-ui-accessible-plus"],
-  html.mastodon-bird-ui[data-user-theme="mastodon-bird-ui-accessible-plus"] {
+  html.mastodon-bird-ui[data-user-theme="mastodon-bird-ui-accessible-plus"],
+  html:has(body:not(.admin))[data-user-theme="mastodon-bird-ui-accessible-plus"] {
     --font-size: 24px;
     --line-height: 30px;
   }
