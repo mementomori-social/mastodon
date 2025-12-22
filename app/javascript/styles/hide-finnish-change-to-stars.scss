@@ -2,6 +2,6 @@
 @use 'mastodon-bird-ui';
 @use 'mastodon-bird-ui/stars';
 
-.status__content[lang="fi"] + .translate-button {
+.status__content__text[lang="fi"] ~ .status__content__translate-button {
   display: none;
 }

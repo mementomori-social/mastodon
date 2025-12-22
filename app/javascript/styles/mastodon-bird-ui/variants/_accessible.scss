@@ -1,5 +1,7 @@
 html[data-user-theme="mastodon-bird-ui-accessible"],
-html:has(body:not(.admin))[data-user-theme="mastodon-bird-ui-accessible"] {
+html[data-user-theme="mastodon-bird-ui-accessible-hide-finnish"],
+html:has(body:not(.admin))[data-user-theme="mastodon-bird-ui-accessible"],
+html:has(body:not(.admin))[data-user-theme="mastodon-bird-ui-accessible-hide-finnish"] {
   // Override Mastodon 4.6.0+ semantic tokens for accessible theme
   --color-bg-primary: #000;
   --color-text-brand: #0a9ff9;
