@@ -118,8 +118,12 @@ function shadeColor(color, percent) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Check if reduced motion is enabled
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  // Check if reduced motion is enabled (browser setting or Mastodon setting)
+  // The html element has 'no-reduce-motion' class when animations are allowed
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mastodonReducedMotion = !document.documentElement.classList.contains('no-reduce-motion');
+
+  if (prefersReducedMotion || mastodonReducedMotion) {
     return; // Don't create snow effect if reduced motion is preferred
   }
 
