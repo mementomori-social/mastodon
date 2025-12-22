@@ -890,6 +890,7 @@ export const Video: React.FC<{
             lang={lang}
             muted={shouldAutoPlay && !startPlaying}
             loop
+            playsInline
             onClick={handleClick}
             onKeyDownCapture={handleVideoKeyDown}
             onPlay={handlePlay}
