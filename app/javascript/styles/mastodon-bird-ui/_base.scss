@@ -63,6 +63,9 @@ html:has(body:not(.admin)):where(
   --color-bg-compose-form: rgb(39 44 64 / 40%);
   --color-bg-compose-form-focus: rgb(39 44 64 / 80%);
 
+  // Mastodon 4.6.0+ semantic tokens override
+  --color-text-brand: var(--color-accent);
+
   // In the original UI this color is lighten($ui-base-color, 12%)
   --color-outer-space: #42485a;
 
@@ -444,6 +447,13 @@ body.theme-mastodon-light.layout-single-column {
   .ui {
     display: flex;
     width: 100%;
+  }
+
+  // Fix dropdown options being white-on-white in dark mode
+  // https://github.com/mastodon/mastodon/issues/37332
+  select option {
+    background: var(--color-bg);
+    color: var(--color-fg);
   }
 
   // Text color
@@ -931,8 +941,9 @@ body.theme-mastodon-light.layout-single-column {
 
   // Composer form warnings
   .compose-form .compose-form__warning {
-    background-color: var(--color-light-purple);
-    color: var(--color-bg);
+    background-color: var(--color-dark);
+    border-color: var(--color-dark);
+    color: var(--color-light-text);
   }
 
   // Content warning placeholder
@@ -1212,9 +1223,11 @@ body.theme-mastodon-light.layout-single-column {
     background-color: var(--color-dark);
   }
 
-  body .notification-group--unread::before,
-  body .notification-ungrouped--unread::before {
-    display: none;
+  @at-root {
+    .notification-group--unread::before,
+    .notification-ungrouped--unread::before {
+      display: none;
+    }
   }
 
   .notification:hover .notification__message {
@@ -4397,6 +4410,10 @@ body.theme-mastodon-light.layout-single-column {
     padding: 5px 9px 50px 36px;
     position: absolute;
     top: 100%;
+  }
+
+  .lists__item__title span {
+    color: var(--color-fg);
   }
 
   .list-panel .icon {
