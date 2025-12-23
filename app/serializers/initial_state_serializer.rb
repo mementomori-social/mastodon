@@ -22,6 +22,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:delete_modal]      = object_account_user.setting_delete_modal
       store[:missing_alt_text_modal] = object_account_user.settings['web.missing_alt_text_modal']
       store[:auto_play_gif]     = object_account_user.setting_auto_play_gif
+      store[:auto_play_video]   = object_account_user.setting_auto_play_video
       store[:display_media]     = object_account_user.setting_display_media
       store[:expand_spoilers]   = object_account_user.setting_expand_spoilers
       store[:reduce_motion]     = object_account_user.setting_reduce_motion
@@ -35,6 +36,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:wrapstodon]        = wrapstodon
     else
       store[:auto_play_gif] = Setting.auto_play_gif
+      store[:auto_play_video] = true
       store[:display_media] = Setting.display_media
       store[:reduce_motion] = Setting.reduce_motion
       store[:use_blurhash]  = Setting.use_blurhash

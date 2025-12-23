@@ -27,7 +27,7 @@ import {
   attachFullscreenListener,
   detachFullscreenListener,
 } from 'mastodon/features/ui/util/fullscreen';
-import { autoPlayGif, displayMedia, reduceMotion, useBlurhash } from 'mastodon/initial_state';
+import { autoPlayVideo, displayMedia, useBlurhash } from 'mastodon/initial_state';
 import { playerSettings } from 'mastodon/settings';
 
 import { HotkeyIndicator } from './components/hotkey_indicator';
@@ -237,7 +237,7 @@ export const Video: React.FC<{
     volume: '0%',
   }));
 
-  const shouldAutoPlay = autoPlayGif || !reduceMotion;
+  const shouldAutoPlay = !!autoPlayVideo;
 
   const handleVideoRef = useCallback(
     (c: HTMLVideoElement | null) => {
