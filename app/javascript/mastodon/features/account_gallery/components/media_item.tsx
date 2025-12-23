@@ -9,7 +9,7 @@ import { AltTextBadge } from 'mastodon/components/alt_text_badge';
 import { Blurhash } from 'mastodon/components/blurhash';
 import { Icon } from 'mastodon/components/icon';
 import { formatTime } from 'mastodon/features/video';
-import { autoPlayGif, displayMedia, reduceMotion, useBlurhash } from 'mastodon/initial_state';
+import { autoPlayGif, autoPlayVideo, displayMedia, useBlurhash } from 'mastodon/initial_state';
 import type { Status, MediaAttachment } from 'mastodon/models/status';
 import { useAppSelector } from 'mastodon/store';
 
@@ -144,7 +144,7 @@ export const MediaItem: React.FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onLoadedData={handleImageLoad}
-          autoPlay={autoPlayGif || !reduceMotion}
+          autoPlay={type === 'gifv' ? !!autoPlayGif : !!autoPlayVideo}
           playsInline
           loop
           muted
