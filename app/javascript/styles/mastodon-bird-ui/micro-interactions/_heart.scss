@@ -146,11 +146,6 @@ html.no-reduce-motion
     background-image: var(--icon-heart-hover);
   }
 
-  //  Make sure popouts stay on top
-  div[data-popper-placement] {
-    z-index: 99;
-  }
-
   //  New navigation bar for mobile in v4.4.0-beta.1+mementomods-2025-06-14
   .columns-area__panels__pane {
     z-index: 22;
