@@ -170,6 +170,9 @@ class Item extends PureComponent {
         badges.push(<span key='video' className='media-gallery__alt__label media-gallery__alt__label--non-interactive'>{formatTime(Math.floor(duration))}</span>);
       }
 
+      // GIFs always loop, videos only loop if autoplay is enabled
+      const shouldLoop = attachment.get('type') === 'gifv' || autoPlay;
+
       thumbnail = (
         <div className={classNames('media-gallery__gifv', { autoplay: autoPlay })}>
           <video
@@ -184,7 +187,7 @@ class Item extends PureComponent {
             onLoadedData={this.handleImageLoad}
             autoPlay={autoPlay}
             playsInline
-            loop
+            loop={shouldLoop}
             muted
           />
         </div>

@@ -134,6 +134,10 @@ export const MediaItem: React.FC<{
       'duration',
     ]) as number;
 
+    // GIFs always loop, videos only loop if autoplay is enabled
+    const autoPlay = type === 'gifv' ? !!autoPlayGif : !!autoPlayVideo;
+    const shouldLoop = type === 'gifv' || autoPlay;
+
     thumbnail = (
       <div className='media-gallery__gifv'>
         <video
@@ -144,9 +148,9 @@ export const MediaItem: React.FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onLoadedData={handleImageLoad}
-          autoPlay={type === 'gifv' ? !!autoPlayGif : !!autoPlayVideo}
+          autoPlay={autoPlay}
           playsInline
-          loop
+          loop={shouldLoop}
           muted
         />
 
