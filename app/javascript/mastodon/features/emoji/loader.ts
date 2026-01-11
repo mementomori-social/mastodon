@@ -133,14 +133,17 @@ async function fetchAndCheckEtag<ResultType extends object[] | object>({
   // Use location.origin as this script may be loaded from a CDN domain.
   const url = new URL(path, location.origin);
 
-  const response = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      'If-None-Match': oldEtag ?? '', // Send the old ETag to check for modifications
-    },
-  });
-  // If not modified, return null
-  if (response.status === 304) {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  // Only send If-None-Match if we have an etag to check
+  if (oldEtag) {
+    headers['If-None-Match'] = oldEtag;
+  }
+
+  const response = await fetch(url, { headers });
+  // If not modified, return null (only valid if we sent an etag)
+  if (response.status === 304 && oldEtag) {
     log('etag not modified for %s', etagName);
     return null;
   }
