@@ -459,6 +459,10 @@
 }
 
 html.no-reduce-motion .icon-button.star-icon.activate .icon-star {
+  animation:
+    sparkles-width 0.65s 1,
+    sparkles-size 0.65s 1,
+    popping 0.5s 1 !important;
   background-color: unset !important;
   background-image: var(
     --icon-star-detailed-status-action-bar-active
@@ -478,13 +482,6 @@ html.no-reduce-motion .icon-button.star-icon.active .icon-star {
   background-image: var(
     --icon-star-detailed-status-action-bar-active
   ) !important;
-}
-
-html.no-reduce-motion .icon-button.star-icon.activate .icon-star {
-  animation:
-    sparkles-width 0.65s 1,
-    sparkles-size 0.65s 1,
-    popping 0.5s 1 !important;
 }
 
 html.no-reduce-motion
