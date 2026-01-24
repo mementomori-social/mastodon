@@ -1,5 +1,9 @@
 !!! 5
+<<<<<<< HEAD
 %html{ lang: I18n.locale, 'data-contrast': 'auto', 'data-color-scheme': 'light' }
+=======
+%html{ lang: I18n.locale, class: 'theme-mastodon-bird-ui' }
+>>>>>>> mementomods-2026-01-11
   %head
     %meta{ charset: 'utf-8' }/
     %meta{ name: 'robots', content: 'noindex' }/
@@ -15,11 +19,15 @@
     = vite_client_tag
     = vite_react_refresh_tag
     = vite_polyfills_tag
+<<<<<<< HEAD
     = theme_style_tags 'system'
+=======
+    = theme_style_tags 'default'
+>>>>>>> mementomods-2026-01-11
     = vite_preload_file_tag "mastodon/locales/#{I18n.locale}.json"
     = render_initial_state
     = vite_typescript_tag 'embed.tsx', integrity: true, crossorigin: 'anonymous'
-  %body.embed
+  %body.embed.app-body.theme-default.no-reduce-motion.layout-single-column
     = yield
 
     .logo-resources{ 'tabindex' => '-1', 'inert' => true, 'aria-hidden' => 'true' }
