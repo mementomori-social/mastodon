@@ -68,6 +68,10 @@ export function KeyboardShortcuts () {
   return import('../../keyboard_shortcuts');
 }
 
+export function SearchReference () {
+  return import(/* webpackChunkName: "features/search_reference" */'../../search_reference');
+}
+
 export function PinnedStatuses () {
   return import('../../pinned_statuses');
 }

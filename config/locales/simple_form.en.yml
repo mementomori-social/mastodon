@@ -238,6 +238,7 @@ en:
         setting_aggregate_reblogs: Group boosts in timelines
         setting_always_send_emails: Always send e-mail notifications
         setting_auto_play_gif: Auto-play animated GIFs
+        setting_auto_play_video: Auto-play videos (muted)
         setting_boost_modal: Control boosting visibility
         setting_color_scheme: Mode
         setting_contrast: Contrast

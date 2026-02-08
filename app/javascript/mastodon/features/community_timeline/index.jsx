@@ -160,11 +160,12 @@ class CommunityTimeline extends PureComponent {
           onLoadMore={this.handleLoadMore}
           emptyMessage={emptyMessage}
           bindToDocument={!multiColumn}
+          withCounters
         />
 
         <Helmet>
           <title>{intl.formatMessage(messages.title)}</title>
-          <meta name='robots' content='noindex' />
+          <meta name='robots' content='index' />
         </Helmet>
       </Column>
     );
