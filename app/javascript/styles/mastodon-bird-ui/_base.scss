@@ -1351,6 +1351,8 @@ html[data-contrast="high"] {
   .column-header,
   .detailed-status,
   .detailed-status__action-bar,
+  .account__display-name:focus,
+  .account__display-name.focusable:focus,
   .column > .scrollable {
     background-color: transparent;
   }
