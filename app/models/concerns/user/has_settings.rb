@@ -23,6 +23,10 @@ module User::HasSettings
     settings['web.auto_play']
   end
 
+  def setting_auto_play_video
+    settings['web.auto_play_video']
+  end
+
   def setting_default_sensitive
     settings['default_sensitive']
   end
