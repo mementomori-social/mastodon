@@ -1134,6 +1134,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_144837) do
 
   create_table "status_edits", force: :cascade do |t|
     t.bigint "account_id"
+    t.string "content_type"
     t.datetime "created_at", null: false
     t.text "media_descriptions", array: true
     t.bigint "ordered_media_attachment_ids", array: true
@@ -1184,6 +1185,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_144837) do
   create_table "statuses", id: :bigint, default: -> { "timestamp_id('statuses'::text)" }, force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "application_id"
+    t.string "content_type"
     t.bigint "conversation_id"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "deleted_at", precision: nil
@@ -1193,6 +1195,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_144837) do
     t.bigint "in_reply_to_id"
     t.string "language"
     t.boolean "local"
+    t.boolean "local_only"
     t.bigint "ordered_media_attachment_ids", array: true
     t.bigint "poll_id"
     t.integer "quote_approval_policy", default: 0, null: false

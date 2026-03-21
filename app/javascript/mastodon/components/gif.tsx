@@ -6,7 +6,7 @@ export const GIF: React.FC<{
   staticSrc: string;
   className: string;
   animate?: boolean;
-}> = ({ src, staticSrc, className, animate = autoPlayGif }) => {
+}> = ({ src, staticSrc, className, animate = !!autoPlayGif }) => {
   const { hovering, handleMouseEnter, handleMouseLeave } = useHovering(animate);
 
   return (
