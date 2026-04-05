@@ -16,6 +16,13 @@ $content-width: 840px;
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
     env(safe-area-inset-bottom) env(safe-area-inset-left);
 
+  // Fix dropdown options being white-on-white in dark mode
+  // https://github.com/mastodon/mastodon/issues/37332
+  select option {
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+  }
+
   .icon {
     width: 16px;
     height: 16px;

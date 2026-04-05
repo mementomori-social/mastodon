@@ -1,0 +1,22 @@
+// Mastodon Bird UI - Main index
+// This file imports all Bird UI modules
+// Add new modules here when modularizing
+
+// CSS properties
+@use "variables/tokens";
+
+// Base file (to be modularized)
+@use "base";
+
+// Components
+@use "components/error";
+@use "components/tabs-bar";
+@use "components/account-avatar";
+@use "components/button";
+@use "components/picture-in-picture";
+
+// Micro interactions
+@use "micro-interactions/heart";
+
+// Advanced web interface
+@use "layouts/advanced-web-interface";

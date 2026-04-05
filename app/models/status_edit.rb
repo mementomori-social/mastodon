@@ -5,6 +5,7 @@
 # Table name: status_edits
 #
 #  id                           :bigint(8)        not null, primary key
+#  content_type                 :string
 #  media_descriptions           :text             is an Array
 #  ordered_media_attachment_ids :bigint(8)        is an Array
 #  poll_options                 :string           is an Array
