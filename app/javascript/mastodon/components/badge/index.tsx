@@ -19,6 +19,7 @@ interface BadgeProps {
   className?: string;
   domain?: ReactNode;
   roleId?: string;
+  roleColor?: string;
   variant?:
     | 'default'
     | 'subtle'
@@ -35,10 +36,12 @@ export const Badge: FC<BadgeProps> = ({
   className,
   domain,
   roleId,
+  roleColor,
 }) => (
   <div
-    className={classNames(classes.badge, classes[variant], className)}
+    className={classNames(classes.badge, classes[variant], roleColor && classes.roleColored, className)}
     data-account-role-id={roleId}
+    style={roleColor ? { color: roleColor } : undefined}
   >
     {icon}
     <span>{label}</span>

@@ -16,6 +16,16 @@
   }
 }
 
+.roleColored {
+  background-color: transparent;
+  border: 1px solid currentColor;
+
+  // Override hardcoded SVG gradient fills with the role color
+  > svg path[fill^='url'] {
+    fill: currentColor;
+  }
+}
+
 .domain {
   opacity: 0.75;
   letter-spacing: 0;
