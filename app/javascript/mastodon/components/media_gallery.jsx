@@ -44,7 +44,7 @@ class Item extends PureComponent {
 
   handleMouseEnter = (e) => {
     if (this.hoverToPlay()) {
-      e.target.play();
+      e.target.play().catch(() => {});
     }
   };
 

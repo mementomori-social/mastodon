@@ -43,7 +43,7 @@ export const useAudioContext = ({ audioElementRef }: AudioContextOptions) => {
   }, [audioElementRef]);
 
   const playAudio = useCallback(() => {
-    void audioElementRef.current?.play();
+    audioElementRef.current?.play().catch(() => {});
     void audioContextRef.current?.resume();
   }, [audioElementRef]);
 
