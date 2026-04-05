@@ -39,7 +39,7 @@ export const MediaItem: React.FC<{
   const handleMouseEnter = useCallback(
     (e: React.MouseEvent<HTMLVideoElement>) => {
       if (e.target instanceof HTMLVideoElement) {
-        void e.target.play();
+        e.target.play().catch(() => {});
       }
     },
     [],
