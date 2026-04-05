@@ -54,7 +54,6 @@ export const accountsCountRenderer = (
       counter: <strong>{displayNumber}</strong>,
       days: 2,
     }}
-    tagName='span'
   />
 );
 
