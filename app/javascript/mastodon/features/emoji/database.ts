@@ -302,7 +302,7 @@ async function toLoadedLocale(localeString: string) {
   }
   if (!loadedLocales.has(locale)) {
     log('Locale %s not loaded, importing...', locale);
-    const { importEmojiData } = await import('./loader');
+    const { importEmojiData } = await import(/* @vite-ignore */ './loader');
     await importEmojiData(locale);
     return locale;
   }
