@@ -1,8 +1,5 @@
-import React from 'react';
 import Column from 'mastodon/components/column';
-import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
-import PropTypes from 'prop-types';
-import ImmutablePureComponent from 'react-immutable-pure-component';
+import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import ColumnHeader from 'mastodon/components/column_header';
 import { Helmet } from 'react-helmet';
 import { searchEnabled } from '../../initial_state';
@@ -11,15 +8,8 @@ const messages = defineMessages({
   heading: { id: 'search_reference.heading', defaultMessage: 'Search Reference' },
 });
 
-class SearchReference extends ImmutablePureComponent {
-
-  static propTypes = {
-    intl: PropTypes.object.isRequired,
-    multiColumn: PropTypes.bool,
-  };
-
-  render () {
-    const { intl, multiColumn } = this.props;
+const SearchReference = ({ multiColumn }) => {
+    const intl = useIntl();
 
     return (
       <Column>
@@ -106,14 +96,6 @@ class SearchReference extends ImmutablePureComponent {
                   <td><FormattedMessage id='search_reference.search_operators.is.bot' defaultMessage='automated accounts and posts from them' /></td>
                 </tr>
                 <tr>
-                  <td><kbd>domain:example.org</kbd></td>
-                  <td><FormattedMessage id='search_reference.search_operators.domain' defaultMessage='limit search to users and posts from a given domain' /></td>
-                </tr>
-                <tr>
-                  <td><kbd>scope:following</kbd></td>
-                  <td><FormattedMessage id='search_reference.search_operators.scope.following' defaultMessage='limit search to users that you follow and posts from them' /></td>
-                </tr>
-                <tr>
                   <td><kbd>in:library</kbd></td>
                   <td><FormattedMessage id='search_reference.search_operators.in.library' defaultMessage='for searching only in posts you have written or interacted with' /></td>
                 </tr>
@@ -144,10 +126,6 @@ class SearchReference extends ImmutablePureComponent {
                 <tr>
                   <td><kbd>from:me</kbd></td>
                   <td><FormattedMessage id='search_reference.search_operators.from.me' defaultMessage='posts authored by me' /></td>
-                </tr>
-                <tr>
-                  <td><kbd>mentions:@username@domain</kbd></td>
-                  <td><FormattedMessage id='search_reference.search_operators.mentions' defaultMessage='posts mentioning a given user' /></td>
                 </tr>
                 <tr>
                   <td><kbd>is:reply</kbd></td>
@@ -189,14 +167,6 @@ class SearchReference extends ImmutablePureComponent {
                   <td><kbd>during:2022-12-17</kbd></td>
                   <td><FormattedMessage id='search_reference.search_operators.date.during' defaultMessage='search during a given date' /></td>
                 </tr>
-                <tr>
-                  <td><kbd>sort:newest</kbd></td>
-                  <td><FormattedMessage id='search_reference.search_operators.sort.newest' defaultMessage='show newest results first' /></td>
-                </tr>
-                <tr>
-                  <td><kbd>sort:oldest</kbd></td>
-                  <td><FormattedMessage id='search_reference.search_operators.sort.oldest' defaultMessage='show oldest results first' /></td>
-                </tr>
               </tbody>
             }
           </table>
@@ -207,8 +177,6 @@ class SearchReference extends ImmutablePureComponent {
         </Helmet>
       </Column>
     );
-  }
+};
 
-}
-
-export default injectIntl(SearchReference);
+export default SearchReference;
