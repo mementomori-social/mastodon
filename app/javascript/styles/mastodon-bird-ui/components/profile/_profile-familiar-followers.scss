@@ -1,0 +1,8 @@
+// Familiar followers spacing
+.layout-single-column,
+.layout-multiple-columns {
+  .account__header__familiar-followers {
+    margin-block-end: 0;
+    margin-block-start: 0;
+  }
+}

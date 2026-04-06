@@ -8,6 +8,7 @@
     flex-wrap: wrap;
     gap: var(--gap-default);
     margin: 0;
+    margin-bottom: 20px;
   }
 
   #{$field-list} > #{$field-item} {
