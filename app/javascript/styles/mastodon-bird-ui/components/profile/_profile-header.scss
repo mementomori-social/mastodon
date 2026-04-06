@@ -20,12 +20,6 @@
     margin-bottom: 4px;
   }
 
-  @media (width >= 760px) {
-    .account__header__image {
-      height: 200px;
-    }
-  }
-
   .account__header__bar .avatar .account__avatar {
     background-color: transparent;
     border: 0;
@@ -180,5 +174,11 @@
 
   .status__action-bar .icon-button.icon-button--with-counter::after {
     transform: translateX(0) translateY(0);
+  }
+
+  @media (width >= 760px) {
+    .account__header__image {
+      height: 200px;
+    }
   }
 }

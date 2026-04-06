@@ -12,10 +12,10 @@
   --color-text-secondary: #717c9b;
   --color-text-tertiary: #717c9b;
   --color-text-on-inverted: #1e2028;
-  --color-text-brand: #6364ff;
-  --color-text-brand-soft: #858afa;
+  --color-text-brand: var(--color-accent);
+  --color-text-brand-soft: var(--color-accent);
   --color-text-on-brand-base: #fff;
-  --color-text-brand-on-inverted: #6364ff;
+  --color-text-brand-on-inverted: var(--color-accent-dark);
   --color-text-error: #f91880;
   --color-text-on-error-base: #fff;
   --color-text-warning: #ffac33;

@@ -70,6 +70,18 @@
     display: none;
   }
 
+  // Icon positioning for ::before pseudo-elements
+  #{$field-list} > #{$field-item}::before {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: inline-block;
+    flex-shrink: 0;
+    height: 18.5px;
+    order: -1;
+    width: 18.5px;
+  }
+
   // Mobile field adjustments
   @media (width <= 700px) {
     #{$field-list} {
@@ -81,17 +93,5 @@
     #{$field-list} > #{$field-item} dd {
       font-size: var(--font-size-mid);
     }
-  }
-
-  // Icon positioning for ::before pseudo-elements
-  #{$field-list} > #{$field-item}::before {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    display: inline-block;
-    flex-shrink: 0;
-    height: 18.5px;
-    order: -1;
-    width: 18.5px;
   }
 }
