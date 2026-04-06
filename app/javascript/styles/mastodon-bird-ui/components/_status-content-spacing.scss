@@ -6,4 +6,10 @@
   .reply-indicator__content p {
     margin-bottom: 18px;
   }
+
+  .status__content p:last-child,
+  .edit-indicator__content p:last-child,
+  .reply-indicator__content p:last-child {
+    margin-bottom: 0;
+  }
 }
