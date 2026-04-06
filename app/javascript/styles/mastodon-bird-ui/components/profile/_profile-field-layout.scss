@@ -6,7 +6,7 @@
   #{$field-list} {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--gap-default);
+    gap: 5px var(--gap-default);
     line-height: var(--line-height-mid) !important;
     margin: 0;
     margin-bottom: 20px;
@@ -84,10 +84,6 @@
 
   // Mobile field adjustments
   @media (width <= 700px) {
-    #{$field-list} {
-      row-gap: 5px;
-    }
-
     #{$field-list} > #{$field-item},
     #{$field-list} > #{$field-item} dt,
     #{$field-list} > #{$field-item} dd {
