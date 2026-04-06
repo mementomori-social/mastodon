@@ -28,6 +28,7 @@
 @use "components/avatars";
 @use "components/hashtag-bar";
 @use "components/status-layout";
+@use "components/status-content-spacing";
 @use "components/media";
 @use "components/detailed-status";
 @use "components/buttons-and-bars";
@@ -69,6 +70,7 @@
 @use "components/profile/profile-name";
 @use "components/profile/profile-pinned-status";
 @use "components/profile/profile-edit-avatar";
+@use "components/profile/profile-familiar-followers";
 @use "components/search-icon-active";
 @use "components/follow-recommendations";
 @use "components/follow-requests";
