@@ -17,13 +17,8 @@
 
   .account__header__buttons {
     display: inline-flex;
-  }
-
-  @media (width >= 420px) {
-    .account__header__buttons {
-      position: absolute;
-      right: 16px;
-      top: var(--gap-default);
-    }
+    position: absolute;
+    right: 16px;
+    top: var(--gap-default);
   }
 }
