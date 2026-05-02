@@ -59,6 +59,10 @@ module User::HasSettings
     settings['web.use_system_scrollbars']
   end
 
+  def setting_use_stars
+    settings['web.use_stars']
+  end
+
   def setting_noindex
     settings['noindex']
   end
