@@ -22,3 +22,6 @@
 @use 'mastodon/dashboard';
 @use 'mastodon/rtl';
 @use 'mastodon/rich_text';
+
+// Fork-owned (mementomods) preferences toggled via Appearance settings
+@use 'mementomods/hide_all_translate_links';
