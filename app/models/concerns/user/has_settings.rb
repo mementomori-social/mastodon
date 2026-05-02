@@ -59,6 +59,10 @@ module User::HasSettings
     settings['web.use_system_scrollbars']
   end
 
+  def setting_hide_finnish_translate_links
+    settings['web.hide_finnish_translate_links']
+  end
+
   def setting_noindex
     settings['noindex']
   end
