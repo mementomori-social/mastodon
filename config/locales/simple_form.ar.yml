@@ -57,6 +57,7 @@ ar:
         setting_always_send_emails: عادة لن تُرسَل إليك إشعارات البريد الإلكتروني عندما تكون نشطًا على ماستدون
         setting_default_sensitive: تُخفى الوسائط الحساسة تلقائيا ويمكن اظهارها عن طريق النقر عليها
         setting_system_scrollbars_ui: ينطبق فقط على متصفحات سطح المكتب البنية على محرك كروم وسفاري
+        setting_hide_finnish_translate_links: إخفاء زر "ترجمة" أسفل منشورات الحالة المكتوبة باللغة الفنلندية
         setting_use_blurhash: الألوان التدرّجية مبنية على ألوان المرئيات المخفية ولكنها تحجب كافة التفاصيل
         setting_use_pending_items: إخفاء تحديثات الخط وراء نقرة بدلًا مِن التمرير التلقائي للموجزات
         username: يمكنك استخدام الأحرف والأرقام والسطور السفلية
@@ -233,6 +234,7 @@ ar:
         setting_reduce_motion: تخفيض عدد الصور في الوسائط المتحركة
         setting_system_font_ui: استخدم الخطوط الافتراضية للنظام
         setting_system_scrollbars_ui: استخدام شريط التمرير الافتراضي للنظام
+        setting_hide_finnish_translate_links: إخفاء روابط الترجمة على المنشورات الفنلندية
         setting_theme: سمة الموقع
         setting_trends: اعرض ما يُتداوَل اليوم
         setting_unfollow_modal: إظهار مربع حوار للتأكيد قبل إلغاء متابعة أي حساب

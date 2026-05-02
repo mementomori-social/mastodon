@@ -60,6 +60,7 @@ ca:
         setting_default_sensitive: El contingut sensible està ocult per defecte i es pot mostrar fent-hi clic
         setting_emoji_style: Com mostrar els emojis. "Automàtic" provarà de fer servir els emojis nadius, però revertirà a twemojis en els navegadors antics.
         setting_system_scrollbars_ui: S'aplica només als navegadors d'escriptori basats en Safari i Chrome
+        setting_hide_finnish_translate_links: Amaga el botó 'Tradueix' que hi ha sota les publicacions d'estat escrites en finès.
         setting_use_blurhash: Els degradats es basen en els colors de les imatges ocultes, però n'enfosqueixen els detalls
         setting_use_pending_items: Amaga les actualitzacions de la línia de temps després de fer un clic, en lloc de desplaçar-les automàticament
         username: Pots emprar lletres, números i subratllats
@@ -241,6 +242,7 @@ ca:
         setting_reduce_motion: Redueix el moviment de les animacions
         setting_system_font_ui: Usa la lletra predeterminada del sistema
         setting_system_scrollbars_ui: Usa la barra de desplaçament predeterminada del sistema
+        setting_hide_finnish_translate_links: Amaga els enllaços de traducció a les publicacions en finès
         setting_theme: Tema del lloc
         setting_trends: Mostra les tendències d'avui
         setting_unfollow_modal: Mostra el diàleg de confirmació abans de deixar de seguir algú

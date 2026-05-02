@@ -67,6 +67,7 @@ pt-BR:
         setting_emoji_style: Como exibir emojis. "Automáticos" tentará usar emojis nativos, mas voltará para o Twemoji para navegadores legados.
         setting_quick_boosting_html: Quando ativado, clicar no ícone de impulsionamento %{boost_icon} impulsionará imediatamente o texto, em vez de abrir o menu suspenso de impulsionamento/citação. Move a ação de citação para o menu %{options_icon} (Opções).
         setting_system_scrollbars_ui: Se aplica apenas para navegadores de computador baseado no Safari e Chrome
+        setting_hide_finnish_translate_links: Oculta o botão "Traduzir" abaixo das postagens de status que estão escritas em finlandês
         setting_use_blurhash: O blur é baseado nas cores da imagem oculta, ofusca a maioria dos detalhes
         setting_use_pending_items: Ocultar atualizações da linha do tempo atrás de um clique ao invés de rolar automaticamente
         username: Você pode usar letras, números e underlines
@@ -265,6 +266,7 @@ pt-BR:
         setting_reduce_motion: Reduzir animações
         setting_system_font_ui: Usar fonte padrão do sistema
         setting_system_scrollbars_ui: Usar barra de rolagem padrão do sistema
+        setting_hide_finnish_translate_links: Ocultar links de tradução em postagens em finlandês
         setting_theme: Tema do site
         setting_trends: Mostrar em alta hoje
         setting_unfollow_modal: Solicitar confirmação antes de deixar de seguir alguém
