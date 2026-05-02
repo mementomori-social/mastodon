@@ -67,6 +67,7 @@ de:
         setting_emoji_style: 'Wie Emojis dargestellt werden: „Automatisch“ verwendet native Emojis, für veraltete Browser wird jedoch Twemoji verwendet.'
         setting_quick_boosting_html: Dadurch wird der Beitrag beim Anklicken des %{boost_icon} Teilen-Symbols sofort geteilt, anstatt das Drop-down-Menü zu öffnen. Die Möglichkeit zum Zitieren wird dabei in %{options_icon} Mehr verschoben.
         setting_system_scrollbars_ui: Betrifft nur Desktop-Browser, die auf Chrome oder Safari basieren
+        setting_use_stars: Ersetzen Sie das beliebte Herzsymbol durch einen gelben Stern im Stil von Twitter, mit Glitzer und Ringanimationen
         setting_use_blurhash: Der Farbverlauf basiert auf den Farben der ausgeblendeten Medien, verschleiert aber jegliche Details
         setting_use_pending_items: Neue Beiträge hinter einem Klick verstecken, anstatt automatisch zu scrollen
         username: Du kannst Buchstaben, Zahlen und Unterstriche verwenden
@@ -265,6 +266,7 @@ de:
         setting_reduce_motion: Bewegung in Animationen verringern
         setting_system_font_ui: Standardschriftart des Browsers verwenden
         setting_system_scrollbars_ui: Bildlaufleiste des Betriebssystems verwenden
+        setting_use_stars: Sterne anstelle von Herzen für Favoriten verwenden
         setting_theme: Design
         setting_trends: Heutige Trends anzeigen
         setting_unfollow_modal: Bestätigungsdialog beim Entfolgen eines Profils anzeigen

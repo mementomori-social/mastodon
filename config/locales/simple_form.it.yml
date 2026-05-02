@@ -67,6 +67,7 @@ it:
         setting_emoji_style: Come visualizzare gli emoji. "Automatico" proverà a usare gli emoji nativi, ma per i browser più vecchi ricorrerà a Twemoji.
         setting_quick_boosting_html: Se abilitato, cliccando sull'icona Boost %{boost_icon}, il potenziamento verrà immediatamente attivato, anziché aprire il menu a discesa potenziamento/citazione. Sposta l'azione della citazione nel menu %{options_icon} (Opzioni).
         setting_system_scrollbars_ui: Si applica solo ai browser desktop basati su Safari e Chrome
+        setting_use_stars: Sostituite l'icona del cuore preferito con una stella gialla in stile Twitter, con animazioni di scintille e anelli
         setting_use_blurhash: I gradienti sono basati sui colori delle immagini nascoste ma offuscano tutti i dettagli
         setting_use_pending_items: Fare clic per mostrare i nuovi messaggi invece di aggiornare la timeline automaticamente
         username: Puoi usare lettere, numeri e caratteri di sottolineatura
@@ -265,6 +266,7 @@ it:
         setting_reduce_motion: Riduci movimento nelle animazioni
         setting_system_font_ui: Usa il carattere predefinito del sistema
         setting_system_scrollbars_ui: Utilizza la barra di scorrimento predefinita del sistema
+        setting_use_stars: Usare le stelle al posto dei cuori per i preferiti
         setting_theme: Tema del sito
         setting_trends: Mostra tendenze di oggi
         setting_unfollow_modal: Chiedi conferma prima di smettere di seguire qualcuno
