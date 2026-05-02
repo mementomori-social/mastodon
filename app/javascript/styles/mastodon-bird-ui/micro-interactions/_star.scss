@@ -484,18 +484,17 @@ html.no-reduce-motion .icon-button.star-icon.active .icon-star {
   ) !important;
 }
 
-html.no-reduce-motion
-  .detailed-status__action-bar
-  button.icon-button.star-icon.activate::after,
+// Sparkle burst and ring expansion fire in both motion modes — they are
+// decorative pseudo-element fades rather than transform animations, so they
+// stay friendly to reduce-motion users.
+.detailed-status__action-bar button.icon-button.star-icon.activate::after,
 .status__action-bar button.icon-button.activate.star-icon::after {
   animation:
     sparkles-width 0.65s 1,
     sparkles-size 0.65s 1;
 }
 
-html.no-reduce-motion
-  .detailed-status__action-bar
-  button.icon-button.activate.star-icon::before,
+.detailed-status__action-bar button.icon-button.activate.star-icon::before,
 .status__action-bar button.icon-button.activate.star-icon::before {
   animation:
     ring-border-width 0.35s 1,
@@ -547,6 +546,7 @@ html.no-reduce-motion .icon-button.star-icon.activate .icon-star,
   .detailed-status__action-bar .icon-button .icon-star,
   .status__action-bar .icon-button .icon-star {
     --size-icon: 20px;
+
     background-image: var(--icon-star-detailed-status-action-bar);
   }
 
@@ -568,7 +568,7 @@ html.no-reduce-motion .icon-button.star-icon.activate .icon-star,
   .detailed-status__action-bar button.icon-button.star-icon.activate::after,
   .status__action-bar button.icon-button.activate.star-icon::after {
     background-color: unset !important;
-    content: "";
+    content: '';
     height: 50px !important;
     left: 50% !important;
     margin-left: -26px;
@@ -583,16 +583,16 @@ html.no-reduce-motion .icon-button.star-icon.activate .icon-star,
 
   .detailed-status__action-bar button.icon-button.activate.star-icon::before,
   .status__action-bar button.icon-button.activate.star-icon::before {
-    border: 0px solid var(--color-yellow);
+    border: 0 solid var(--color-yellow);
     border-radius: 10em;
-    content: "";
-    height: 0em;
+    content: '';
+    height: 0;
     left: 50%;
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
     transform-origin: 50px 50px;
-    width: 0em;
+    width: 0;
   }
 
   .icon-button.star-icon.active,
