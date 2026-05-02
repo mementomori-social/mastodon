@@ -79,6 +79,7 @@
       .navigation-panel__list-panel__items
       .column-link {
       --gap-column-link: 8px;
+
       font-size: 16px;
     }
 
@@ -98,66 +99,66 @@
 
     .list-panel:focus,
     .list-panel:hover,
-    .column-link[href="/lists"]:focus ~ .list-panel,
-    .column-link[href="/lists"]:hover ~ .list-panel {
+    .column-link[href='/lists']:focus ~ .list-panel,
+    .column-link[href='/lists']:hover ~ .list-panel {
       opacity: 1;
     }
 
     // Order of the side nav items
-    .column-link[href="/home"] {
+    .column-link[href='/home'] {
       order: 2;
     }
 
-    .column-link[href="/notifications"] {
+    .column-link[href='/notifications'] {
       order: 3;
     }
 
-    .column-link[href="/explore"] {
+    .column-link[href='/explore'] {
       order: 4;
     }
 
-    .column-link[href="/public/local"] {
+    .column-link[href='/public/local'] {
       order: 5;
     }
 
-    .column-link[href="/public"] {
+    .column-link[href='/public'] {
       order: 6;
     }
 
-    .column-link[href="/conversations"] {
+    .column-link[href='/conversations'] {
       order: 7;
     }
 
-    .column-link[href="/follow_requests"] {
+    .column-link[href='/follow_requests'] {
       order: 8;
     }
 
-    .column-link[href="/bookmarks"] {
+    .column-link[href='/bookmarks'] {
       order: 9;
     }
 
-    .column-link[href="/favourites"] {
+    .column-link[href='/favourites'] {
       order: 10;
     }
 
-    .column-link[href="/search"] {
+    .column-link[href='/search'] {
       order: 11;
     }
 
     .navigation-panel__list-panel,
-    .column-link[href="/lists"] {
+    .column-link[href='/lists'] {
       order: 16;
     }
 
-    .column-link[href="/admin/dashboard"] {
+    .column-link[href='/admin/dashboard'] {
       order: 11;
     }
 
-    .column-link[href="/admin/reports"] {
+    .column-link[href='/admin/reports'] {
       order: 12;
     }
 
-    .column-link[href="/settings/preferences"] {
+    .column-link[href='/settings/preferences'] {
       order: 11;
     }
 
@@ -229,18 +230,22 @@
       margin-left: 3px;
     }
 
-    .app-body:not(.layout-multiple-columns):not(
-        :has(.ui .ui__header__links > .button[href="/auth/sign_in"])
-      )
+    .app-body:not(.layout-multiple-columns, :has(.ui .ui__header__links > .button[href='/auth/sign_in']))
       .tabs-bar__wrapper {
       z-index: 3;
     }
 
     .app-body:not(.layout-multiple-columns):has(
-        .ui .ui__header__links > .button[href="/auth/sign_in"]
+        .ui .ui__header__links > .button[href='/auth/sign_in']
       )
       .tabs-bar__wrapper
-      :is(.column-back-button, .column-header > *) {
+      .column-back-button,
+    .app-body:not(.layout-multiple-columns):has(
+        .ui .ui__header__links > .button[href='/auth/sign_in']
+      )
+      .tabs-bar__wrapper
+      .column-header
+      > * {
       display: none;
     }
 
@@ -262,7 +267,7 @@
     .app-body:not(.layout-multiple-columns):has(.column-header)
       .tabs-bar__wrapper::after {
       background-color: var(--color-bg-90);
-      content: "";
+      content: '';
       height: 49px;
       left: 0;
       position: absolute;
@@ -271,7 +276,7 @@
       z-index: 0;
     }
 
-    .ui:has([href="/auth/sign_in"]) .tabs-bar__wrapper::after,
+    .ui:has([href='/auth/sign_in']) .tabs-bar__wrapper::after,
     .ui:has(.compose-form__submit) .tabs-bar__wrapper::after {
       display: none;
     }
