@@ -42,6 +42,7 @@ sk:
         setting_always_send_emails: Pri bežnom používaní Mastodonu nebudete dostávať e-mailové upozornenia
         setting_default_sensitive: Citlivé médiá sú predvolene ukryté a môžu byť zobrazené kliknutím
         setting_system_scrollbars_ui: Platí len pre počítačové prehliadače využívajúce technológiu Chrome alebo Safari
+        setting_hide_all_translate_links: Skryje tlačidlo "Preložiť" pod každým príspevkom statusu, ktorý má jazykovú značku
         setting_use_blurhash: Prechody sú založené na farbách skrytých vizuálov, ale skrývajú akékoľvek podrobnosti
         setting_use_pending_items: Časová os bude aktualizovaná až po kliknutí, feed sa nebúde posúvať automaticky
         whole_word: Ak je kľúčové slovo, alebo fráza poskladaná iba s písmen a čísel, bude použité iba ak sa zhoduje s celým výrazom
@@ -143,6 +144,7 @@ sk:
         setting_reduce_motion: Stlmiť animácie
         setting_system_font_ui: Používať predvolené písmo systému
         setting_system_scrollbars_ui: Používať predvolený posuvník systému
+        setting_hide_all_translate_links: Skryť všetky odkazy na preklad
         setting_theme: Vzhľad webu
         setting_trends: Zobrazovať dnešné trendy
         setting_unfollow_modal: Vyžaduj potvrdenie pred tým, než niekoho prestaneš sledovať

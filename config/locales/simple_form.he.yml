@@ -67,6 +67,7 @@ he:
         setting_emoji_style: כיצד להציג רגישונים. "אוטומטי" ינסה להציג מסט האימוג'י המקומי, אבל נופל לערכת Twemoji כברירת מחדל עבור דפדפנים ישנים.
         setting_quick_boosting_html: כשמאופשר, לחיצה על %{boost_icon} איקון הדהוד ייצור הדהוד מיידי במקום לפתוח את תיבת הבחירה הדהוד/ציטוט. מעביר את פעולת הציטוט אל %{options_icon} תפריט אפשרויות.
         setting_system_scrollbars_ui: נוגע רק לגבי דפדפני דסקטופ מבוססים ספארי וכרום
+        setting_hide_all_translate_links: מסתיר את כפתור 'תרגם' המופיע מתחת לכל פוסט סטטוס שכולל תווית שפה
         setting_use_blurhash: הגראדיינטים מבוססים על תוכן התמונה המוסתרת, אבל מסתירים את כל הפרטים
         setting_use_pending_items: הסתר עדכוני פיד מאחורי קליק במקום לגלול את הפיד אוטומטית
         username: ניתן להשתמש בספרות, אותיות לטיניות ומקף תחתון
@@ -267,6 +268,7 @@ he:
         setting_reduce_motion: הפחתת תנועה בהנפשות
         setting_system_font_ui: להשתמש בגופן ברירת המחדל של המערכת
         setting_system_scrollbars_ui: להשתמש בפס הגלילה שהוא ברירת המחדל של המערכת
+        setting_hide_all_translate_links: הסתר את כל קישורי התרגום
         setting_theme: ערכת העיצוב של האתר
         setting_trends: הצגת הנושאים החמים
         setting_unfollow_modal: להראות תיבת אישור לפני הפסקת מעקב אחרי אחרים
