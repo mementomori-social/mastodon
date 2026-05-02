@@ -45,6 +45,28 @@
     font-size: var(--font-size-12);
   }
 
+  // Apply font size variable so accessible themes scale these elements
+  .display-name__html {
+    font-size: var(--font-size);
+  }
+
+  [class*='_comp_form_fields_form_field_wrapper__wrapper'] {
+    font-size: var(--font-size);
+  }
+
+  .app-form__link__text,
+  .app-form__link__text strong {
+    font-size: var(--font-size-mid);
+  }
+
+  .simple_form span.hint {
+    font-size: var(--font-size-smaller);
+  }
+
+  .simple_form .input.with_label .hint {
+    font-size: var(--font-size-smaller);
+  }
+
   // Line heights
   .status__content {
     line-height: var(--line-height);
