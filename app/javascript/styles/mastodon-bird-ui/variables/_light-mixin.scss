@@ -2,6 +2,7 @@
 // Used by both _variables-light.scss (forced-light entries) and the new
 // auto bundle (mastodon-bird-ui-auto.scss) which scopes the tokens to
 // [data-color-scheme="light"] and prefers-color-scheme: light.
+// stylelint-disable plugin/no-unused-custom-properties
 
 @mixin tokens {
   --color-bg: #fff;
