@@ -2079,7 +2079,7 @@ fi:
     review_link: Käy käyttöehdot läpi
     title: Palvelimen %{domain} käyttöehdot muuttuvat
   themes:
-    mastodon-dark: Mastodon (tumma)
+    mastodon-dark: Mastodon
     mastodon-bird-ui-auto: Mastodon Bird UI
     mastodon-bird-ui-accessible-plus: Mastodon Bird UI (saavutettavuus Plus, fontit vielä isommalla)
     mastodon-bird-ui-accessible: Mastodon Bird UI (saavutettavuus huomioitu)

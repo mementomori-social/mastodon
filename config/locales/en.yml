@@ -2083,7 +2083,7 @@ en:
     review_link: Review terms of service
     title: The terms of service of %{domain} are changing
   themes:
-    mastodon-dark: Mastodon (Dark)
+    mastodon-dark: Mastodon
     mastodon-bird-ui-auto: Mastodon Bird UI
     mastodon-bird-ui-accessible-plus: Mastodon Bird UI (Ultra accessible Plus+)
     mastodon-bird-ui-accessible: Mastodon Bird UI (Ultra accessible)
