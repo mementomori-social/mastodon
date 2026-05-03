@@ -68,6 +68,7 @@ da:
         setting_quick_boosting_html: Når aktiveret, vil klik på %{boost_icon} fremhæv-ikonet straks fremhæve i stedet for at åbne fremhæv/citér-foldudmenuen. Flytter citeringshandlingen til %{options_icon} menuen (Indstillinger).
         setting_system_scrollbars_ui: Gælder kun for desktop-browsere baseret på Safari og Chrome
         setting_use_stars: Udskift favorithjerteikonet med en gul stjerne i Twitter-stil, med gnistrende og ringende animationer
+        setting_hide_finnish_translate_links: Skjuler knappen 'Oversæt' under statusopslag, der er skrevet på finsk
         setting_use_blurhash: Gradienter er baseret på de skjulte grafikelementers farver, men slører alle detaljer
         setting_use_pending_items: Skjul tidslinjeopdateringer bag et klik i stedet for brug af auto-feedrulning
         username: Bogstaver, cifre og understregningstegn kan benyttes
@@ -267,6 +268,7 @@ da:
         setting_system_font_ui: Brug systemets standardskrifttype
         setting_system_scrollbars_ui: Brug standard systemrullebjælke
         setting_use_stars: Brug stjerner i stedet for hjerter som favoritter
+        setting_hide_finnish_translate_links: Skjul oversættelseslinks på finske indlæg
         setting_theme: Webstedstema
         setting_trends: Vis dagens trends
         setting_unfollow_modal: Vis bekræftelsesdialog, før du stopper med at følge nogen

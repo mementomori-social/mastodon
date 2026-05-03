@@ -68,6 +68,7 @@ sv:
         setting_quick_boosting_html: När aktiverad, klicka på %{boost_icon} Boost-ikonen för att omedelbart boosta istället för att öppna boost/citera-rullgardinsmenyn. Flyttar citering till %{options_icon} (Alternativ)-menyn.
         setting_system_scrollbars_ui: Gäller endast för webbläsare som är baserade på Safari och Chrome
         setting_use_stars: Byt ut favoritsymbolen hjärta mot en gul stjärna i Twitter-stil, med gnistrande och ringanimationer
+        setting_hide_finnish_translate_links: Döljer "Översätt"-knappen under statusinlägg som är skrivna på finska
         setting_use_blurhash: Gradienter är baserade på färgerna av de dolda objekten men fördunklar alla detaljer
         setting_use_pending_items: Dölj tidslinjeuppdateringar bakom ett klick istället för att automatiskt bläddra i flödet
         username: Du kan använda bokstäver, siffror och understreck
@@ -267,6 +268,7 @@ sv:
         setting_system_font_ui: Använd systemets standardfont
         setting_system_scrollbars_ui: Använd systemets standardrullningsfält
         setting_use_stars: Använd stjärnor istället för hjärtan för favoriter
+        setting_hide_finnish_translate_links: Dölj Translate-länkar på finska inlägg
         setting_theme: Sidans tema
         setting_trends: Visa dagens trender
         setting_unfollow_modal: Visa bekräftelse innan du slutar följa någon

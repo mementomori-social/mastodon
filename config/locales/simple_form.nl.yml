@@ -68,6 +68,7 @@ nl:
         setting_quick_boosting_html: Wanneer dit is ingeschakeld, boost je in één keer wanneer je op het %{boost_icon} boostpictogram klikt en verplaatst de citeeroptie zich naar het %{options_icon} optiemenu. Wanneer dit is uitgeschakeld krijg je gelijk de mogelijkheid om te boosten of te citeren.
         setting_system_scrollbars_ui: Alleen van toepassing op desktopbrowsers gebaseerd op Safari en Chrome
         setting_use_stars: Vervang het favoriete hartpictogram door een gele ster in Twitter-stijl, met glinstering en ringanimaties
+        setting_hide_finnish_translate_links: Verbergt de knop 'Vertalen' onder statusberichten die in het Fins zijn geschreven
         setting_use_blurhash: Wazige kleurovergangen zijn gebaseerd op de kleuren van de verborgen media, waarmee elk detail verdwijnt
         setting_use_pending_items: De tijdlijn wordt bijgewerkt door op het aantal nieuwe items te klikken, in plaats van dat deze automatisch wordt bijgewerkt
         username: Je kunt letters, cijfers en underscores gebruiken
@@ -267,6 +268,7 @@ nl:
         setting_system_font_ui: Standaardlettertype van het systeem gebruiken
         setting_system_scrollbars_ui: Standaard scrollbalk van het systeem gebruiken
         setting_use_stars: Gebruik sterren in plaats van hartjes voor favorieten
+        setting_hide_finnish_translate_links: Verberg vertaallinks op Finse berichten
         setting_theme: Thema website
         setting_trends: Trends van vandaag tonen
         setting_unfollow_modal: Vraag voor het ontvolgen van iemand een bevestiging

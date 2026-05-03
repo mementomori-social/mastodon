@@ -58,6 +58,7 @@ lv:
         setting_default_sensitive: Pēc noklusējuma jūtīgi informācijas nesēji ir paslēpti, un tos var atklāt ar klikšķi
         setting_system_scrollbars_ui: Attiecas tikai uz darbvirsmas pārlūkiem, kuru pamatā ir Safari vai Chrome
         setting_use_stars: Aizstājiet iecienītāko sirds ikonu ar dzeltenu zvaigzni Twitter stilā ar dzirksteļošanas un gredzena animācijām
+        setting_hide_finnish_translate_links: Paslēpj pogu "Tulkot" zem statusa ziņojumiem, kas rakstīti somu valodā
         setting_use_blurhash: Pāreju pamatā ir paslēpto uzskatāmo līdzekļu krāsas, bet saturs tiek padarīts neskaidrs
         setting_use_pending_items: Paslēpt laika skalas atjauninājumus aiz klikšķa, nevis ar automātisku plūsmas ritināšanu
         username: Tu vari lietot burtus, ciparus un zemsvītras
@@ -225,6 +226,7 @@ lv:
         setting_system_font_ui: Lietot sistēmas noklusējuma fontu
         setting_system_scrollbars_ui: Lietot sistēmas noklusējuma ritjoslu
         setting_use_stars: Izmantojiet zvaigznītes, nevis sirsniņas, lai ierakstītu izlasi
+        setting_hide_finnish_translate_links: Paslēpt tulkotāja saites somu valodas ziņās
         setting_theme: Vietnes motīvs
         setting_trends: Parādīt šodienas tendences
         setting_unfollow_modal: Rādīt apstiprinājuma dialogu pirms pārtraukt kādam sekot

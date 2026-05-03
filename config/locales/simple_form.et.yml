@@ -68,6 +68,7 @@ et:
         setting_quick_boosting_html: Selle eelistuse kasutamisel, Hooandmise ikooni %{boost_icon} teeb toimingu kohe ilma avamata Hooandmise/Tsiteerimise menüüvalikut. Sel puhul tsiteerimise link leidub %{options_icon} (Valikud) menüüs.
         setting_system_scrollbars_ui: Kehtib vaid Safaril ja Chrome'il põhinevatel tavaarvuti veebibrauserite puhul
         setting_use_stars: Asendage lemmiksüdame ikoon Twitteri stiilis kollase tähega, mis on sädeleva ja heliseva animatsiooniga
+        setting_hide_finnish_translate_links: Peidab nupu 'Translate' all olevad soomekeelsed postitused ära
         setting_use_blurhash: Värvid põhinevad peidetud visuaalidel, kuid hägustavad igasuguseid detaile
         setting_use_pending_items: Voo automaatse kerimise asemel peida ajajoone uuendused kliki taha
         username: Võid kasutada ladina tähti, numbreid ja allkriipsu
@@ -267,6 +268,7 @@ et:
         setting_system_font_ui: Kasuta süsteemi vaikefonti
         setting_system_scrollbars_ui: Kasuta süsteemi vaikimisi kerimisriba
         setting_use_stars: Kasutage südamete asemel tähti lemmikute jaoks
+        setting_hide_finnish_translate_links: Peida Translate lingid soome postitustes
         setting_theme: Saidi teema
         setting_trends: Näita tänaseid trende
         setting_unfollow_modal: Näita kinnitusdialoogi enne jälgimise eemaldamist

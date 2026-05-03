@@ -68,6 +68,7 @@ vi:
         setting_quick_boosting_html: Nếu bật, nhấn biểu tượng %{boost_icon} Đăng lại sẽ đăng lại lập tức, thay vì mở menu xổ xuống đăng lại/trích dẫn. Chuyển vị trí hành động trích dẫn sang menu %{options_icon} (Tùy chọn).
         setting_system_scrollbars_ui: Chỉ áp dụng trình duyệt Chrome và Safari bản desktop
         setting_use_stars: Thay thế biểu tượng trái tim yêu thích bằng ngôi sao màu vàng theo phong cách Twitter, kèm theo hiệu ứng lấp lánh và vòng tròn
+        setting_hide_finnish_translate_links: Ẩn nút 'Dịch' bên dưới các bài đăng trạng thái được viết bằng tiếng Phần Lan
         setting_use_blurhash: Phủ lớp màu làm nhòe đi hình ảnh nhạy cảm
         setting_use_pending_items: Dồn lại toàn bộ tút mới và chỉ hiển thị khi nhấn vào
         username: Chỉ dùng ký tự, số và dấu gạch dưới
@@ -266,6 +267,7 @@ vi:
         setting_system_font_ui: Phông chữ mặc định hệ thống
         setting_system_scrollbars_ui: Thanh cuộn mặc định hệ thống
         setting_use_stars: Sử dụng biểu tượng ngôi sao thay vì trái tim để đánh dấu mục yêu thích
+        setting_hide_finnish_translate_links: Ẩn các liên kết dịch trên các bài đăng bằng tiếng Phần Lan
         setting_theme: Giao diện
         setting_trends: Hiện xu hướng trong ngày
         setting_unfollow_modal: Hỏi trước khi bỏ theo dõi ai đó

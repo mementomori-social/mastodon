@@ -28,6 +28,7 @@ class UserSettings
     setting :use_system_font, default: false
     setting :use_system_scrollbars, default: false
     setting :use_stars, default: false
+    setting :hide_finnish_translate_links, default: false
     setting :disable_swiping, default: false
     setting :disable_hover_cards, default: false
     setting :delete_modal, default: true

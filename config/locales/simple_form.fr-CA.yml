@@ -68,6 +68,7 @@ fr-CA:
         setting_quick_boosting_html: Lorsque cette option est activée, cliquer sur l'icône de partage %{boost_icon} va immédiatement partager le message au lieu d'ouvrir le menu déroulant Partage/Citation. L'action de citation est déplacée dans le menu %{options_icon} (options).
         setting_system_scrollbars_ui: S'applique uniquement aux navigateurs basés sur Safari et Chrome
         setting_use_stars: Remplacez l'icône du cœur par une étoile jaune de style Twitter, avec des animations de scintillement et d'anneau
+        setting_hide_finnish_translate_links: Masque le bouton "Traduire" sous les messages d'état rédigés en finnois
         setting_use_blurhash: Les dégradés sont basés sur les couleurs des images cachées mais n’en montrent pas les détails
         setting_use_pending_items: Cacher les mises à jour des fils d’actualités derrière un clic, au lieu de les afficher automatiquement
         username: Vous pouvez utiliser des lettres, des chiffres, et des tirets bas
@@ -267,6 +268,7 @@ fr-CA:
         setting_system_font_ui: Utiliser la police par défaut du système
         setting_system_scrollbars_ui: Utiliser la barre de défilement par défaut du système
         setting_use_stars: Utilisez des étoiles au lieu de cœurs pour les favoris
+        setting_hide_finnish_translate_links: Masquer les liens Translate sur les articles en finnois
         setting_theme: Thème du site
         setting_trends: Afficher les tendances du jour
         setting_unfollow_modal: Afficher une fenêtre de confirmation avant de vous désabonner d’un compte
