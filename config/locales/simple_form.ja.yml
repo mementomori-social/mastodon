@@ -65,6 +65,7 @@ ja:
         setting_system_scrollbars_ui: Safari/Chromeベースのデスクトップブラウザーでのみ有効です
         setting_use_stars: お気に入りのハートアイコンをTwitterスタイルの黄色い星に置き換え、輝きとリングのアニメーションを追加。
         setting_hide_finnish_translate_links: フィンランド語で書かれたステータス投稿の下にある「翻訳」ボタンを非表示にする。
+        setting_hide_all_translate_links: 言語タグを持つすべてのステータス投稿の下に「翻訳」ボタンを非表示にする。
         setting_use_blurhash: ぼかしはメディアの色を元に生成されますが、細部は見えにくくなっています
         setting_use_pending_items: 新着があってもタイムラインを自動的にスクロールしないようにします
         username: アルファベット大文字と小文字、数字、アンダーバー「_」が使えます
@@ -252,6 +253,7 @@ ja:
         setting_system_scrollbars_ui: システムのデフォルトのスクロールバーを使う
         setting_use_stars: お気に入りにはハートの代わりに星を使う
         setting_hide_finnish_translate_links: フィンランド語投稿の翻訳リンクを隠す
+        setting_hide_all_translate_links: すべての翻訳リンクを隠す
         setting_theme: サイトテーマ
         setting_trends: 本日のトレンドタグを表示する
         setting_unfollow_modal: フォローを解除する前に確認ダイアログを表示する

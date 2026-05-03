@@ -62,6 +62,7 @@ eo:
         setting_system_scrollbars_ui: Aplikas nur por surtablaj retumiloj baziĝas de Safari kaj Chrome
         setting_use_stars: Anstataŭigu la favoritan kor-ikonon per flava stelo laŭ la stilo de Twitter, kun briletaj kaj ringaj animacioj.
         setting_hide_finnish_translate_links: Kaŝas la butonon 'Traduki' sub statusaj afiŝoj skribitaj en la finna.
+        setting_hide_all_translate_links: Kaŝas la butonon 'Traduki' sub ĉiu statusa afiŝo, kiu havas lingvan etikedon.
         setting_use_blurhash: Transirojn estas bazita sur la koloroj de la kaŝitaj aŭdovidaĵoj sed ne montri iun ajn detalon
         setting_use_pending_items: Kaŝi tempoliniajn ĝisdatigojn malantaŭ klako anstataŭ aŭtomate rulumi la fluon
         username: Vi povas uzi literojn, ciferojn kaj substrekojn
@@ -241,6 +242,7 @@ eo:
         setting_system_scrollbars_ui: Uzu la defaŭltan rulumilon de la sistemo
         setting_use_stars: Uzu stelojn anstataŭ korojn por favoratoj.
         setting_hide_finnish_translate_links: Kaŝi tradukajn ligilojn en finnaj afiŝoj
+        setting_hide_all_translate_links: Kaŝi ĉiujn tradukajn ligilojn
         setting_theme: Etoso de la retejo
         setting_trends: Montri hodiaŭajn furoraĵojn
         setting_unfollow_modal: Montri konfirman fenestron antaŭ ol ĉesi sekvi iun

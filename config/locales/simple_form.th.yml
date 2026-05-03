@@ -213,6 +213,7 @@ th:
         setting_system_scrollbars_ui: ใช้แถบเลื่อนเริ่มต้นของระบบ
         setting_use_stars: เปลี่ยนไอคอนรูปหัวใจที่ชื่นชอบเป็นดาวสีเหลืองสไตล์ Twitter พร้อมเอฟเฟกต์ประกายและวงแหวน
         setting_hide_finnish_translate_links: ซ่อนปุ่ม 'แปล' ที่อยู่ใต้โพสต์สถานะที่เขียนเป็นภาษาฟินแลนด์
+        setting_hide_all_translate_links: ซ่อนปุ่ม 'แปล' ที่อยู่ด้านล่างของโพสต์สถานะทุกโพสต์ที่มีแท็กภาษา
         setting_theme: ชุดรูปแบบไซต์
         setting_trends: แสดงแนวโน้มของวันนี้
         setting_unfollow_modal: แสดงกล่องโต้ตอบการยืนยันก่อนเลิกติดตามใครสักคน

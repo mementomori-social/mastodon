@@ -69,6 +69,7 @@ he:
         setting_system_scrollbars_ui: נוגע רק לגבי דפדפני דסקטופ מבוססים ספארי וכרום
         setting_use_stars: החלף את סמל הלב המועדף בכוכב צהוב בסגנון טוויטר, עם אנימציות של נצנוץ וטבעת
         setting_hide_finnish_translate_links: מסתיר את כפתור 'תרגם' מתחת לפוסטים שנכתבו בפינית
+        setting_hide_all_translate_links: מסתיר את כפתור 'תרגם' המופיע מתחת לכל פוסט סטטוס שכולל תווית שפה
         setting_use_blurhash: הגראדיינטים מבוססים על תוכן התמונה המוסתרת, אבל מסתירים את כל הפרטים
         setting_use_pending_items: הסתר עדכוני פיד מאחורי קליק במקום לגלול את הפיד אוטומטית
         username: ניתן להשתמש בספרות, אותיות לטיניות ומקף תחתון
@@ -271,6 +272,7 @@ he:
         setting_system_scrollbars_ui: להשתמש בפס הגלילה שהוא ברירת המחדל של המערכת
         setting_use_stars: השתמשו בכוכבים במקום בלבבות עבור המועדפים
         setting_hide_finnish_translate_links: הסתר קישורי תרגום בפוסטים בפינית
+        setting_hide_all_translate_links: הסתר את כל קישורי התרגום
         setting_theme: ערכת העיצוב של האתר
         setting_trends: הצגת הנושאים החמים
         setting_unfollow_modal: להראות תיבת אישור לפני הפסקת מעקב אחרי אחרים

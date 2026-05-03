@@ -68,6 +68,7 @@ sq:
         setting_system_scrollbars_ui: Ka vend vetëm për shfletues desktop bazuar në Safari dhe Chrome
         setting_use_stars: Zëvendësoni ikonën e zemrës së preferuar me një yll të verdhë në stilin e Twitter-it, me animacione shkëlqimi dhe unaze.
         setting_hide_finnish_translate_links: Fsheh butonin 'Përkthe' nën postimet e statusit që janë shkruar në finlandisht.
+        setting_hide_all_translate_links: Fsheh butonin 'Përkthe' nën çdo postim në status që ka një etiketë gjuhësore.
         setting_use_blurhash: Gradientët bazohen në ngjyrat e elementëve pamorë të fshehur, por errësojnë çfarëdo hollësie
         setting_use_pending_items: Fshihi përditësimet e rrjedhës kohore pas një klikimi, në vend të rrëshqitjes automatike nëpër prurje
         username: Mund të përdorni shkronja, numra dhe nënvija
@@ -268,6 +269,7 @@ sq:
         setting_system_scrollbars_ui: Përdor shtyllë rrëshqitjesh parazgjedhje të sistemit
         setting_use_stars: Përdorni yje në vend të zemrave për të preferuarat
         setting_hide_finnish_translate_links: Fshi lidhjet e përkthimit në postimet finlandeze
+        setting_hide_all_translate_links: Fshi të gjitha lidhjet e përkthimit
         setting_theme: Temë sajti
         setting_trends: Shfaq prirjet sot
         setting_unfollow_modal: Shfaq dialog ripohimi përpara heqjes së ndjekjes për dikë

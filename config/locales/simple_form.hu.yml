@@ -69,6 +69,7 @@ hu:
         setting_system_scrollbars_ui: Csak Chrome és Safari alapú asztali böngészőkre vonatkozik
         setting_use_stars: Cserélje ki a kedvenc szív ikont egy Twitter-stílusú sárga csillagra, csillogó és gyűrűs animációkkal
         setting_hide_finnish_translate_links: Elrejti a 'Fordítás' gombot a finn nyelvű státuszbejegyzések alatt
+        setting_hide_all_translate_links: Elrejti a 'Fordítás' gombot minden olyan státuszbejegyzés alatt, amely nyelvi címkével rendelkezik
         setting_use_blurhash: A kihomályosítás az eredeti képből történik, de minden részletet elrejt
         setting_use_pending_items: Idővonal frissítése csak kattintásra automatikus görgetés helyett
         username: Betűk, számok és alávonások használhatók
@@ -269,6 +270,7 @@ hu:
         setting_system_scrollbars_ui: Rendszer alapértelmezett görgetősávjának használata
         setting_use_stars: Használjon csillagokat a szívek helyett a kedvencekhez
         setting_hide_finnish_translate_links: Fordítás linkek elrejtése a finn hozzászólásokban
+        setting_hide_all_translate_links: Összes link elrejtése Fordítás
         setting_theme: Megjelenítési sablon
         setting_trends: Mai trend mutatása
         setting_unfollow_modal: Megerősítés kérése mielőtt abbahagyod valaki követését

@@ -59,6 +59,7 @@ ar:
         setting_system_scrollbars_ui: ينطبق فقط على متصفحات سطح المكتب البنية على محرك كروم وسفاري
         setting_use_stars: استبدل أيقونة القلب المفضل بنجمة صفراء على غرار تويتر، مع رسوم متحركة متلألئة ورنين
         setting_hide_finnish_translate_links: إخفاء زر "ترجمة" أسفل منشورات الحالة المكتوبة باللغة الفنلندية
+        setting_hide_all_translate_links: إخفاء زر "ترجمة" أسفل كل منشور حالة يحتوي على علامة لغة
         setting_use_blurhash: الألوان التدرّجية مبنية على ألوان المرئيات المخفية ولكنها تحجب كافة التفاصيل
         setting_use_pending_items: إخفاء تحديثات الخط وراء نقرة بدلًا مِن التمرير التلقائي للموجزات
         username: يمكنك استخدام الأحرف والأرقام والسطور السفلية
@@ -237,6 +238,7 @@ ar:
         setting_system_scrollbars_ui: استخدام شريط التمرير الافتراضي للنظام
         setting_use_stars: استخدم النجوم بدلاً من القلوب للتفضيلات
         setting_hide_finnish_translate_links: إخفاء روابط الترجمة على المنشورات الفنلندية
+        setting_hide_all_translate_links: إخفاء جميع روابط الترجمة
         setting_theme: سمة الموقع
         setting_trends: اعرض ما يُتداوَل اليوم
         setting_unfollow_modal: إظهار مربع حوار للتأكيد قبل إلغاء متابعة أي حساب

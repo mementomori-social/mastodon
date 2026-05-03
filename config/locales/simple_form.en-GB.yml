@@ -69,6 +69,7 @@ en-GB:
         setting_system_scrollbars_ui: Applies only to desktop browsers based on Safari and Chrome
         setting_use_stars: Replace the favourite heart icon with a Twitter-style yellow star, with sparkle and ring animations
         setting_hide_finnish_translate_links: Hides the 'Translate' button below status posts that are written in Finnish
+        setting_hide_all_translate_links: Hides the 'Translate' button below every status post that has a language tag
         setting_use_blurhash: Gradients are based on the colours of the hidden visuals but obfuscate any details
         setting_use_pending_items: Hide timeline updates behind a click instead of automatically scrolling the feed
         username: You can use letters, numbers, and underscores
@@ -269,6 +270,7 @@ en-GB:
         setting_system_scrollbars_ui: Use system's default scrollbar
         setting_use_stars: Use stars instead of hearts for favourites
         setting_hide_finnish_translate_links: Hide Translate links on Finnish posts
+        setting_hide_all_translate_links: Hide all Translate links
         setting_theme: Site theme
         setting_trends: Show today's trends
         setting_unfollow_modal: Show confirmation dialogue before unfollowing someone

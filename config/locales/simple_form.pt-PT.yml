@@ -69,6 +69,7 @@ pt-PT:
         setting_system_scrollbars_ui: Aplica-se apenas a navegadores de desktop baseados no Safari e Chrome
         setting_use_stars: Substituir o ícone do coração favorito por uma estrela amarela ao estilo do Twitter, com brilho e animações de anel
         setting_hide_finnish_translate_links: Oculta o botão "Traduzir" abaixo das mensagens de estado escritas em finlandês
+        setting_hide_all_translate_links: Oculta o botão "Traduzir" por baixo de cada publicação de estado que tenha uma etiqueta de idioma
         setting_use_blurhash: Os gradientes são baseados nas cores das imagens escondidas, mas ofuscam quaisquer pormenores
         setting_use_pending_items: Ocultar as atualizações da cronologia após um clique em vez de percorrer automaticamente a cronologia
         username: Podes utilizar letras, números e traços inferiores (_)
@@ -267,6 +268,7 @@ pt-PT:
         setting_system_scrollbars_ui: Utilizar a barra de deslocação predefinida do sistema
         setting_use_stars: Utilizar estrelas em vez de corações para os favoritos
         setting_hide_finnish_translate_links: Ocultar hiperligações de tradução nas mensagens em finlandês
+        setting_hide_all_translate_links: Ocultar todas as ligações Traduzir
         setting_theme: Tema do sítio
         setting_trends: Mostrar as tendências de hoje
         setting_unfollow_modal: Solicitar confirmação antes de deixar de seguir alguém

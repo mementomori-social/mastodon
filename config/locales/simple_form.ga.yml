@@ -69,6 +69,7 @@ ga:
         setting_system_scrollbars_ui: Ní bhaineann sé ach le brabhsálaithe deisce bunaithe ar Safari agus Chrome
         setting_use_stars: Athraigh an deilbhín croí is fearr le réalta bhuí i stíl Twitter, le beochana spréach agus fáinne.
         setting_hide_finnish_translate_links: Folaíonn sé an cnaipe 'Aistriúchán' faoi phoist stádais atá scríofa sa tSualainnis.
+        setting_hide_all_translate_links: Folaíonn sé an cnaipe 'Aistriúchán' faoi gach postáil stádais a bhfuil clib teanga aici.
         setting_use_blurhash: Tá grádáin bunaithe ar dhathanna na n-amharcanna ceilte ach cuireann siad salach ar aon mhionsonraí
         setting_use_pending_items: Folaigh nuashonruithe amlíne taobh thiar de chlic seachas an fotha a scrollú go huathoibríoch
         username: Is féidir leat litreacha, uimhreacha, agus béim a úsáid
@@ -272,6 +273,7 @@ ga:
         setting_system_scrollbars_ui: Bain úsáid as scrollbharra réamhshocraithe an chórais
         setting_use_stars: Bain úsáid as réaltaí in ionad croíthe do na ceanáin.
         setting_hide_finnish_translate_links: Folaigh/Aistrigh naisc ar phostálacha Fionlainnise
+        setting_hide_all_translate_links: Folaigh naisc aistriúcháin go léir
         setting_theme: Téama suímh
         setting_trends: Taispeáin treochtaí an lae inniu
         setting_unfollow_modal: Taispeáin dialóg deimhnithe sula ndíleanfaidh tú duine éigin

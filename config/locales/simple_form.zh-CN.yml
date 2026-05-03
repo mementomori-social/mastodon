@@ -69,6 +69,7 @@ zh-CN:
         setting_system_scrollbars_ui: 仅对基于 Safari 或 Chromium 内核的桌面端浏览器有效
         setting_use_stars: 用 Twitter 风格的黄色星星取代最爱的心形图标，并带有闪光和环形动画效果
         setting_hide_finnish_translate_links: 隐藏芬兰语状态帖子下方的 "翻译 "按钮
+        setting_hide_all_translate_links: 隐藏每个带有语言标记的状态文章下方的 "翻译 "按钮
         setting_use_blurhash: 渐变是基于模糊后的隐藏内容生成的
         setting_use_pending_items: 点击查看时间线更新，而非自动滚动更新动态。
         username: 你只能使用字母、数字和下划线
@@ -268,6 +269,7 @@ zh-CN:
         setting_system_scrollbars_ui: 使用系统默认样式的滚动条
         setting_use_stars: 用星星代替心形表示喜爱
         setting_hide_finnish_translate_links: 隐藏芬兰文帖子上的翻译链接
+        setting_hide_all_translate_links: 隐藏所有翻译链接
         setting_theme: 站点主题
         setting_trends: 显示今日热门
         setting_unfollow_modal: 在取消关注前询问我

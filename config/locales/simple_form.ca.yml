@@ -62,6 +62,7 @@ ca:
         setting_system_scrollbars_ui: S'aplica només als navegadors d'escriptori basats en Safari i Chrome
         setting_use_stars: Substitueix la icona del cor preferida per una estrella groga d'estil Twitter, amb animacions de brillantor i de so.
         setting_hide_finnish_translate_links: Amaga el botó 'Tradueix' que hi ha sota les publicacions d'estat escrites en finès.
+        setting_hide_all_translate_links: Amaga el botó 'Tradueix' a sota de cada publicació d'estat que tingui una etiqueta de llengua.
         setting_use_blurhash: Els degradats es basen en els colors de les imatges ocultes, però n'enfosqueixen els detalls
         setting_use_pending_items: Amaga les actualitzacions de la línia de temps després de fer un clic, en lloc de desplaçar-les automàticament
         username: Pots emprar lletres, números i subratllats
@@ -245,6 +246,7 @@ ca:
         setting_system_scrollbars_ui: Usa la barra de desplaçament predeterminada del sistema
         setting_use_stars: Utilitza estrelles en lloc de cors per als favorits
         setting_hide_finnish_translate_links: Amaga els enllaços de traducció a les publicacions en finès
+        setting_hide_all_translate_links: Amagar tots els enllaços Tradueix
         setting_theme: Tema del lloc
         setting_trends: Mostra les tendències d'avui
         setting_unfollow_modal: Mostra el diàleg de confirmació abans de deixar de seguir algú

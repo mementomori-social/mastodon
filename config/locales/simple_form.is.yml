@@ -69,6 +69,7 @@ is:
         setting_system_scrollbars_ui: Á einungis við um vafra fyrir vinnutölvur sem byggjast á Safari og Chrome
         setting_use_stars: Skiptu út uppáhalds hjartatákninum fyrir gulu stjörnu í Twitter-stíl, með glitrandi og hringlaga hreyfimyndum.
         setting_hide_finnish_translate_links: Fylkir hnappinn "Þýða" neðst á stöðuuppfærslum sem skrifaðar eru á finnsku.
+        setting_hide_all_translate_links: Fylkir hnappinn "Þýða" undir hverri stöðufærslu sem hefur tungumálsmerki
         setting_use_blurhash: Litstiglarnir byggja á litunum í földu myndunum, en gera öll smáatriði óskýr
         setting_use_pending_items: Fela uppfærslur tímalínu þar til smellt er, í stað þess að hún skruni streyminu sjálfvirkt
         username: Þú mátt nota bókstafi, tölur og undirstrik
@@ -269,6 +270,7 @@ is:
         setting_system_scrollbars_ui: Nota sjálfgefna skrunstiku kerfisins
         setting_use_stars: Notaðu stjörnur í stað hjarta fyrir uppáhald
         setting_hide_finnish_translate_links: Fela þýðingartengla á finnskum færslum
+        setting_hide_all_translate_links: Fela allar þýðingartenglar
         setting_theme: Þema vefsvæðis
         setting_trends: Birta það sem er efst á baugi í dag
         setting_unfollow_modal: Birta staðfestingarglugga áður en hætt er að fylgjast með einhverjum
