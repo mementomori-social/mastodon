@@ -61,8 +61,12 @@ module User::HasSettings
 
   def setting_use_stars
     settings['web.use_stars']
+  end
+
   def setting_hide_finnish_translate_links
     settings['web.hide_finnish_translate_links']
+  end
+
   def setting_hide_all_translate_links
     settings['web.hide_all_translate_links']
   end
