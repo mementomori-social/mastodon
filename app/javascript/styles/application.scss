@@ -22,6 +22,7 @@
 @use 'mastodon/dashboard';
 @use 'mastodon/rtl';
 @use 'mastodon/rich_text';
+@use 'mastodon/mobile-autohide';
 
 // Fork-owned (mementomods) preferences toggled via Appearance settings
 @use 'mementomods/stars';
