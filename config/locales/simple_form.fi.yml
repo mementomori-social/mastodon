@@ -270,7 +270,7 @@ fi:
         setting_system_scrollbars_ui: Käytä järjestelmän oletusarvoista vierityspalkkia
         setting_use_stars: Käytä tähtiä sydämien sijaan suosikointitoiminnossa
         setting_hide_finnish_translate_links: Piilota käännöslinkit suomenkielisistä postauksista
-        setting_hide_all_translate_links: Piilot kaikki Käännä-linkit
+        setting_hide_all_translate_links: Piilota kaikki Käännä-linkit
         setting_theme: Sivuston teema
         setting_trends: Näytä päivän trendit
         setting_unfollow_modal: Kysy vahvistusta ennen seuraamisen lopettamista
