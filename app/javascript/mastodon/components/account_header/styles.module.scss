@@ -78,6 +78,8 @@
 
 .nameWrapper {
   flex-grow: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .name {
@@ -272,6 +274,14 @@ $button-fallback-breakpoint: $button-breakpoint + 55px;
 .bio {
   font-size: 15px;
   color: var(--color-text-primary);
+
+  :any-link {
+    color: var(--color-text-status-links);
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 .familiarFollowers {
