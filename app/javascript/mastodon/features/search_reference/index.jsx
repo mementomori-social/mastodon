@@ -1,7 +1,7 @@
 import Column from 'mastodon/components/column';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import ColumnHeader from 'mastodon/components/column_header';
-import { Helmet } from 'react-helmet';
+import { Helmet } from '@unhead/react/helmet';
 import { searchEnabled } from '../../initial_state';
 
 const messages = defineMessages({
