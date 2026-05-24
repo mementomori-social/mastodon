@@ -1,0 +1,130 @@
+// Verified colors, joined label, profile link fields
+.layout-single-column,
+.layout-multiple-columns {
+  // Verified colors for Firefox before :has
+  .account__details .verified-badge a,
+  .account__header__bar .account__header__fields .verified__mark,
+  .account__header__bar .account__header__fields .verified a,
+  .account__header__bar
+    .account__header__bio
+    .account__header__fields
+    .verified
+    a,
+  .account__header__bar
+    .account__header__bio
+    .account__header__fields
+    .verified
+    dd {
+    color: var(--color-verified);
+    font-weight: var(--font-weight-regular);
+  }
+
+  // Reset verified colors
+  .account__details .verified-badge a,
+  .account__header__bar:has(.account__header__fields .verified)
+    .account__header__fields
+    .verified__mark,
+  .account__header__bar:has(.account__header__fields .verified)
+    .account__header__fields
+    .verified
+    a,
+  .account__header__bar:has(.account__header__fields .verified)
+    .account__header__bio
+    .account__header__fields
+    .verified
+    a,
+  .account__header__bar:has(.account__header__fields .verified)
+    .account__header__bio
+    .account__header__fields
+    .verified
+    dd {
+    color: var(--color-accent);
+    font-weight: var(--font-weight-regular);
+  }
+
+  // Replace verified__mark
+  .account__details .verified-badge .verified-badge__mark,
+  .account__header__bar:has(.account__header__fields .verified)
+    .account__header__fields
+    .verified__mark {
+    background-image: var(--icon-verified-smaller);
+    background-repeat: no-repeat;
+    content: "";
+    height: 15px;
+    width: 15px;
+  }
+
+  .account__details .verified-badge .verified-badge__mark path,
+  .account__header__bar:has(.account__header__fields .verified)
+    .account__header__fields
+    .verified__mark
+    path {
+    display: none;
+  }
+
+  .account__details .verified-badge,
+  .account__header__bar:has(.account__header__fields .verified)
+    .account__header__fields
+    .verified
+    dd {
+    align-items: center;
+    display: inline-flex;
+    gap: 4px;
+  }
+
+  .account__details .verified-badge .verified-badge__mark,
+  .account__header__bar:has(.account__header__fields .verified)
+    .account__header__fields
+    .verified
+    dd
+    span:nth-child(1) {
+    align-items: center;
+    display: flex;
+    order: 2;
+  }
+
+  .account__details .verified-badge > span,
+  .account__header__bar:has(.account__header__fields .verified)
+    .account__header__fields
+    .verified
+    dd
+    span:nth-child(2) {
+    order: 1;
+  }
+
+  // Joined label - first dl is always "Joined"
+  .account__header__bio .account__header__fields dl:first-of-type dt {
+    display: inline-flex;
+    font-weight: var(--font-weight-regular);
+    gap: calc(var(--gap-default) / 2);
+    text-transform: unset;
+  }
+
+  h4,
+  .search__popout h4,
+  .search-popout h4,
+  .server-banner h4 {
+    text-transform: unset;
+  }
+
+  .account__header__bio .account__header__fields dd,
+  .account__header__bio .account__header__fields dt {
+    color: var(--color-dim);
+    font-size: var(--font-size);
+    font-weight: var(--font-weight-regular);
+    text-transform: unset;
+  }
+
+  .account__header__bio .account__header__fields dl {
+    align-items: center;
+    background-color: transparent;
+    border: 0;
+    color: var(--color-dim);
+    display: inline-flex;
+    font-size: var(--font-size);
+    font-weight: var(--font-weight-regular);
+    gap: calc(var(--gap-default) / 2);
+    padding: 0;
+    width: 100%;
+  }
+}
