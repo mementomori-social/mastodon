@@ -27,6 +27,10 @@ module User::HasSettings
     settings['web.auto_play']
   end
 
+  def setting_auto_play_video
+    settings['web.auto_play_video']
+  end
+
   def setting_default_sensitive
     settings['default_sensitive']
   end
@@ -53,6 +57,18 @@ module User::HasSettings
 
   def setting_system_scrollbars_ui
     settings['web.use_system_scrollbars']
+  end
+
+  def setting_use_stars
+    settings['web.use_stars']
+  end
+
+  def setting_hide_finnish_translate_links
+    settings['web.hide_finnish_translate_links']
+  end
+
+  def setting_hide_all_translate_links
+    settings['web.hide_all_translate_links']
   end
 
   def setting_noindex
