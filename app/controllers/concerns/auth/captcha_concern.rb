@@ -28,6 +28,7 @@ module Auth::CaptchaConcern
   included do
     helper_method :render_captcha
     helper_method :captcha_provider
+    helper_method :captcha_required?
   end
 
   def captcha_provider
