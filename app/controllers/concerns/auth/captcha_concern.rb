@@ -139,10 +139,10 @@ module Auth::CaptchaConcern
   end
 
   def turnstile_tags
-    site_key = Rails.configuration.x.captcha.site_key
-    safe_join([
-      javascript_include_tag(TURNSTILE_SCRIPT_URL, async: true, defer: true),
-      tag.div('', class: 'cf-turnstile', data: { sitekey: site_key }),
-    ])
+    site_key = ERB::Util.html_escape(Rails.configuration.x.captcha.site_key.to_s)
+    (
+      %(<script src="#{TURNSTILE_SCRIPT_URL}" async defer></script>) +
+      %(<div class="cf-turnstile" data-sitekey="#{site_key}"></div>)
+    ).html_safe
   end
 end
