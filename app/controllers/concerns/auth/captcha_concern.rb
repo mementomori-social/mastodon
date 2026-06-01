@@ -100,12 +100,16 @@ module Auth::CaptchaConcern
 
     return false unless response.status.success?
 
-    body = Oj.load(response.to_s, symbol_keys: true) || {}
-    return true if body[:success]
+    body = begin
+      JSON.parse(response.to_s)
+    rescue JSON::ParserError
+      {}
+    end
+    return true if body['success']
 
-    flash[:turnstile_error] = I18n.t('auth.captcha_confirmation.error_html', message: Array(body[:'error-codes']).join(', ').presence || I18n.t('auth.captcha_confirmation.error_unknown'))
+    flash[:turnstile_error] = I18n.t('auth.captcha_confirmation.error_html', message: Array(body['error-codes']).join(', ').presence || I18n.t('auth.captcha_confirmation.error_unknown'))
     false
-  rescue HTTP::Error, OpenSSL::SSL::SSLError, Oj::ParseError => e
+  rescue HTTP::Error, OpenSSL::SSL::SSLError => e
     Rails.logger.warn("Turnstile verification failed: #{e.class} #{e.message}")
     flash[:turnstile_error] = I18n.t('auth.captcha_confirmation.error_unknown')
     false
