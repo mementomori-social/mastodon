@@ -33,6 +33,23 @@
     display: none;
   }
 
+  // All badges in account list items (collections): drop the 4px padding
+  // core applies on the base ._comp_badge__badge class so they sit flush.
+  // Covers both the wrapped Follows-you case (._comp_badge__badge inside a
+  // ._comp_account_list_item__badge span) and the verified-link case (where
+  // ._comp_account_list_item__verifiedBadge is on the same element).
+  [class*="_comp_account_list_item__badge"] > [class*="_comp_badge__badge"],
+  [class*="_comp_badge__badge"][class*="_comp_account_list_item__verifiedBadge"] {
+    padding: 0;
+    padding-inline-end: 0;
+  }
+
+  // Follows you badge in account list items needs a vertical nudge so it
+  // sits flush with the surrounding row.
+  [class*="_comp_account_list_item__badge"] > [class*="_comp_badge__default"] {
+    transform: translate(-1px, -5px);
+  }
+
   // Pinned badge - no background, no padding
   [class*="_comp_badge__default"][class*="pinnedBadge"] {
     background-color: transparent;
