@@ -14,6 +14,19 @@
     }
   }
 
+  @media screen and (height < 1080px) {
+    // Compact navigation items so more fit on shorter laptop screens.
+    .column-link {
+      --gap-column-link: 7px;
+      font-size: 17px;
+    }
+
+    // Drop the trends panel to 2 items to save vertical space.
+    .getting-started__trends .trends__item:nth-of-type(n+3) {
+      display: none;
+    }
+  }
+
   @media screen and (width >= 760px) {
     // Hide the space between Lists and the actual lists
     .list-panel > hr,
