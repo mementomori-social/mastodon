@@ -161,7 +161,8 @@ export function fillTimelineGaps(timelineId, path, params = {}) {
 }
 
 export const expandHomeTimeline            = ({ maxId } = {}) => (dispatch, getState) => {
-  const ranked = getState().getIn(['settings', 'home', 'ranked'], false);
+  const ranked   = getState().getIn(['settings', 'home', 'ranked'], false);
+  const discover = getState().getIn(['settings', 'home', 'rankedDiscover'], false);
 
   let params = { max_id: maxId };
 
@@ -169,13 +170,13 @@ export const expandHomeTimeline            = ({ maxId } = {}) => (dispatch, getS
     // Ranked order paginates by offset; count loaded statuses, skipping gaps and special markers
     const items  = getState().getIn(['timelines', 'home', 'items'], ImmutableList());
 
-    params = { ranked: true, offset: items.count(id => id !== null && /^\d+$/.test(id)) };
+    params = { ranked: true, discover, offset: items.count(id => id !== null && /^\d+$/.test(id)) };
   } else if (ranked) {
     // A fetch from the top re-ranks the whole column so new posts are
     // included at their scored position instead of prepended chronologically
     dispatch(clearTimeline('home'));
 
-    params = { ranked: true, offset: 0 };
+    params = { ranked: true, discover, offset: 0 };
   }
 
   return dispatch(expandTimeline('home', '/api/v1/timelines/home', params));

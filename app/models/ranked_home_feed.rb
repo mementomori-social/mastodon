@@ -19,14 +19,66 @@ class RankedHomeFeed < HomeFeed
 
   AFFINITY_CACHE_TTL = 15.minutes
 
+  # How many top candidates may get their remote reply trees backfilled per request
+  REPLY_BACKFILL_LIMIT = 25
+
+  # Out-of-network candidates pulled from trending statuses when discovery is on
+  DISCOVER_CANDIDATES = 40
+
+  # One discovered status is interleaved after every DISCOVER_INTERVAL followed statuses
+  DISCOVER_INTERVAL = 4
+
+  def initialize(account, discover: false)
+    @discover = discover
+
+    super(account)
+  end
+
   def get(limit, offset = 0)
     limit  = limit.to_i
     offset = offset.to_i
 
-    scored_statuses[offset, limit] || []
+    statuses = scored_statuses
+    statuses = interleave_discovered(statuses) if @discover
+
+    backfill_replies!(statuses) if offset.zero?
+
+    statuses[offset, limit] || []
   end
 
   private
+
+  # Replies only federate to instances subscribed to their authors, so counts
+  # on remote posts lag; ask the origin instance for the full reply tree. The
+  # worker no-ops within Status::FETCH_REPLIES_COOLDOWN_MINUTES, same as when
+  # opening a thread, so repeated feed loads do not re-crawl.
+  def backfill_replies!(statuses)
+    statuses.take(REPLY_BACKFILL_LIMIT).select(&:should_fetch_replies?).each do |status|
+      ActivityPub::FetchAllRepliesWorker.perform_async(status.id)
+    end
+  end
+
+  # Blends trending statuses (already quality-ranked, block/mute-filtered and
+  # language-preferring) into the feed at a fixed interval
+  def interleave_discovered(statuses)
+    seen_ids   = statuses.to_set(&:id)
+    discovered = discovered_statuses.reject { |status| seen_ids.include?(status.id) }
+
+    return statuses if discovered.empty?
+
+    result = []
+
+    statuses.each_with_index do |status, index|
+      result << status
+      result << discovered.shift if ((index + 1) % DISCOVER_INTERVAL).zero? && !discovered.empty?
+    end
+
+    result.concat(discovered)
+  end
+
+  def discovered_statuses
+    Trends.statuses.query.allowed.filtered_for(@account).limit(DISCOVER_CANDIDATES).to_a
+  end
 
   def scored_statuses
     entries  = window_entries
