@@ -71,6 +71,30 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with a remote status whose engagement is only known to its origin instance' do
+      let(:remote_account) { Fabricate(:account, domain: 'example.com') }
+      let(:remote_status)  { Fabricate(:status, account: remote_account, uri: 'https://example.com/statuses/1') }
+      let(:local_status)   { Fabricate(:status, account: ana) }
+
+      before do
+        Fabricate(
+          :status_stat,
+          status: remote_status,
+          favourites_count: 0,
+          reblogs_count: 0,
+          replies_count: 0,
+          untrusted_favourites_count: 50,
+          untrusted_reblogs_count: 10
+        )
+        push(remote_status)
+        push(local_status)
+      end
+
+      it 'scores the remote status on its origin instance counts' do
+        expect(subject.get(20)).to eq [remote_status, local_status]
+      end
+    end
+
     context 'when a feed entry no longer exists in the database' do
       let(:status) { Fabricate(:status, account: bob) }
 
