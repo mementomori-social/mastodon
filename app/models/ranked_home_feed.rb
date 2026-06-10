@@ -53,9 +53,11 @@ class RankedHomeFeed < HomeFeed
   end
 
   def score(status, inserted_at, affinity_count)
-    engagement = (REBLOG_WEIGHT * status.reblogs_count) +
+    # Remote statuses carry the origin instance's counts as untrusted counts;
+    # prefer them so federated posts are scored on what the user actually sees
+    engagement = (REBLOG_WEIGHT * (status.untrusted_reblogs_count || status.reblogs_count)) +
                  (REPLY_WEIGHT * status.replies_count) +
-                 (FAVOURITE_WEIGHT * status.favourites_count)
+                 (FAVOURITE_WEIGHT * (status.untrusted_favourites_count || status.favourites_count))
 
     age_in_hours = [(Time.now.utc - inserted_at) / 1.hour, 0.0].max
     decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
