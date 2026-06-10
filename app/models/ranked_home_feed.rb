@@ -3,30 +3,37 @@
 # Re-orders the most recent window of a home feed by an engagement,
 # affinity and recency score instead of strict reverse-chronology.
 # Read-only: the underlying Redis feed is never modified.
+#
+# Scoring runs over plucked rows (no model instantiation) and the ranked id
+# list is cached briefly per user, so only the returned page is hydrated.
 class RankedHomeFeed < HomeFeed
   # How many of the most recent home feed entries are scored and re-ordered
-  WINDOW_SIZE = 400
+  WINDOW_SIZE = (ENV.fetch('RANKED_HOME_WINDOW', nil) || FeedManager::MAX_ITEMS).to_i
 
-  REBLOG_WEIGHT    = 3.0
-  REPLY_WEIGHT     = 2.0
-  FAVOURITE_WEIGHT = 1.0
+  REBLOG_WEIGHT    = ENV.fetch('RANKED_REBLOG_WEIGHT', '3.0').to_f
+  REPLY_WEIGHT     = ENV.fetch('RANKED_REPLY_WEIGHT', '2.0').to_f
+  FAVOURITE_WEIGHT = ENV.fetch('RANKED_FAVOURITE_WEIGHT', '1.0').to_f
 
   # How far back the viewer's own interactions count towards author affinity
   AFFINITY_PERIOD = 30.days
 
   # A status loses half of its score every HALF_LIFE_HOURS after feed insertion
-  HALF_LIFE_HOURS = 6.0
+  HALF_LIFE_HOURS = ENV.fetch('RANKED_HALF_LIFE_HOURS', '6.0').to_f
 
   AFFINITY_CACHE_TTL = 15.minutes
 
+  # How long the computed ranking is reused between requests; keeps offset
+  # pagination consistent while scrolling and caps the cost per user
+  RANKING_CACHE_TTL = ENV.fetch('RANKED_CACHE_TTL_SECONDS', '60').to_i.seconds
+
   # How many top candidates may get their remote reply trees backfilled per request
-  REPLY_BACKFILL_LIMIT = 25
+  REPLY_BACKFILL_LIMIT = ENV.fetch('RANKED_REPLY_BACKFILL_LIMIT', '50').to_i
 
   # Out-of-network candidates pulled from trending statuses when discovery is on
-  DISCOVER_CANDIDATES = 40
+  DISCOVER_CANDIDATES = ENV.fetch('RANKED_DISCOVER_CANDIDATES', '100').to_i
 
   # One discovered status is interleaved after every DISCOVER_INTERVAL followed statuses
-  DISCOVER_INTERVAL = 4
+  DISCOVER_INTERVAL = ENV.fetch('RANKED_DISCOVER_INTERVAL', '3').to_i
 
   def initialize(account, discover: false)
     @discover = discover
@@ -38,61 +45,57 @@ class RankedHomeFeed < HomeFeed
     limit  = limit.to_i
     offset = offset.to_i
 
-    statuses = scored_statuses
-    statuses = interleave_discovered(statuses) if @discover
+    ranked_ids = cached_ranked_ids
 
-    backfill_replies!(statuses) if offset.zero?
+    backfill_replies!(ranked_ids) if offset.zero?
 
-    statuses[offset, limit] || []
+    page_ids = ranked_ids[offset, limit] || []
+    statuses = Status.where(id: page_ids).index_by(&:id)
+
+    page_ids.filter_map { |id| statuses[id] }
   end
 
   private
 
-  # Replies only federate to instances subscribed to their authors, so counts
-  # on remote posts lag; ask the origin instance for the full reply tree. The
-  # worker no-ops within Status::FETCH_REPLIES_COOLDOWN_MINUTES, same as when
-  # opening a thread, so repeated feed loads do not re-crawl.
-  def backfill_replies!(statuses)
-    statuses.take(REPLY_BACKFILL_LIMIT).select(&:should_fetch_replies?).each do |status|
-      ActivityPub::FetchAllRepliesWorker.perform_async(status.id)
+  def cached_ranked_ids
+    Rails.cache.fetch("ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}", expires_in: RANKING_CACHE_TTL) do
+      ids = scored_status_ids
+      ids = interleave_discovered(ids) if @discover
+      ids
     end
   end
 
-  # Blends trending statuses (already quality-ranked, block/mute-filtered and
-  # language-preferring) into the feed at a fixed interval
-  def interleave_discovered(statuses)
-    seen_ids   = statuses.to_set(&:id)
-    discovered = discovered_statuses.reject { |status| seen_ids.include?(status.id) }
-
-    return statuses if discovered.empty?
-
-    result = []
-
-    statuses.each_with_index do |status, index|
-      result << status
-      result << discovered.shift if ((index + 1) % DISCOVER_INTERVAL).zero? && !discovered.empty?
-    end
-
-    result.concat(discovered)
-  end
-
-  def discovered_statuses
-    Trends.statuses.query.allowed.filtered_for(@account).limit(DISCOVER_CANDIDATES).to_a
-  end
-
-  def scored_statuses
+  def scored_status_ids
     entries  = window_entries
-    statuses = Status.where(id: entries.keys).includes(:account, :status_stat).index_by(&:id)
     affinity = affinity_map
+    now      = Time.now.utc
 
-    scored = entries.filter_map do |status_id, inserted_at|
-      status = statuses[status_id]
-      next if status.nil?
+    rows = Status.where(id: entries.keys)
+      .left_joins(:status_stat)
+      .pluck(
+        :id, :account_id, :local, :uri,
+        'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
+        'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count'
+      )
 
-      [status, score(status, inserted_at, affinity[status.account_id])]
+    scored = rows.map do |id, account_id, local, uri, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
+      # Remote statuses carry the origin instance's counts as untrusted counts;
+      # prefer them so federated posts are scored on what the user actually sees
+      remote      = !(local || uri.nil?)
+      boost_count = remote ? (untrusted_reblogs || reblogs).to_i : reblogs.to_i
+      fav_count   = remote ? (untrusted_favourites || favourites).to_i : favourites.to_i
+
+      engagement = (REBLOG_WEIGHT * boost_count) +
+                   (REPLY_WEIGHT * replies.to_i) +
+                   (FAVOURITE_WEIGHT * fav_count)
+
+      age_in_hours = [(now - entries[id]) / 1.hour, 0.0].max
+      decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
+
+      [id, (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity[account_id].to_i)) * decay]
     end
 
-    scored.sort_by { |status, score| [-score, -status.id] }.map(&:first)
+    scored.sort_by { |id, score| [-score, -id] }.map(&:first)
   end
 
   # Maps status id to feed insertion time. The zset score is the snowflake id
@@ -104,17 +107,36 @@ class RankedHomeFeed < HomeFeed
     end
   end
 
-  def score(status, inserted_at, affinity_count)
-    # Remote statuses carry the origin instance's counts as untrusted counts;
-    # prefer them so federated posts are scored on what the user actually sees
-    engagement = (REBLOG_WEIGHT * (status.untrusted_reblogs_count || status.reblogs_count)) +
-                 (REPLY_WEIGHT * status.replies_count) +
-                 (FAVOURITE_WEIGHT * (status.untrusted_favourites_count || status.favourites_count))
+  # Replies only federate to instances subscribed to their authors, so counts
+  # on remote posts lag; ask the origin instance for the full reply tree. The
+  # worker no-ops within Status::FETCH_REPLIES_COOLDOWN_MINUTES, same as when
+  # opening a thread, so repeated feed loads do not re-crawl.
+  def backfill_replies!(ranked_ids)
+    Status.where(id: ranked_ids.take(REPLY_BACKFILL_LIMIT)).should_fetch_replies.pluck(:id).each do |id|
+      ActivityPub::FetchAllRepliesWorker.perform_async(id)
+    end
+  end
 
-    age_in_hours = [(Time.now.utc - inserted_at) / 1.hour, 0.0].max
-    decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
+  # Blends trending statuses (already quality-ranked, block/mute-filtered and
+  # language-preferring) into the feed at a fixed interval
+  def interleave_discovered(ranked_ids)
+    seen       = ranked_ids.to_set
+    discovered = discovered_status_ids.reject { |id| seen.include?(id) }
 
-    (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity_count.to_i)) * decay
+    return ranked_ids if discovered.empty?
+
+    result = []
+
+    ranked_ids.each_with_index do |id, index|
+      result << id
+      result << discovered.shift if ((index + 1) % DISCOVER_INTERVAL).zero? && !discovered.empty?
+    end
+
+    result.concat(discovered)
+  end
+
+  def discovered_status_ids
+    Trends.statuses.query.allowed.filtered_for(@account).limit(DISCOVER_CANDIDATES).map(&:id)
   end
 
   # Maps author account id to the number of times the viewer favourited,
