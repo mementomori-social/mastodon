@@ -113,4 +113,85 @@ namespace :demo_feed do
 
     puts "Posted #{count} statuses."
   end
+
+  desc 'Import real public posts from a live instance into the demo feed (refuses to run in production)'
+  task import: :environment do
+    abort 'demo_feed:import refuses to run in production' if Rails.env.production?
+
+    source = ENV['SOURCE'] || 'https://mementomori.social'
+    count  = (ENV['COUNT'] || 60).to_i
+    watch  = ENV['WATCH'] == '1'
+    token  = ENV.fetch('ACCESS_TOKEN', nil)
+
+    viewer_user = User.find_by(email: 'demo_viewer@localhost')
+    abort 'No demo viewer found, run demo_feed:seed first' if viewer_user.nil?
+
+    viewer = viewer_user.account
+
+    client = HTTP.headers('User-Agent' => 'demo-feed-import')
+    client = client.auth("Bearer #{token}") if token
+
+    fetch_page = lambda do |params|
+      res = client.get("#{source}/api/v1/timelines/public", params: { local: ENV['LOCAL'] != '0', limit: 40 }.merge(params))
+      abort "#{source} returned #{res.status}" unless res.status.success?
+
+      JSON.parse(res.body.to_s)
+    end
+
+    import_status = lambda do |payload|
+      status = Status.find_by(uri: payload['uri']) || ActivityPub::FetchRemoteStatusService.new.call(payload['uri'])
+      return nil if status.nil?
+
+      # Carry over the engagement the source instance has seen so ranking has real data
+      status.status_stat.update(
+        favourites_count: payload['favourites_count'].to_i,
+        reblogs_count: payload['reblogs_count'].to_i,
+        replies_count: payload['replies_count'].to_i
+      )
+
+      FeedManager.instance.push_to_home(viewer, status, update: true)
+      puts "#{Time.now.utc.strftime('%H:%M:%S')} imported #{payload['account']['acct']} favs:#{payload['favourites_count']} boosts:#{payload['reblogs_count']}"
+      status
+    rescue HTTP::Error, OpenSSL::SSL::SSLError, ActiveRecord::RecordInvalid, Mastodon::ValidationError, Mastodon::UnexpectedResponseError => e
+      puts "skipped #{payload['uri']}: #{e.class}"
+      nil
+    end
+
+    imported  = 0
+    max_id    = nil
+    newest_id = nil
+
+    while imported < count
+      page = fetch_page.call(max_id ? { max_id: max_id } : {})
+      break if page.empty?
+
+      newest_id ||= page.first['id']
+
+      page.each do |payload|
+        break if imported >= count
+
+        imported += 1 if import_status.call(payload)
+      end
+
+      max_id = page.last['id']
+    end
+
+    puts "Imported #{imported} posts from #{source}."
+
+    if watch
+      puts 'Watching for new posts every 20 seconds, Ctrl+C to stop.'
+
+      since_id = newest_id
+
+      loop do
+        sleep 20
+
+        page = fetch_page.call(since_id ? { since_id: since_id } : {})
+        next if page.empty?
+
+        since_id = page.first['id']
+        page.reverse_each { |payload| import_status.call(payload) }
+      end
+    end
+  end
 end
