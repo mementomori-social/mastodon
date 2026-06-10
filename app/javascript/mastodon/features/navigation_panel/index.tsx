@@ -29,6 +29,8 @@ import SettingsIcon from '@/material-icons/400-24px/settings.svg?react';
 import StarActiveIcon from '@/material-icons/400-24px/star-fill.svg?react';
 import StarIcon from '@/material-icons/400-24px/star.svg?react';
 import TrendingUpIcon from '@/material-icons/400-24px/trending_up.svg?react';
+import WandStarsActiveIcon from '@/material-icons/400-24px/wand_stars-fill.svg?react';
+import WandStarsIcon from '@/material-icons/400-24px/wand_stars.svg?react';
 import { fetchFollowRequests } from 'mastodon/actions/accounts';
 import { openNavigation, closeNavigation } from 'mastodon/actions/navigation';
 import { Account } from 'mastodon/components/account';
@@ -48,6 +50,7 @@ import {
 import { transientSingleColumn } from 'mastodon/is_mobile';
 import { canViewFeed } from 'mastodon/permissions';
 import { selectUnreadNotificationGroupsCount } from 'mastodon/selectors/notifications';
+import { isRankedHomeEnabled } from 'mastodon/selectors/settings';
 import { useAppSelector, useAppDispatch } from 'mastodon/store';
 
 import { AnnualReportNavItem } from '../annual_report/nav_item';
@@ -61,6 +64,7 @@ import { Trends } from './components/trends';
 
 const messages = defineMessages({
   home: { id: 'tabs_bar.home', defaultMessage: 'Home' },
+  forYou: { id: 'column.for_you', defaultMessage: 'For you' },
   notifications: {
     id: 'tabs_bar.notifications',
     defaultMessage: 'Notifications',
@@ -219,6 +223,7 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
   const location = useLocation();
   const showSearch = useBreakpoint('full') && !multiColumn;
   const account = useAccount(me);
+  const rankedHome = useAppSelector(isRankedHomeEnabled);
 
   let banner: React.ReactNode;
 
@@ -277,9 +282,13 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
                 transparent
                 to='/home'
                 icon='home'
-                iconComponent={HomeIcon}
-                activeIconComponent={HomeActiveIcon}
-                text={intl.formatMessage(messages.home)}
+                iconComponent={rankedHome ? WandStarsIcon : HomeIcon}
+                activeIconComponent={
+                  rankedHome ? WandStarsActiveIcon : HomeActiveIcon
+                }
+                text={intl.formatMessage(
+                  rankedHome ? messages.forYou : messages.home,
+                )}
               />
             </li>
           </>
