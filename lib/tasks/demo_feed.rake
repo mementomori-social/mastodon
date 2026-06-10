@@ -82,4 +82,35 @@ namespace :demo_feed do
       The ranked response should lead with high-engagement posts and posts from demo_author_1 (affinity).
     INSTRUCTIONS
   end
+
+  desc 'Continuously post and engage as demo accounts to test live behaviour (refuses to run in production)'
+  task live: :environment do
+    abort 'demo_feed:live refuses to run in production' if Rails.env.production?
+
+    duration = (ENV['DURATION'] || 1800).to_i
+
+    authors = Account.where(domain: nil, username: (1..5).map { |i| "demo_author_#{i}" }).to_a
+    lurkers = Account.where(domain: nil, username: (1..10).map { |i| "demo_lurker_#{i}" }).to_a
+
+    abort 'No demo accounts found, run demo_feed:seed first' if authors.empty?
+
+    finish_at = Time.now.utc + duration
+    count = 0
+
+    puts "Posting as demo authors every few seconds for #{duration / 60} minutes, Ctrl+C to stop."
+
+    while Time.now.utc < finish_at
+      author = authors.sample
+      status = PostStatusService.new.call(author, text: "Live post #{count + 1} from #{author.username} at #{Time.now.utc.strftime('%H:%M:%S')}")
+      count += 1
+
+      lurkers.sample(rand(0..4)).each { |lurker| FavouriteService.new.call(lurker, status) }
+      lurkers.sample(rand(0..2)).each { |lurker| ReblogService.new.call(lurker, status) }
+
+      puts "#{Time.now.utc.strftime('%H:%M:%S')} #{author.username} posted, #{count} total"
+      sleep rand(3..8)
+    end
+
+    puts "Posted #{count} statuses."
+  end
 end
