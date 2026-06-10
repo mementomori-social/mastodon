@@ -53,6 +53,13 @@ export function updateTimeline(timeline, status, { accept = undefined, bogusQuot
       return;
     }
 
+    if (timeline === 'home' && getState().getIn(['settings', 'home', 'ranked'], false)) {
+      // Streaming updates are chronological and would corrupt the ranked
+      // order; the ranked view only changes on explicit reload
+
+      return;
+    }
+
     dispatch(importFetchedStatus(status, { bogusQuotePolicy }));
 
     dispatch({
@@ -158,12 +165,17 @@ export const expandHomeTimeline            = ({ maxId } = {}) => (dispatch, getS
 
   let params = { max_id: maxId };
 
-  if (ranked) {
+  if (ranked && maxId) {
     // Ranked order paginates by offset; count loaded statuses, skipping gaps and special markers
     const items  = getState().getIn(['timelines', 'home', 'items'], ImmutableList());
-    const offset = maxId ? items.count(id => id !== null && /^\d+$/.test(id)) : 0;
 
-    params = { ranked: true, offset };
+    params = { ranked: true, offset: items.count(id => id !== null && /^\d+$/.test(id)) };
+  } else if (ranked) {
+    // A fetch from the top re-ranks the whole column so new posts are
+    // included at their scored position instead of prepended chronologically
+    dispatch(clearTimeline('home'));
+
+    params = { ranked: true, offset: 0 };
   }
 
   return dispatch(expandTimeline('home', '/api/v1/timelines/home', params));
