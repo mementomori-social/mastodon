@@ -460,6 +460,7 @@
   "column.firehose_local": "Live feed for this server",
   "column.firehose_singular": "Live feed",
   "column.follow_requests": "Follow requests",
+  "column.for_you": "For you",
   "column.home": "Home",
   "column.list_members": "Manage list members",
   "column.lists": "Lists",
