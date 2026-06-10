@@ -19,6 +19,8 @@ const initialState = ImmutableMap({
   }),
 
   home: ImmutableMap({
+    ranked: false,
+
     shows: ImmutableMap({
       quote: true,
       reblog: true,

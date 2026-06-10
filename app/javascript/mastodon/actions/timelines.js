@@ -153,7 +153,21 @@ export function fillTimelineGaps(timelineId, path, params = {}) {
   };
 }
 
-export const expandHomeTimeline            = ({ maxId } = {}) => expandTimeline('home', '/api/v1/timelines/home', { max_id: maxId });
+export const expandHomeTimeline            = ({ maxId } = {}) => (dispatch, getState) => {
+  const ranked = getState().getIn(['settings', 'home', 'ranked'], false);
+
+  let params = { max_id: maxId };
+
+  if (ranked) {
+    // Ranked order paginates by offset; count loaded statuses, skipping gaps and special markers
+    const items  = getState().getIn(['timelines', 'home', 'items'], ImmutableList());
+    const offset = maxId ? items.count(id => id !== null && /^\d+$/.test(id)) : 0;
+
+    params = { ranked: true, offset };
+  }
+
+  return dispatch(expandTimeline('home', '/api/v1/timelines/home', params));
+};
 export const expandPublicTimeline          = ({ maxId, onlyMedia, onlyRemote } = {}) => expandTimeline(`public${onlyRemote ? ':remote' : ''}${onlyMedia ? ':media' : ''}`, '/api/v1/timelines/public', { remote: !!onlyRemote, max_id: maxId, only_media: !!onlyMedia });
 export const expandCommunityTimeline       = ({ maxId, onlyMedia } = {}) => expandTimeline(`community${onlyMedia ? ':media' : ''}`, '/api/v1/timelines/public', { local: true, max_id: maxId, only_media: !!onlyMedia });
 export const expandAccountTimeline         = (accountId, { maxId, withReplies, tagged } = {}) => expandTimeline(`account:${accountId}${withReplies ? ':with_replies' : ''}${tagged ? `:${tagged}` : ''}`, `/api/v1/accounts/${accountId}/statuses`, { exclude_replies: !withReplies, exclude_reblogs: withReplies, tagged, max_id: maxId });
