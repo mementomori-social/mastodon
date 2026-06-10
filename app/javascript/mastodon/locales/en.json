@@ -774,6 +774,7 @@
   "hints.profiles.see_more_follows": "See more follows on {domain}",
   "hints.profiles.see_more_posts": "See more posts on {domain}",
   "home.column_settings.ranked": "Ranked order (experimental)",
+  "home.column_settings.ranked_discover": "Include posts from people you don't follow (experimental)",
   "home.column_settings.show_quotes": "Show quotes",
   "home.column_settings.show_reblogs": "Show boosts",
   "home.column_settings.show_replies": "Show replies",

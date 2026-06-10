@@ -7,7 +7,7 @@ class Api::V1::Timelines::HomeController < Api::V1::Timelines::BaseController
   before_action :require_user!
   before_action :require_valid_pagination_options!
 
-  PERMITTED_PARAMS = %i(local limit ranked).freeze
+  PERMITTED_PARAMS = %i(local limit ranked discover).freeze
 
   def show
     with_read_replica do
@@ -50,7 +50,7 @@ class Api::V1::Timelines::HomeController < Api::V1::Timelines::BaseController
   end
 
   def account_home_feed
-    @account_home_feed ||= ranked? ? RankedHomeFeed.new(current_account) : HomeFeed.new(current_account)
+    @account_home_feed ||= ranked? ? RankedHomeFeed.new(current_account, discover: truthy_param?(:discover)) : HomeFeed.new(current_account)
   end
 
   def ranked?

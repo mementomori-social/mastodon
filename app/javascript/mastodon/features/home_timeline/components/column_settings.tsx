@@ -88,6 +88,21 @@ export const ColumnSettings: React.FC = () => {
               />
             }
           />
+
+          {Boolean(settings.get('ranked')) && (
+            <SettingToggle
+              prefix='home_timeline'
+              settings={settings}
+              settingPath={['rankedDiscover']}
+              onChange={onRankedChange}
+              label={
+                <FormattedMessage
+                  id='home.column_settings.ranked_discover'
+                  defaultMessage="Include posts from people you don't follow (experimental)"
+                />
+              }
+            />
+          )}
         </div>
       </section>
     </div>

@@ -107,5 +107,54 @@ RSpec.describe RankedHomeFeed do
         expect(subject.get(20)).to eq []
       end
     end
+
+    context 'with a remote status eligible for reply backfill' do
+      let(:remote_account) { Fabricate(:account, domain: 'example.com') }
+      let(:remote_status)  { Fabricate(:status, account: remote_account, uri: 'https://example.com/statuses/2', created_at: 1.hour.ago) }
+      let(:local_status)   { Fabricate(:status, account: bob) }
+
+      before do
+        push(remote_status)
+        push(local_status)
+      end
+
+      it 'enqueues a reply backfill for the remote status only on the first page' do
+        subject.get(20)
+
+        expect(ActivityPub::FetchAllRepliesWorker).to have_enqueued_sidekiq_job(remote_status.id)
+        expect(ActivityPub::FetchAllRepliesWorker).to_not have_enqueued_sidekiq_job(local_status.id)
+      end
+
+      it 'does not enqueue backfills for later pages' do
+        subject.get(20, 20)
+
+        expect(ActivityPub::FetchAllRepliesWorker).to_not have_enqueued_sidekiq_job(remote_status.id)
+      end
+    end
+
+    context 'with discovery enabled' do
+      subject { described_class.new(viewer, discover: true) }
+
+      let(:followed_statuses) { Array.new(4) { Fabricate(:status, account: bob) } }
+      let(:trending_status)   { Fabricate(:status, account: ana) }
+
+      before do
+        followed_statuses.each { |status| push(status) }
+        Fabricate(:status_trend, status: trending_status, account: ana, allowed: true, rank: 1, score: 10.0)
+      end
+
+      it 'interleaves trending statuses into the feed' do
+        results = subject.get(20)
+
+        expect(results).to include(trending_status)
+        expect(results.first).to_not eq trending_status
+      end
+
+      it 'does not duplicate statuses already in the feed' do
+        push(trending_status)
+
+        expect(subject.get(20).count { |status| status.id == trending_status.id }).to eq 1
+      end
+    end
   end
 end

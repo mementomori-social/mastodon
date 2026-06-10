@@ -121,6 +121,7 @@ namespace :demo_feed do
     source = ENV['SOURCE'] || 'https://mementomori.social'
     count  = (ENV['COUNT'] || 60).to_i
     watch  = ENV['WATCH'] == '1'
+    push   = ENV['PUSH'] != '0'
     token  = ENV.fetch('ACCESS_TOKEN', nil)
 
     viewer_user = User.find_by(email: 'demo_viewer@localhost')
@@ -149,7 +150,7 @@ namespace :demo_feed do
         replies_count: payload['replies_count'].to_i
       )
 
-      FeedManager.instance.push_to_home(viewer, status, update: true)
+      FeedManager.instance.push_to_home(viewer, status, update: true) if push
       puts "#{Time.now.utc.strftime('%H:%M:%S')} imported #{payload['account']['acct']} favs:#{payload['favourites_count']} boosts:#{payload['reblogs_count']}"
       status
     rescue HTTP::Error, OpenSSL::SSL::SSLError, ActiveRecord::RecordInvalid, Mastodon::ValidationError, Mastodon::UnexpectedResponseError => e
@@ -193,5 +194,33 @@ namespace :demo_feed do
         page.reverse_each { |payload| import_status.call(payload) }
       end
     end
+  end
+
+  desc 'Mark the most engaged recent statuses as trending so discovery has candidates (refuses to run in production)'
+  task trendify: :environment do
+    abort 'demo_feed:trendify refuses to run in production' if Rails.env.production?
+
+    statuses = Status.where(reblog_of_id: nil, in_reply_to_id: nil, visibility: :public)
+      .where(created_at: 3.days.ago..)
+      .joins(:status_stat)
+      .reorder(Arel.sql('status_stats.untrusted_favourites_count + status_stats.untrusted_reblogs_count DESC NULLS LAST'))
+      .limit(30)
+      .to_a
+
+    statuses.each_with_index do |status, index|
+      StatusTrend.upsert(
+        {
+          status_id: status.id,
+          account_id: status.account_id,
+          score: (statuses.size - index).to_f,
+          rank: index,
+          allowed: true,
+          language: status.language,
+        },
+        unique_by: :status_id
+      )
+    end
+
+    puts "Marked #{statuses.size} statuses as trending."
   end
 end

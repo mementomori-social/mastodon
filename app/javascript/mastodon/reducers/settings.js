@@ -20,6 +20,7 @@ const initialState = ImmutableMap({
 
   home: ImmutableMap({
     ranked: false,
+    rankedDiscover: false,
 
     shows: ImmutableMap({
       quote: true,
