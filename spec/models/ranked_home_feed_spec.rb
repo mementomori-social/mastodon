@@ -207,6 +207,37 @@ RSpec.describe RankedHomeFeed do
 
         expect(subject.get(20).count { |status| status.id == trending_status.id }).to eq 1
       end
+
+      it 'does not discover the viewer own posts' do
+        own_trending = Fabricate(:status, account: viewer)
+        Fabricate(:status_trend, status: own_trending, account: viewer, allowed: true, rank: 0, score: 99.0)
+
+        expect(subject.get(20)).to_not include(own_trending)
+      end
+    end
+
+    context 'when scrolling past the ranked window with discovery enabled' do
+      subject { described_class.new(viewer, discover: true) }
+
+      let!(:followed_status) { Fabricate(:status, account: bob) }
+      let!(:trends) do
+        Array.new(3) do |i|
+          author = Fabricate(:account)
+          status = Fabricate(:status, account: author)
+          Fabricate(:status_trend, status: status, account: author, allowed: true, rank: i, score: 10.0 - i)
+          status
+        end
+      end
+
+      before do
+        stub_const('RankedHomeFeed::DISCOVER_CANDIDATES', 1)
+        push(followed_status)
+      end
+
+      it 'continues into the trending pool beyond the ranked list' do
+        expect(subject.get(2)).to eq [followed_status, trends[0]]
+        expect(subject.get(2, 2)).to eq [trends[1], trends[2]]
+      end
     end
   end
 end
