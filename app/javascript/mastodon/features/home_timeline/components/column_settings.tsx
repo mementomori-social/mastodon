@@ -33,48 +33,57 @@ export const ColumnSettings: React.FC = () => {
     [dispatch],
   );
 
+  const rankedEnabled = Boolean(settings.get('ranked'));
+
   return (
     <div className='column-settings'>
       <section>
         <div className='column-settings__row'>
-          <SettingToggle
-            prefix='home_timeline'
-            settings={settings}
-            settingPath={['shows', 'reblog']}
-            onChange={onChange}
-            label={
-              <FormattedMessage
-                id='home.column_settings.show_reblogs'
-                defaultMessage='Show boosts'
+          {/* The display filters only apply to the chronological feed; the
+              ranked feed surfaces boosted posts directly so they cannot be
+              filtered client side */}
+          {!rankedEnabled && (
+            <>
+              <SettingToggle
+                prefix='home_timeline'
+                settings={settings}
+                settingPath={['shows', 'reblog']}
+                onChange={onChange}
+                label={
+                  <FormattedMessage
+                    id='home.column_settings.show_reblogs'
+                    defaultMessage='Show boosts'
+                  />
+                }
               />
-            }
-          />
 
-          <SettingToggle
-            prefix='home_timeline'
-            settings={settings}
-            settingPath={['shows', 'quote']}
-            onChange={onChange}
-            label={
-              <FormattedMessage
-                id='home.column_settings.show_quotes'
-                defaultMessage='Show quotes'
+              <SettingToggle
+                prefix='home_timeline'
+                settings={settings}
+                settingPath={['shows', 'quote']}
+                onChange={onChange}
+                label={
+                  <FormattedMessage
+                    id='home.column_settings.show_quotes'
+                    defaultMessage='Show quotes'
+                  />
+                }
               />
-            }
-          />
 
-          <SettingToggle
-            prefix='home_timeline'
-            settings={settings}
-            settingPath={['shows', 'reply']}
-            onChange={onChange}
-            label={
-              <FormattedMessage
-                id='home.column_settings.show_replies'
-                defaultMessage='Show replies'
+              <SettingToggle
+                prefix='home_timeline'
+                settings={settings}
+                settingPath={['shows', 'reply']}
+                onChange={onChange}
+                label={
+                  <FormattedMessage
+                    id='home.column_settings.show_replies'
+                    defaultMessage='Show replies'
+                  />
+                }
               />
-            }
-          />
+            </>
+          )}
 
           <SettingToggle
             prefix='home_timeline'
@@ -89,7 +98,7 @@ export const ColumnSettings: React.FC = () => {
             }
           />
 
-          {Boolean(settings.get('ranked')) && (
+          {rankedEnabled && (
             <SettingToggle
               prefix='home_timeline'
               settings={settings}
