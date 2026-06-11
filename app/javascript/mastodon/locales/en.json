@@ -785,6 +785,8 @@
   "home.pending_critical_update.body": "Please update your Mastodon server as soon as possible!",
   "home.pending_critical_update.link": "See updates",
   "home.pending_critical_update.title": "Critical security update available!",
+  "home.ranked_feed_end": "You're all caught up for now",
+  "home.ranked_feed_end.enable_discover": "Show posts from people you don't follow",
   "home.show_announcements": "Show announcements",
   "ignore_notifications_modal.disclaimer": "Mastodon cannot inform users that you've ignored their notifications. Ignoring notifications will not stop the messages themselves from being sent.",
   "ignore_notifications_modal.filter_instead": "Filter instead",

@@ -26,6 +26,7 @@ import ColumnHeader from '../../components/column_header';
 import StatusListContainer from '../ui/containers/status_list_container';
 
 import { ColumnSettings } from './components/column_settings';
+import { RankedFeedEnd } from './components/ranked_feed_end';
 import { CriticalUpdateBanner } from './components/critical_update_banner';
 import { Announcements } from './components/announcements';
 import { AnnualReportTimeline } from '../annual_report/timeline';
@@ -185,6 +186,7 @@ class HomeTimeline extends PureComponent {
             onLoadMore={this.handleLoadMore}
             timelineId='home'
             showFollowBadge={ranked}
+            append={ranked ? <RankedFeedEnd /> : undefined}
             emptyMessage={<FormattedMessage id='empty_column.home' defaultMessage='Your home timeline is empty! Follow more people to fill it up.' />}
             bindToDocument={!multiColumn}
             withCounters
