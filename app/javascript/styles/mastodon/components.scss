@@ -1479,7 +1479,9 @@ body > [data-popper-placement] {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 150ms ease, background 150ms ease;
+  transition:
+    transform 150ms ease,
+    background 150ms ease;
 
   .icon {
     width: 12px;
@@ -1550,6 +1552,16 @@ body > [data-popper-placement] {
   &__button {
     width: 100%;
   }
+}
+
+.ranked-feed-end {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--color-text-secondary);
 }
 
 .status__wrapper--filtered {
