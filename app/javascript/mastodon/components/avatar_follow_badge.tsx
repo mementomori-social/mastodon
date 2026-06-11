@@ -4,7 +4,7 @@ import { useIntl, defineMessages } from 'react-intl';
 
 import { useIdentity } from '@/mastodon/identity_context';
 import AddIcon from '@/material-icons/400-24px/add.svg?react';
-import { followAccount } from 'mastodon/actions/accounts';
+import { openModal } from 'mastodon/actions/modal';
 import { Icon } from 'mastodon/components/icon';
 import { me } from 'mastodon/initial_state';
 import { useAppDispatch, useAppSelector } from 'mastodon/store';
@@ -29,7 +29,12 @@ export const AvatarFollowBadge: React.FC<{ accountId?: string }> = ({
       event.stopPropagation();
 
       if (accountId) {
-        dispatch(followAccount(accountId));
+        dispatch(
+          openModal({
+            modalType: 'CONFIRM_FOLLOW',
+            modalProps: { accountId },
+          }),
+        );
       }
     },
     [dispatch, accountId],
