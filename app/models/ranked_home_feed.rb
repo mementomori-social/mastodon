@@ -44,6 +44,10 @@ class RankedHomeFeed < HomeFeed
   # One discovered status is interleaved after every DISCOVER_INTERVAL followed statuses
   DISCOVER_INTERVAL = ENV.fetch('RANKED_DISCOVER_INTERVAL', '3').to_i
 
+  # How deep a single page may look into the trending pool when scrolling
+  # past the ranked window
+  DISCOVERY_TAIL_FETCH = ENV.fetch('RANKED_DISCOVERY_TAIL_FETCH', '500').to_i
+
   # Random score multiplier range applied per ranking computation so the
   # order reshuffles a little on every refresh instead of freezing in place
   JITTER = ENV.fetch('RANKED_JITTER', '0.1').to_f
@@ -66,12 +70,18 @@ class RankedHomeFeed < HomeFeed
 
     backfill_replies!(ranked_ids) if offset.zero?
 
-    page_ids = ranked_ids[offset, limit] || []
+    # A refresh serves the top of the ranking; scrolling serves the next
+    # batch that has not been served yet. The seen set is the cursor, so
+    # pagination cannot drift when the ranking is recomputed mid scroll.
+    page_ids =
+      if offset.zero?
+        ranked_ids.take(limit)
+      else
+        seen = seen_ids
+        ranked_ids.reject { |id| seen.include?(id) }.take(limit)
+      end
 
-    if @discover && page_ids.size < limit
-      tail_offset = [offset - ranked_ids.size, 0].max
-      page_ids += discovery_tail_ids(tail_offset, limit - page_ids.size, ranked_ids)
-    end
+    page_ids += discovery_tail_ids(limit - page_ids.size, ranked_ids) if @discover && page_ids.size < limit
 
     statuses = Status.where(id: page_ids).index_by(&:id)
 
@@ -220,20 +230,25 @@ class RankedHomeFeed < HomeFeed
   end
 
   def discovered_status_ids
+    seen = seen_ids
+
     Trends.statuses.query.allowed.filtered_for(@account)
-      .limit(DISCOVER_CANDIDATES)
+      .limit(DISCOVER_CANDIDATES * 2)
       .filter_map { |status| status.id unless status.account_id == @account.id }
+      .reject { |id| seen.include?(id) }
+      .take(DISCOVER_CANDIDATES)
   end
 
   # Once the ranked window is exhausted, deeper scrolling continues through
-  # the trending pool instead of ending at the feed window size
-  def discovery_tail_ids(tail_offset, needed, ranked_ids)
+  # the trending pool. Served posts are marked seen, so filtering by the seen
+  # set paginates by itself: every page serves the next unseen batch and the
+  # feed only ends when the pool is genuinely exhausted.
+  def discovery_tail_ids(needed, ranked_ids)
     seen    = seen_ids
     exclude = ranked_ids.to_set
 
     Trends.statuses.query.allowed.filtered_for(@account)
-      .offset(DISCOVER_CANDIDATES + tail_offset)
-      .limit(needed * 3)
+      .limit(DISCOVERY_TAIL_FETCH)
       .filter_map { |status| status.id unless status.account_id == @account.id }
       .reject { |id| exclude.include?(id) || seen.include?(id) }
       .take(needed)
