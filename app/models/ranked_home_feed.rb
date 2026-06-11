@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'benchmark'
+
 # Re-orders the most recent window of a home feed by an engagement,
 # affinity and recency score instead of strict reverse-chronology.
 # Read-only: the underlying Redis feed is never modified.
@@ -16,6 +18,11 @@ class RankedHomeFeed < HomeFeed
 
   # How far back the viewer's own interactions count towards author affinity
   AFFINITY_PERIOD = 30.days
+
+  # Cap on how many recent favourites are scanned for affinity; favourites
+  # have no created_at index, so the (account_id, id) index plus a limit
+  # keeps the query fast for very active accounts
+  AFFINITY_RECENT_FAVOURITES = ENV.fetch('RANKED_AFFINITY_RECENT_FAVOURITES', '2000').to_i
 
   # A status loses half of its score every HALF_LIFE_HOURS after feed insertion
   HALF_LIFE_HOURS = ENV.fetch('RANKED_HALF_LIFE_HOURS', '6.0').to_f
@@ -34,6 +41,10 @@ class RankedHomeFeed < HomeFeed
 
   # One discovered status is interleaved after every DISCOVER_INTERVAL followed statuses
   DISCOVER_INTERVAL = ENV.fetch('RANKED_DISCOVER_INTERVAL', '3').to_i
+
+  # Random score multiplier range applied per ranking computation so the
+  # order reshuffles a little on every refresh instead of freezing in place
+  JITTER = ENV.fetch('RANKED_JITTER', '0.1').to_f
 
   def initialize(account, discover: false)
     @discover = discover
@@ -58,11 +69,28 @@ class RankedHomeFeed < HomeFeed
   private
 
   def cached_ranked_ids
-    Rails.cache.fetch("ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}", expires_in: RANKING_CACHE_TTL) do
-      ids = scored_status_ids
-      ids = interleave_discovered(ids) if @discover
-      ids
+    computed = false
+
+    ids = Rails.cache.fetch("ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}", expires_in: RANKING_CACHE_TTL) do
+      computed = true
+      timings  = {}
+      result   = nil
+
+      timings[:affinity] = Benchmark.realtime { affinity_map }
+      timings[:scoring]  = Benchmark.realtime { result = scored_status_ids }
+      timings[:discover] = Benchmark.realtime { result = interleave_discovered(result) } if @discover
+
+      Rails.logger.info do
+        phases = timings.map { |phase, seconds| "#{phase}=#{(seconds * 1000).round}ms" }.join(' ')
+        "RankedHomeFeed compute account=#{@account.id} #{phases}"
+      end
+
+      result
     end
+
+    Rails.logger.debug { "RankedHomeFeed cache hit account=#{@account.id}" } unless computed
+
+    ids
   end
 
   def scored_status_ids
@@ -76,12 +104,15 @@ class RankedHomeFeed < HomeFeed
       .joins('INNER JOIN statuses AS targets ON targets.id = COALESCE(statuses.reblog_of_id, statuses.id)')
       .joins('LEFT JOIN status_stats ON status_stats.status_id = targets.id')
       .pluck(
-        'statuses.id', 'statuses.account_id', 'targets.local', 'targets.uri',
+        'statuses.id', 'statuses.account_id', 'targets.id', 'targets.local', 'targets.uri',
         'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
         'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count'
       )
 
-    scored = rows.map do |id, account_id, local, uri, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
+    scored = rows.filter_map do |id, account_id, target_id, local, uri, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
+      # A recommendation feed should not recommend the viewer's own posts or boosts
+      next if account_id == @account.id
+
       # Remote statuses carry the origin instance's counts as untrusted counts;
       # prefer them so federated posts are scored on what the user actually sees
       remote      = !(local || uri.nil?)
@@ -94,11 +125,14 @@ class RankedHomeFeed < HomeFeed
 
       age_in_hours = [(now - entries[id]) / 1.hour, 0.0].max
       decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
+      jitter       = 1.0 + (JITTER * rand)
 
-      [id, (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity[account_id].to_i)) * decay]
+      # Boosts are scored on their target and surface the target itself, so
+      # the feed shows the post rather than an "x boosted" wrapper
+      [target_id, (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity[account_id].to_i)) * decay * jitter]
     end
 
-    scored.sort_by { |id, score| [-score, -id] }.map(&:first)
+    scored.sort_by { |id, score| [-score, -id] }.map(&:first).uniq
   end
 
   # Maps status id to feed insertion time. The zset score is the snowflake id
@@ -148,21 +182,30 @@ class RankedHomeFeed < HomeFeed
   # boosted or replied to that author within AFFINITY_PERIOD
   def affinity_map
     Rails.cache.fetch("ranked_home_feed:affinity:#{@account.id}", expires_in: AFFINITY_CACHE_TTL) do
-      since = AFFINITY_PERIOD.ago
+      # Status ids are snowflakes, so an id range uses the (account_id, id)
+      # index where a created_at filter would scan the whole account history
+      since_id = Mastodon::Snowflake.id_at(AFFINITY_PERIOD.ago, with_random: false)
 
-      favourites = Favourite.where(account_id: @account.id, created_at: since..)
+      recent_favourite_ids = Favourite.where(account_id: @account.id)
+        .order(id: :desc)
+        .limit(AFFINITY_RECENT_FAVOURITES)
+        .pluck(:id)
+
+      favourites = Favourite.where(id: recent_favourite_ids)
         .joins(:status)
         .group('statuses.account_id')
         .count
 
-      reblogs = Status.where(account_id: @account.id, created_at: since..)
+      reblogs = Status.where(account_id: @account.id)
+        .where(id: since_id..)
         .where.not(reblog_of_id: nil)
         .joins('INNER JOIN statuses AS reblog_targets ON reblog_targets.id = statuses.reblog_of_id')
         .reorder(nil)
         .group('reblog_targets.account_id')
         .count
 
-      replies = Status.where(account_id: @account.id, created_at: since..)
+      replies = Status.where(account_id: @account.id)
+        .where(id: since_id..)
         .where.not(in_reply_to_account_id: nil)
         .reorder(nil)
         .group(:in_reply_to_account_id)
