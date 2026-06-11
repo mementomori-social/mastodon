@@ -82,6 +82,14 @@ class HomeTimeline extends PureComponent {
     dispatch(moveColumn(columnId, dir));
   };
 
+  // Column exposes scrollTop through context now, so scrollTopOnClick covers
+  // the scroll and this only has to refresh the ranking
+  handleHeaderClick = () => {
+    if (this.props.ranked) {
+      this.props.dispatch(expandHomeTimeline());
+    }
+  };
+
   handleLoadMore = maxId => {
     this.props.dispatch(expandHomeTimeline({ maxId }));
   };
@@ -183,6 +191,7 @@ class HomeTimeline extends PureComponent {
             extraButton={announcementsButton}
             appendContent={hasAnnouncements && showAnnouncements && <Announcements />}
             scrollTopOnClick
+            onClick={this.handleHeaderClick}
           >
             <ColumnSettings />
           </LegacyColumnHeader>

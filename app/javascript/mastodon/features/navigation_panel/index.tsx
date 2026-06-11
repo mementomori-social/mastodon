@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { defineMessages, useIntl } from 'react-intl';
 
@@ -33,6 +33,7 @@ import WandStarsActiveIcon from '@/material-icons/400-24px/wand_stars-fill.svg?r
 import WandStarsIcon from '@/material-icons/400-24px/wand_stars.svg?react';
 import { fetchFollowRequests } from 'mastodon/actions/accounts';
 import { openNavigation, closeNavigation } from 'mastodon/actions/navigation';
+import { expandHomeTimeline } from 'mastodon/actions/timelines';
 import { Account } from 'mastodon/components/account';
 import { IconWithBadge } from 'mastodon/components/icon_with_badge';
 import { WordmarkLogo } from 'mastodon/components/logo';
@@ -224,6 +225,14 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
   const showSearch = useBreakpoint('full') && !multiColumn;
   const account = useAccount(me);
   const rankedHome = useAppSelector(isRankedHomeEnabled);
+  const dispatch = useAppDispatch();
+
+  const handleHomeClick = useCallback(() => {
+    // The ranked feed reloads with fresh content when its link is clicked
+    if (rankedHome) {
+      dispatch(expandHomeTimeline());
+    }
+  }, [dispatch, rankedHome]);
 
   let banner: React.ReactNode;
 
@@ -282,6 +291,7 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
                 transparent
                 to='/home'
                 icon='home'
+                onClick={handleHomeClick}
                 iconComponent={rankedHome ? WandStarsIcon : HomeIcon}
                 activeIconComponent={
                   rankedHome ? WandStarsActiveIcon : HomeActiveIcon
