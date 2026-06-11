@@ -28,7 +28,7 @@ export const ColumnSettings: React.FC = () => {
     (key: string[], checked: boolean) => {
       dispatch(changeSetting(['home', ...key], checked));
       dispatch(clearTimeline('home'));
-      dispatch(expandHomeTimeline());
+      dispatch(expandHomeTimeline({ forceRefresh: true }));
     },
     [dispatch],
   );

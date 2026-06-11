@@ -15,7 +15,7 @@ export const RankedFeedEnd: React.FC = () => {
   const handleEnableDiscover = useCallback(() => {
     dispatch(changeSetting(['home', 'rankedDiscover'], true));
     dispatch(clearTimeline('home'));
-    dispatch(expandHomeTimeline());
+    dispatch(expandHomeTimeline({ forceRefresh: true }));
   }, [dispatch]);
 
   return (
