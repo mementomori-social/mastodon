@@ -78,6 +78,10 @@ class HomeTimeline extends PureComponent {
   };
 
   handleHeaderClick = () => {
+    if (this.props.ranked) {
+      this.props.dispatch(expandHomeTimeline());
+    }
+
     this.column.scrollTop();
   };
 

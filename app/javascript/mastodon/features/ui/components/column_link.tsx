@@ -18,6 +18,7 @@ export const ColumnLink: React.FC<{
   transparent?: boolean;
   className?: string;
   id?: string;
+  onClick?: React.MouseEventHandler;
 }> = ({
   icon,
   activeIcon,
