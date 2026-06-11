@@ -83,8 +83,26 @@ RSpec.describe RankedHomeFeed do
         push(plain_status)
       end
 
-      it 'scores the boost on the boosted status engagement' do
-        expect(subject.get(20)).to eq [boost, plain_status]
+      it 'surfaces the boosted status itself ranked by its engagement' do
+        expect(subject.get(20)).to eq [popular_status, plain_status]
+      end
+    end
+
+    context 'with own posts and boosts in the feed' do
+      let(:tim)         { Fabricate(:account) }
+      let(:tims_status) { Fabricate(:status, account: tim) }
+      let(:own_status)  { Fabricate(:status, account: viewer) }
+      let(:own_boost)   { Fabricate(:status, account: viewer, reblog: tims_status) }
+      let(:bob_status)  { Fabricate(:status, account: bob) }
+
+      before do
+        push(own_status)
+        push(own_boost)
+        push(bob_status)
+      end
+
+      it 'excludes the viewer posts and boosts' do
+        expect(subject.get(20)).to eq [bob_status]
       end
     end
 
