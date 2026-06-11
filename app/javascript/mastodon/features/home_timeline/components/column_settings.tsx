@@ -10,6 +10,7 @@ import { FormattedMessage } from 'react-intl';
 import { useAppSelector, useAppDispatch } from 'mastodon/store';
 
 import { changeSetting } from '../../../actions/settings';
+import { clearTimeline, expandHomeTimeline } from '../../../actions/timelines';
 import SettingToggle from '../../notifications/components/setting_toggle';
 
 export const ColumnSettings: React.FC = () => {
@@ -19,6 +20,15 @@ export const ColumnSettings: React.FC = () => {
   const onChange = useCallback(
     (key: string[], checked: boolean) => {
       dispatch(changeSetting(['home', ...key], checked));
+    },
+    [dispatch],
+  );
+
+  const onRankedChange = useCallback(
+    (key: string[], checked: boolean) => {
+      dispatch(changeSetting(['home', ...key], checked));
+      dispatch(clearTimeline('home'));
+      dispatch(expandHomeTimeline());
     },
     [dispatch],
   );
@@ -65,6 +75,34 @@ export const ColumnSettings: React.FC = () => {
               />
             }
           />
+
+          <SettingToggle
+            prefix='home_timeline'
+            settings={settings}
+            settingPath={['ranked']}
+            onChange={onRankedChange}
+            label={
+              <FormattedMessage
+                id='home.column_settings.ranked'
+                defaultMessage='Ranked order (experimental)'
+              />
+            }
+          />
+
+          {Boolean(settings.get('ranked')) && (
+            <SettingToggle
+              prefix='home_timeline'
+              settings={settings}
+              settingPath={['rankedDiscover']}
+              onChange={onRankedChange}
+              label={
+                <FormattedMessage
+                  id='home.column_settings.ranked_discover'
+                  defaultMessage="Include posts from people you don't follow (experimental)"
+                />
+              }
+            />
+          )}
         </div>
       </section>
     </div>

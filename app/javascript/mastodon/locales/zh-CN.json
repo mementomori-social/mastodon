@@ -460,6 +460,7 @@
   "column.firehose_local": "此服务器的实时动态",
   "column.firehose_singular": "实时动态",
   "column.follow_requests": "关注请求",
+  "column.for_you": "为你推荐",
   "column.home": "主页",
   "column.list_members": "管理列表成员",
   "column.lists": "列表",

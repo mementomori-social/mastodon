@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 
 import CampaignIcon from '@/material-icons/400-24px/campaign.svg?react';
 import HomeIcon from '@/material-icons/400-24px/home-fill.svg?react';
+import WandStarsIcon from '@/material-icons/400-24px/wand_stars-fill.svg?react';
 import { injectIntl } from '@/mastodon/components/intl';
 import { SymbolLogo } from 'mastodon/components/logo';
 import { fetchAnnouncements, toggleShowAnnouncements } from 'mastodon/actions/announcements';
@@ -31,12 +32,14 @@ import { AnnualReportTimeline } from '../annual_report/timeline';
 
 const messages = defineMessages({
   title: { id: 'column.home', defaultMessage: 'Home' },
+  forYouTitle: { id: 'column.for_you', defaultMessage: 'For you' },
   show_announcements: { id: 'home.show_announcements', defaultMessage: 'Show announcements' },
   hide_announcements: { id: 'home.hide_announcements', defaultMessage: 'Hide announcements' },
 });
 
 const mapStateToProps = state => ({
   hasUnread: state.getIn(['timelines', 'home', 'unread']) > 0,
+  ranked: state.getIn(['settings', 'home', 'ranked'], false),
   isPartial: state.getIn(['timelines', 'home', 'isPartial']),
   hasAnnouncements: !state.getIn(['announcements', 'items']).isEmpty(),
   unreadAnnouncements: state.getIn(['announcements', 'items']).count(item => !item.get('read')),
@@ -56,6 +59,7 @@ class HomeTimeline extends PureComponent {
     unreadAnnouncements: PropTypes.number,
     showAnnouncements: PropTypes.bool,
     matchesBreakpoint: PropTypes.bool,
+    ranked: PropTypes.bool,
   };
 
   handlePin = () => {
@@ -125,8 +129,9 @@ class HomeTimeline extends PureComponent {
   };
 
   render () {
-    const { intl, hasUnread, columnId, multiColumn, hasAnnouncements, unreadAnnouncements, showAnnouncements, matchesBreakpoint } = this.props;
+    const { intl, hasUnread, columnId, multiColumn, hasAnnouncements, unreadAnnouncements, showAnnouncements, matchesBreakpoint, ranked } = this.props;
     const pinned = !!columnId;
+    const title = intl.formatMessage(ranked ? messages.forYouTitle : messages.title);
     const { signedIn } = this.props.identity;
     const banners = [
       <CriticalUpdateBanner key='critical-update-banner' />,
@@ -150,12 +155,12 @@ class HomeTimeline extends PureComponent {
     }
 
     return (
-      <Column bindToDocument={!multiColumn} ref={this.setRef} label={intl.formatMessage(messages.title)}>
+      <Column bindToDocument={!multiColumn} ref={this.setRef} label={title}>
         <ColumnHeader
           icon='home'
-          iconComponent={matchesBreakpoint ? SymbolLogo : HomeIcon}
+          iconComponent={matchesBreakpoint ? SymbolLogo : (ranked ? WandStarsIcon : HomeIcon)}
           active={hasUnread}
-          title={intl.formatMessage(messages.title)}
+          title={title}
           onPin={this.handlePin}
           onMove={this.handleMove}
           onClick={this.handleHeaderClick}
@@ -182,7 +187,7 @@ class HomeTimeline extends PureComponent {
         ) : <NotSignedInIndicator />}
 
         <Helmet>
-          <title>{intl.formatMessage(messages.title)}</title>
+          <title>{title}</title>
         </Helmet>
       </Column>
     );
