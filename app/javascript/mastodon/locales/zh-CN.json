@@ -824,8 +824,6 @@
   "keyboard_shortcuts.keys.backspace": "Backspace",
   "keyboard_shortcuts.keys.enter": "Enter",
   "keyboard_shortcuts.keys.esc": "Esc",
-  "keyboard_shortcuts.keys.page_down": "Page Down",
-  "keyboard_shortcuts.keys.page_up": "Page Up",
   "keyboard_shortcuts.legend": "显示此列表",
   "keyboard_shortcuts.load_more": "将焦点移至“加载更多”按钮",
   "keyboard_shortcuts.local": "打开本站时间线",

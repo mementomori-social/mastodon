@@ -824,8 +824,6 @@
   "keyboard_shortcuts.keys.backspace": "Backspace",
   "keyboard_shortcuts.keys.enter": "Eingabetaste",
   "keyboard_shortcuts.keys.esc": "Esc",
-  "keyboard_shortcuts.keys.page_down": "Bild ab",
-  "keyboard_shortcuts.keys.page_up": "Bild auf",
   "keyboard_shortcuts.legend": "Tastenkürzel anzeigen (diese Seite)",
   "keyboard_shortcuts.load_more": "Schaltfläche „Mehr laden“ fokussieren",
   "keyboard_shortcuts.local": "Lokale Timeline öffnen",

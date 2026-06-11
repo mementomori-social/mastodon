@@ -824,8 +824,6 @@
   "keyboard_shortcuts.keys.backspace": "Retroceso",
   "keyboard_shortcuts.keys.enter": "Enter",
   "keyboard_shortcuts.keys.esc": "Escape",
-  "keyboard_shortcuts.keys.page_down": "Re Pág",
-  "keyboard_shortcuts.keys.page_up": "Av Pág",
   "keyboard_shortcuts.legend": "Mostrar esta leyenda",
   "keyboard_shortcuts.load_more": "Enfoque en el botón \"Cargar más\"",
   "keyboard_shortcuts.local": "Abrir cronología local",

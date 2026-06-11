@@ -824,8 +824,6 @@
   "keyboard_shortcuts.keys.backspace": "Backspace",
   "keyboard_shortcuts.keys.enter": "Enter",
   "keyboard_shortcuts.keys.esc": "Esc",
-  "keyboard_shortcuts.keys.page_down": "Side ned",
-  "keyboard_shortcuts.keys.page_up": "Side op",
   "keyboard_shortcuts.legend": "Vis dette symbol",
   "keyboard_shortcuts.load_more": "Fokusér knappen \"Indlæs flere\"",
   "keyboard_shortcuts.local": "Åbn lokal tidslinje",
