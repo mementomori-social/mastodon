@@ -70,10 +70,13 @@ class RankedHomeFeed < HomeFeed
     affinity = affinity_map
     now      = Time.now.utc
 
+    # Boosts sit in the feed as wrapper statuses with no engagement of their
+    # own, so engagement and remoteness are read from the boosted target
     rows = Status.where(id: entries.keys)
-      .left_joins(:status_stat)
+      .joins('INNER JOIN statuses AS targets ON targets.id = COALESCE(statuses.reblog_of_id, statuses.id)')
+      .joins('LEFT JOIN status_stats ON status_stats.status_id = targets.id')
       .pluck(
-        :id, :account_id, :local, :uri,
+        'statuses.id', 'statuses.account_id', 'targets.local', 'targets.uri',
         'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
         'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count'
       )
@@ -112,7 +115,9 @@ class RankedHomeFeed < HomeFeed
   # worker no-ops within Status::FETCH_REPLIES_COOLDOWN_MINUTES, same as when
   # opening a thread, so repeated feed loads do not re-crawl.
   def backfill_replies!(ranked_ids)
-    Status.where(id: ranked_ids.take(REPLY_BACKFILL_LIMIT)).should_fetch_replies.pluck(:id).each do |id|
+    target_ids = Status.where(id: ranked_ids.take(REPLY_BACKFILL_LIMIT)).pluck(Arel.sql('COALESCE(reblog_of_id, id)'))
+
+    Status.where(id: target_ids).should_fetch_replies.pluck(:id).each do |id|
       ActivityPub::FetchAllRepliesWorker.perform_async(id)
     end
   end
