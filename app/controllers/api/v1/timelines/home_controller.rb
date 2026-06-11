@@ -63,6 +63,10 @@ class Api::V1::Timelines::HomeController < Api::V1::Timelines::BaseController
 
   def next_path
     if ranked?
+      # A short page means the ranked feed is exhausted; emitting a next link
+      # would render a dead "Load more" button at the end of the feed
+      return if @statuses.size < limit_param(DEFAULT_STATUSES_LIMIT)
+
       api_v1_timelines_home_url permitted_params.merge(offset: offset_param + limit_param(DEFAULT_STATUSES_LIMIT))
     else
       api_v1_timelines_home_url next_path_params
