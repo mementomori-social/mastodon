@@ -87,7 +87,7 @@ class HomeTimeline extends PureComponent {
   // the scroll and this only has to refresh the ranking
   handleHeaderClick = () => {
     if (this.props.ranked) {
-      this.props.dispatch(expandHomeTimeline());
+      this.props.dispatch(expandHomeTimeline({ forceRefresh: true }));
     }
   };
 
