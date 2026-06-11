@@ -825,8 +825,6 @@
   "keyboard_shortcuts.keys.backspace": "Backspace",
   "keyboard_shortcuts.keys.enter": "Enter",
   "keyboard_shortcuts.keys.esc": "Esc",
-  "keyboard_shortcuts.keys.page_down": "Page Down",
-  "keyboard_shortcuts.keys.page_up": "Page Up",
   "keyboard_shortcuts.legend": "mostrar estes atalhos",
   "keyboard_shortcuts.load_more": "Focar no botão de Carregar mais",
   "keyboard_shortcuts.local": "abrir linha local",

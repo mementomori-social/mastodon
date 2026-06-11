@@ -825,8 +825,6 @@
   "keyboard_shortcuts.keys.backspace": "Askelpalautin",
   "keyboard_shortcuts.keys.enter": "Enter",
   "keyboard_shortcuts.keys.esc": "Esc",
-  "keyboard_shortcuts.keys.page_down": "Page Down",
-  "keyboard_shortcuts.keys.page_up": "Page Up",
   "keyboard_shortcuts.legend": "Näytä tämä ohje",
   "keyboard_shortcuts.load_more": "Kohdista ”Lataa lisää” -⁠painikkeeseen",
   "keyboard_shortcuts.local": "Avaa paikallinen aikajana",

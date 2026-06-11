@@ -825,8 +825,6 @@
   "keyboard_shortcuts.keys.backspace": "Retour arrière",
   "keyboard_shortcuts.keys.enter": "Entrée",
   "keyboard_shortcuts.keys.esc": "Échap",
-  "keyboard_shortcuts.keys.page_down": "Page bas",
-  "keyboard_shortcuts.keys.page_up": "Page haut",
   "keyboard_shortcuts.legend": "Afficher cette légende",
   "keyboard_shortcuts.load_more": "Bouton Focus \"Charger plus\"",
   "keyboard_shortcuts.local": "Ouvrir le fil local",
