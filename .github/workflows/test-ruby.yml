@@ -61,12 +61,6 @@ jobs:
       - name: Precompile assets
         run: |-
           bin/rails assets:precompile
-          # The committed public/sw.js symlink targets public/packs, which only
-          # production builds produce; give test builds a real file there too
-          if [ ! -f public/packs/sw.js ] && [ -f public/packs-test/sw.js ]; then
-            mkdir -p public/packs
-            cp public/packs-test/sw.js public/packs/sw.js
-          fi
 
       - name: Archive asset artifacts
         run: |

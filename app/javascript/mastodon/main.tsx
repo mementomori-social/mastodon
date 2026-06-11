@@ -44,9 +44,6 @@ function main() {
     if (
       me &&
       'serviceWorker' in navigator &&
-      // Test builds compile with NODE_ENV=production, so isProduction()
-      // cannot exclude them; check the build mode as well
-      import.meta.env.MODE !== 'test' &&
       (isDevelopment() || isProduction()) // Disallow testing environment
     ) {
       let swPath = '/sw.js';
