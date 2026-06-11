@@ -40,6 +40,10 @@ class RankedHomeFeed < HomeFeed
   # One discovered status is interleaved after every DISCOVER_INTERVAL followed statuses
   DISCOVER_INTERVAL = ENV.fetch('RANKED_DISCOVER_INTERVAL', '3').to_i
 
+  # Random score multiplier range applied per ranking computation so the
+  # order reshuffles a little on every refresh instead of freezing in place
+  JITTER = ENV.fetch('RANKED_JITTER', '0.1').to_f
+
   def initialize(account, discover: false)
     @discover = discover
 
@@ -81,12 +85,15 @@ class RankedHomeFeed < HomeFeed
       .joins('INNER JOIN statuses AS targets ON targets.id = COALESCE(statuses.reblog_of_id, statuses.id)')
       .joins('LEFT JOIN status_stats ON status_stats.status_id = targets.id')
       .pluck(
-        'statuses.id', 'statuses.account_id', 'targets.local', 'targets.uri',
+        'statuses.id', 'statuses.account_id', 'targets.id', 'targets.local', 'targets.uri',
         'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
         'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count'
       )
 
-    scored = rows.map do |id, account_id, local, uri, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
+    scored = rows.filter_map do |id, account_id, target_id, local, uri, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
+      # A recommendation feed should not recommend the viewer's own posts or boosts
+      next if account_id == @account.id
+
       # Remote statuses carry the origin instance's counts as untrusted counts;
       # prefer them so federated posts are scored on what the user actually sees
       remote      = !(local || uri.nil?)
@@ -99,11 +106,14 @@ class RankedHomeFeed < HomeFeed
 
       age_in_hours = [(now - entries[id]) / 1.hour, 0.0].max
       decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
+      jitter       = 1.0 + (JITTER * rand)
 
-      [id, (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity[account_id].to_i)) * decay]
+      # Boosts are scored on their target and surface the target itself, so
+      # the feed shows the post rather than an "x boosted" wrapper
+      [target_id, (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity[account_id].to_i)) * decay * jitter]
     end
 
-    scored.sort_by { |id, score| [-score, -id] }.map(&:first)
+    scored.sort_by { |id, score| [-score, -id] }.map(&:first).uniq
   end
 
   # Maps status id to feed insertion time. The zset score is the snowflake id
