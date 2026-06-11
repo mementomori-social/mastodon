@@ -67,6 +67,12 @@ class RankedHomeFeed < HomeFeed
     backfill_replies!(ranked_ids) if offset.zero?
 
     page_ids = ranked_ids[offset, limit] || []
+
+    if @discover && page_ids.size < limit
+      tail_offset = [offset - ranked_ids.size, 0].max
+      page_ids += discovery_tail_ids(tail_offset, limit - page_ids.size, ranked_ids)
+    end
+
     statuses = Status.where(id: page_ids).index_by(&:id)
 
     mark_seen!(page_ids)
@@ -214,7 +220,23 @@ class RankedHomeFeed < HomeFeed
   end
 
   def discovered_status_ids
-    Trends.statuses.query.allowed.filtered_for(@account).limit(DISCOVER_CANDIDATES).map(&:id)
+    Trends.statuses.query.allowed.filtered_for(@account)
+      .limit(DISCOVER_CANDIDATES)
+      .filter_map { |status| status.id unless status.account_id == @account.id }
+  end
+
+  # Once the ranked window is exhausted, deeper scrolling continues through
+  # the trending pool instead of ending at the feed window size
+  def discovery_tail_ids(tail_offset, needed, ranked_ids)
+    seen    = seen_ids
+    exclude = ranked_ids.to_set
+
+    Trends.statuses.query.allowed.filtered_for(@account)
+      .offset(DISCOVER_CANDIDATES + tail_offset)
+      .limit(needed * 3)
+      .filter_map { |status| status.id unless status.account_id == @account.id }
+      .reject { |id| exclude.include?(id) || seen.include?(id) }
+      .take(needed)
   end
 
   # Maps author account id to the number of times the viewer favourited,
