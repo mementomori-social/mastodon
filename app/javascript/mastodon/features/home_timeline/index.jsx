@@ -185,6 +185,7 @@ class HomeTimeline extends PureComponent {
             onLoadMore={this.handleLoadMore}
             timelineId='home'
             withCounters={ranked}
+            showFollowBadge={ranked}
             emptyMessage={<FormattedMessage id='empty_column.home' defaultMessage='Your home timeline is empty! Follow more people to fill it up.' />}
             bindToDocument={!multiColumn}
           />

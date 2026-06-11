@@ -1460,6 +1460,37 @@ body > [data-popper-placement] {
   color: var(--color-text-tertiary);
 }
 
+.status__avatar {
+  position: relative;
+}
+
+.avatar-follow-badge {
+  position: absolute;
+  bottom: -2px;
+  inset-inline-end: -2px;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  .icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover,
+  &:focus {
+    background: var(--color-bg-secondary);
+  }
+}
+
 .status__wrapper--filtered {
   color: var(--color-text-tertiary);
   border: 0;
