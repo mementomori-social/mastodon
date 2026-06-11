@@ -4,6 +4,7 @@ import api, { getLinks } from 'mastodon/api';
 import { compareId } from 'mastodon/compare_id';
 import { usePendingItems as preferPendingItems } from 'mastodon/initial_state';
 
+import { fetchRelationships } from './accounts';
 import { importFetchedStatus, importFetchedStatuses } from './importer';
 import { submitMarkers } from './markers';
 import { timelineDelete } from './timelines_typed';
@@ -179,7 +180,29 @@ export const expandHomeTimeline            = ({ maxId } = {}) => (dispatch, getS
     params = { ranked: true, discover, offset: 0 };
   }
 
-  return dispatch(expandTimeline('home', '/api/v1/timelines/home', params));
+  const promise = dispatch(expandTimeline('home', '/api/v1/timelines/home', params));
+
+  if (ranked) {
+    // The follow badge needs relationships for every author on the page
+    void promise.then(() => {
+      const state = getState();
+      const accountIds = state
+        .getIn(['timelines', 'home', 'items'], ImmutableList())
+        .filter(id => id !== null && /^\d+$/.test(id))
+        .map(id => state.getIn(['statuses', id, 'account']))
+        .filter(accountId => accountId && state.getIn(['relationships', accountId], null) === null)
+        .toSet()
+        .toArray();
+
+      if (accountIds.length > 0) {
+        dispatch(fetchRelationships(accountIds));
+      }
+
+      return undefined;
+    });
+  }
+
+  return promise;
 };
 export const expandPublicTimeline          = ({ maxId, onlyMedia, onlyRemote } = {}) => expandTimeline(`public${onlyRemote ? ':remote' : ''}${onlyMedia ? ':media' : ''}`, '/api/v1/timelines/public', { remote: !!onlyRemote, max_id: maxId, only_media: !!onlyMedia });
 export const expandCommunityTimeline       = ({ maxId, onlyMedia } = {}) => expandTimeline(`community${onlyMedia ? ':media' : ''}`, '/api/v1/timelines/public', { local: true, max_id: maxId, only_media: !!onlyMedia });
