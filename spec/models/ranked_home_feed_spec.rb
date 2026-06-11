@@ -130,6 +130,25 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'when posts have already been served to the viewer' do
+      let(:popular_status) { Fabricate(:status, account: bob) }
+      let(:plain_status)   { Fabricate(:status, account: ana) }
+
+      before do
+        Fabricate(:status_stat, status: popular_status, favourites_count: 10, reblogs_count: 3, replies_count: 2)
+        push(popular_status)
+        push(plain_status)
+      end
+
+      it 'ranks served posts behind unseen ones on the next computation' do
+        expect(subject.get(1)).to eq [popular_status]
+
+        Rails.cache.clear
+
+        expect(subject.get(2)).to eq [plain_status, popular_status]
+      end
+    end
+
     context 'when a feed entry no longer exists in the database' do
       let(:status) { Fabricate(:status, account: bob) }
 
