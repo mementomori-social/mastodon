@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'benchmark'
+
 # Re-orders the most recent window of a home feed by an engagement,
 # affinity and recency score instead of strict reverse-chronology.
 # Read-only: the underlying Redis feed is never modified.
@@ -67,11 +69,28 @@ class RankedHomeFeed < HomeFeed
   private
 
   def cached_ranked_ids
-    Rails.cache.fetch("ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}", expires_in: RANKING_CACHE_TTL) do
-      ids = scored_status_ids
-      ids = interleave_discovered(ids) if @discover
-      ids
+    computed = false
+
+    ids = Rails.cache.fetch("ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}", expires_in: RANKING_CACHE_TTL) do
+      computed = true
+      timings  = {}
+      result   = nil
+
+      timings[:affinity] = Benchmark.realtime { affinity_map }
+      timings[:scoring]  = Benchmark.realtime { result = scored_status_ids }
+      timings[:discover] = Benchmark.realtime { result = interleave_discovered(result) } if @discover
+
+      Rails.logger.info do
+        phases = timings.map { |phase, seconds| "#{phase}=#{(seconds * 1000).round}ms" }.join(' ')
+        "RankedHomeFeed compute account=#{@account.id} #{phases}"
+      end
+
+      result
     end
+
+    Rails.logger.debug { "RankedHomeFeed cache hit account=#{@account.id}" } unless computed
+
+    ids
   end
 
   def scored_status_ids
