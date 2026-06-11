@@ -140,12 +140,10 @@ RSpec.describe RankedHomeFeed do
         push(plain_status)
       end
 
-      it 'ranks served posts behind unseen ones on the next computation' do
+      it 'surfaces unseen posts first on every refresh and cycles back when all are seen' do
         expect(subject.get(1)).to eq [popular_status]
-
-        Rails.cache.clear
-
-        expect(subject.get(2)).to eq [plain_status, popular_status]
+        expect(subject.get(1)).to eq [plain_status]
+        expect(subject.get(2)).to eq [popular_status, plain_status]
       end
     end
 

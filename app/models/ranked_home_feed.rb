@@ -30,8 +30,9 @@ class RankedHomeFeed < HomeFeed
 
   AFFINITY_CACHE_TTL = 15.minutes
 
-  # How long the computed ranking is reused between requests; keeps offset
-  # pagination consistent while scrolling and caps the cost per user
+  # A refresh (offset 0) always recomputes the ranking so each one surfaces
+  # posts not seen before; the cached copy only keeps offset pagination
+  # consistent while the user scrolls
   RANKING_CACHE_TTL = ENV.fetch('RANKED_CACHE_TTL_SECONDS', '60').to_i.seconds
 
   # How many top candidates may get their remote reply trees backfilled per request
@@ -61,7 +62,7 @@ class RankedHomeFeed < HomeFeed
     limit  = limit.to_i
     offset = offset.to_i
 
-    ranked_ids = cached_ranked_ids
+    ranked_ids = offset.zero? ? refreshed_ranked_ids : cached_ranked_ids
 
     backfill_replies!(ranked_ids) if offset.zero?
 
@@ -75,29 +76,34 @@ class RankedHomeFeed < HomeFeed
 
   private
 
+  def refreshed_ranked_ids
+    ids = compute_ranked_ids
+    Rails.cache.write(ranking_cache_key, ids, expires_in: RANKING_CACHE_TTL)
+    ids
+  end
+
   def cached_ranked_ids
-    computed = false
+    Rails.cache.fetch(ranking_cache_key, expires_in: RANKING_CACHE_TTL) { compute_ranked_ids }
+  end
 
-    ids = Rails.cache.fetch("ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}", expires_in: RANKING_CACHE_TTL) do
-      computed = true
-      timings  = {}
-      result   = nil
+  def ranking_cache_key
+    "ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}"
+  end
 
-      timings[:affinity] = Benchmark.realtime { affinity_map }
-      timings[:scoring]  = Benchmark.realtime { result = scored_status_ids }
-      timings[:discover] = Benchmark.realtime { result = interleave_discovered(result) } if @discover
+  def compute_ranked_ids
+    timings = {}
+    result  = nil
 
-      Rails.logger.info do
-        phases = timings.map { |phase, seconds| "#{phase}=#{(seconds * 1000).round}ms" }.join(' ')
-        "RankedHomeFeed compute account=#{@account.id} #{phases}"
-      end
+    timings[:affinity] = Benchmark.realtime { affinity_map }
+    timings[:scoring]  = Benchmark.realtime { result = scored_status_ids }
+    timings[:discover] = Benchmark.realtime { result = interleave_discovered(result) } if @discover
 
-      result
+    Rails.logger.info do
+      phases = timings.map { |phase, seconds| "#{phase}=#{(seconds * 1000).round}ms" }.join(' ')
+      "RankedHomeFeed compute account=#{@account.id} #{phases}"
     end
 
-    Rails.logger.debug { "RankedHomeFeed cache hit account=#{@account.id}" } unless computed
-
-    ids
+    result
   end
 
   def scored_status_ids
