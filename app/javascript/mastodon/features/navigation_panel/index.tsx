@@ -221,7 +221,7 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
   const handleHomeClick = useCallback(() => {
     // The ranked feed reloads with fresh content when its link is clicked
     if (rankedHome) {
-      dispatch(expandHomeTimeline());
+      dispatch(expandHomeTimeline({ forceRefresh: true }));
     }
   }, [dispatch, rankedHome]);
 

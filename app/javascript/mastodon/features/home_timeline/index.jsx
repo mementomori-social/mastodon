@@ -80,7 +80,7 @@ class HomeTimeline extends PureComponent {
 
   handleHeaderClick = () => {
     if (this.props.ranked) {
-      this.props.dispatch(expandHomeTimeline());
+      this.props.dispatch(expandHomeTimeline({ forceRefresh: true }));
     }
 
     this.column.scrollTop();

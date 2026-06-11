@@ -161,7 +161,10 @@ export function fillTimelineGaps(timelineId, path, params = {}) {
   };
 }
 
-export const expandHomeTimeline            = ({ maxId } = {}) => (dispatch, getState) => {
+/**
+ * @param {{ maxId?: string, forceRefresh?: boolean }} [options]
+ */
+export const expandHomeTimeline            = ({ maxId, forceRefresh = false } = {}) => (dispatch, getState) => {
   const ranked   = getState().getIn(['settings', 'home', 'ranked'], false);
   const discover = getState().getIn(['settings', 'home', 'rankedDiscover'], false);
 
@@ -173,9 +176,21 @@ export const expandHomeTimeline            = ({ maxId } = {}) => (dispatch, getS
 
     params = { ranked: true, discover, offset: items.count(id => id !== null && /^\d+$/.test(id)) };
   } else if (ranked) {
+    const hasItems  = getState().getIn(['timelines', 'home', 'items'], ImmutableList()).size > 0;
+    const isPartial = getState().getIn(['timelines', 'home', 'isPartial'], false);
+
+    // Background catch-ups (stream reconnects, focus) must not wipe the
+    // ranked column and reset the scroll position; only explicit refreshes
+    // re-rank the feed
+    if (!forceRefresh && hasItems && !isPartial) {
+      return Promise.resolve();
+    }
+
     // A fetch from the top re-ranks the whole column so new posts are
     // included at their scored position instead of prepended chronologically
-    dispatch(clearTimeline('home'));
+    if (hasItems) {
+      dispatch(clearTimeline('home'));
+    }
 
     params = { ranked: true, discover, offset: 0 };
   }
