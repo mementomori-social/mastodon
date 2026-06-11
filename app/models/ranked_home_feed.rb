@@ -4,7 +4,8 @@ require 'benchmark'
 
 # Re-orders the most recent window of a home feed by an engagement,
 # affinity and recency score instead of strict reverse-chronology.
-# Read-only: the underlying Redis feed is never modified.
+# The underlying Redis feed is never modified; the only state written is a
+# per-user set of already served status ids used to keep refreshes fresh.
 #
 # Scoring runs over plucked rows (no model instantiation) and the ranked id
 # list is cached briefly per user, so only the returned page is hydrated.
@@ -46,6 +47,10 @@ class RankedHomeFeed < HomeFeed
   # order reshuffles a little on every refresh instead of freezing in place
   JITTER = ENV.fetch('RANKED_JITTER', '0.1').to_f
 
+  # How long served posts are remembered; within this window they always rank
+  # behind everything not yet seen, so refreshes surface new content first
+  SEEN_TTL = 2.days
+
   def initialize(account, discover: false)
     @discover = discover
 
@@ -62,6 +67,8 @@ class RankedHomeFeed < HomeFeed
 
     page_ids = ranked_ids[offset, limit] || []
     statuses = Status.where(id: page_ids).index_by(&:id)
+
+    mark_seen!(page_ids)
 
     page_ids.filter_map { |id| statuses[id] }
   end
@@ -96,6 +103,7 @@ class RankedHomeFeed < HomeFeed
   def scored_status_ids
     entries  = window_entries
     affinity = affinity_map
+    seen     = seen_ids
     now      = Time.now.utc
 
     # Boosts sit in the feed as wrapper statuses with no engagement of their
@@ -132,7 +140,15 @@ class RankedHomeFeed < HomeFeed
       [target_id, (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity[account_id].to_i)) * decay * jitter]
     end
 
-    scored.sort_by { |id, score| [-score, -id] }.map(&:first).uniq
+    unseen, already_seen = scored.partition { |id, _| seen.exclude?(id) }
+
+    # Already served posts go behind everything new, so the feed reads fresh
+    # on every recompute and repeats only once new content runs out
+    (rank(unseen) + rank(already_seen)).uniq
+  end
+
+  def rank(scored)
+    scored.sort_by { |id, score| [-score, -id] }.map(&:first)
   end
 
   # Maps status id to feed insertion time. The zset score is the snowflake id
@@ -172,6 +188,23 @@ class RankedHomeFeed < HomeFeed
     end
 
     result.concat(discovered)
+  end
+
+  def seen_key
+    "ranked_home_feed:seen:#{@account.id}"
+  end
+
+  def seen_ids
+    redis.smembers(seen_key).to_set(&:to_i)
+  end
+
+  def mark_seen!(status_ids)
+    return if status_ids.empty?
+
+    redis.pipelined do |pipeline|
+      pipeline.sadd(seen_key, status_ids)
+      pipeline.expire(seen_key, SEEN_TTL.to_i)
+    end
   end
 
   def discovered_status_ids
