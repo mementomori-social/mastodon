@@ -1479,6 +1479,7 @@ body > [data-popper-placement] {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: transform 150ms ease, background 150ms ease;
 
   .icon {
     width: 12px;
@@ -1488,6 +1489,7 @@ body > [data-popper-placement] {
   &:hover,
   &:focus {
     background: var(--color-bg-secondary);
+    transform: scale(1.2);
   }
 }
 
