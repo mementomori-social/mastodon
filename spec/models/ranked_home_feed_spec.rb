@@ -71,6 +71,23 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with a boost of a highly engaged status' do
+      let(:tim)            { Fabricate(:account) }
+      let(:popular_status) { Fabricate(:status, account: tim) }
+      let(:boost)          { Fabricate(:status, account: bob, reblog: popular_status) }
+      let(:plain_status)   { Fabricate(:status, account: ana) }
+
+      before do
+        Fabricate(:status_stat, status: popular_status, favourites_count: 10, reblogs_count: 3, replies_count: 2)
+        push(boost)
+        push(plain_status)
+      end
+
+      it 'scores the boost on the boosted status engagement' do
+        expect(subject.get(20)).to eq [boost, plain_status]
+      end
+    end
+
     context 'with a remote status whose engagement is only known to its origin instance' do
       let(:remote_account) { Fabricate(:account, domain: 'example.com') }
       let(:remote_status)  { Fabricate(:status, account: remote_account, uri: 'https://example.com/statuses/1') }
