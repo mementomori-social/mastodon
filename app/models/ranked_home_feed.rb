@@ -17,6 +17,11 @@ class RankedHomeFeed < HomeFeed
   # How far back the viewer's own interactions count towards author affinity
   AFFINITY_PERIOD = 30.days
 
+  # Cap on how many recent favourites are scanned for affinity; favourites
+  # have no created_at index, so the (account_id, id) index plus a limit
+  # keeps the query fast for very active accounts
+  AFFINITY_RECENT_FAVOURITES = ENV.fetch('RANKED_AFFINITY_RECENT_FAVOURITES', '2000').to_i
+
   # A status loses half of its score every HALF_LIFE_HOURS after feed insertion
   HALF_LIFE_HOURS = ENV.fetch('RANKED_HALF_LIFE_HOURS', '6.0').to_f
 
@@ -148,21 +153,30 @@ class RankedHomeFeed < HomeFeed
   # boosted or replied to that author within AFFINITY_PERIOD
   def affinity_map
     Rails.cache.fetch("ranked_home_feed:affinity:#{@account.id}", expires_in: AFFINITY_CACHE_TTL) do
-      since = AFFINITY_PERIOD.ago
+      # Status ids are snowflakes, so an id range uses the (account_id, id)
+      # index where a created_at filter would scan the whole account history
+      since_id = Mastodon::Snowflake.id_at(AFFINITY_PERIOD.ago, with_random: false)
 
-      favourites = Favourite.where(account_id: @account.id, created_at: since..)
+      recent_favourite_ids = Favourite.where(account_id: @account.id)
+        .order(id: :desc)
+        .limit(AFFINITY_RECENT_FAVOURITES)
+        .pluck(:id)
+
+      favourites = Favourite.where(id: recent_favourite_ids)
         .joins(:status)
         .group('statuses.account_id')
         .count
 
-      reblogs = Status.where(account_id: @account.id, created_at: since..)
+      reblogs = Status.where(account_id: @account.id)
+        .where(id: since_id..)
         .where.not(reblog_of_id: nil)
         .joins('INNER JOIN statuses AS reblog_targets ON reblog_targets.id = statuses.reblog_of_id')
         .reorder(nil)
         .group('reblog_targets.account_id')
         .count
 
-      replies = Status.where(account_id: @account.id, created_at: since..)
+      replies = Status.where(account_id: @account.id)
+        .where(id: since_id..)
         .where.not(in_reply_to_account_id: nil)
         .reorder(nil)
         .group(:in_reply_to_account_id)
