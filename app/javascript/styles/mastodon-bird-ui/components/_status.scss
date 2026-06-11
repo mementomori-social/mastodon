@@ -30,6 +30,7 @@
     display: inline-flex;
     gap: var(--gap-default);
     order: 1;
+    z-index: 2;
   }
 
   .status__info .display-name {
