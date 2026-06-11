@@ -94,6 +94,17 @@ RSpec.describe 'Home', :inline_jobs do
         expect(response.headers['Link']).to_not include('rel="prev"')
       end
 
+      context 'when the ranked feed is exhausted' do
+        let(:params) { { ranked: 'true', limit: 20 } }
+
+        it 'omits the next page link', :aggregate_failures do
+          subject
+
+          expect(response).to have_http_status(200)
+          expect(response.headers['Link'].to_s).to_not include('rel="next"')
+        end
+      end
+
       context 'with a negative offset' do
         let(:params) { { ranked: 'true', offset: -1 } }
 
