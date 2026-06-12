@@ -198,6 +198,40 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with word interests' do
+      let(:tim)      { Fabricate(:account, indexable: true) }
+      let(:writer)   { Fabricate(:account, indexable: true) }
+      let(:tagged)   { Fabricate(:status, account: writer, text: 'Paras saunailta pitkaan aikaan') }
+      let(:untagged) { Fabricate(:status, account: ana, text: 'Jotain ihan muuta sisaltoa') }
+
+      before do
+        stub_const('RankedHomeFeed::JITTER', 0.0)
+
+        liked = Fabricate(:status, account: tim, text: 'Taas yksi mahtava saunailta rannalla')
+        Fabricate(:favourite, account: viewer, status: liked)
+
+        push(tagged)
+        push(untagged)
+      end
+
+      it 'ranks posts sharing words with liked posts higher' do
+        expect(subject.get(20)).to eq [tagged, untagged]
+      end
+
+      it 'ignores words of authors who have not opted into search indexing' do
+        writer.update!(indexable: false)
+
+        expect(subject.get(20)).to eq [untagged, tagged]
+      end
+
+      it 'ignores instance wide common words' do
+        feed = subject
+        feed.send(:redis).sadd(InterestTerms::COMMON_TERMS_KEY, %w(saunailta))
+
+        expect(feed.get(20)).to eq [untagged, tagged]
+      end
+    end
+
     context 'when a feed entry no longer exists in the database' do
       let(:status) { Fabricate(:status, account: bob) }
 

@@ -44,6 +44,13 @@ class RankedHomeFeed < HomeFeed
   INTEREST_SAMPLE    = ENV.fetch('RANKED_INTEREST_SAMPLE', '1000').to_i
   INTEREST_CACHE_TTL = ENV.fetch('RANKED_INTEREST_CACHE_MINUTES', '60').to_i.minutes
 
+  # Term fingerprints are per status and shared by every user on the
+  # instance, so each post is tokenized once
+  FINGERPRINT_TTL = 2.days
+
+  # Cap on how many distinct words a profile keeps
+  INTEREST_PROFILE_TERMS = ENV.fetch('RANKED_INTEREST_PROFILE_TERMS', '100').to_i
+
   # A refresh (offset 0) always recomputes the ranking so each one surfaces
   # posts not seen before; the cached copy only keeps offset pagination
   # consistent while the user scrolls
@@ -156,7 +163,9 @@ class RankedHomeFeed < HomeFeed
       )
 
     direct_visibility = Status.visibilities[:direct]
-    status_tags       = interests.empty? ? {} : tags_for(rows.pluck(2).uniq)
+    candidate_ids     = rows.pluck(2).uniq
+    status_tags       = interests.empty? ? {} : tags_for(candidate_ids)
+    status_words      = interests.empty? ? {} : fingerprints_for(candidate_ids)
 
     scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
       # A recommendation feed should not recommend the viewer's own posts or boosts
@@ -180,7 +189,8 @@ class RankedHomeFeed < HomeFeed
       age_in_hours = [(now - entries[id]) / 1.hour, 0.0].max
       decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
       jitter       = 1.0 + (JITTER * rand)
-      interest     = (status_tags[target_id] || []).sum { |tag_id| interests[tag_id].to_i }
+      interest     = (status_tags[target_id] || []).sum { |tag_id| interests["t:#{tag_id}"].to_i } +
+                     (status_words[target_id] || []).sum { |term| interests["w:#{term}"].to_i }
 
       # Boosts are scored on their target and surface the target itself, so
       # the feed shows the post rather than an "x boosted" wrapper
@@ -283,8 +293,11 @@ class RankedHomeFeed < HomeFeed
       .take(needed)
   end
 
-  # Maps tag id to how often the viewer favourited, boosted or replied to
-  # posts carrying that tag within AFFINITY_PERIOD
+  # Maps interest keys to how often the viewer favourited, boosted or
+  # replied to posts carrying them within AFFINITY_PERIOD. Keys are
+  # "t:<tag id>" for hashtags (taken from all posts, since tagging is the
+  # author labeling the post for discovery) and "w:<term>" for words, taken
+  # ONLY from posts whose authors opted into search indexing.
   def interest_map
     Rails.cache.fetch("ranked_home_feed:interests:#{@account.id}", expires_in: INTEREST_CACHE_TTL) do
       since_id = Mastodon::Snowflake.id_at(AFFINITY_PERIOD.ago, with_random: false)
@@ -302,8 +315,57 @@ class RankedHomeFeed < HomeFeed
 
       status_ids = (favourited_ids + interacted_ids).compact.uniq.take(INTEREST_SAMPLE)
 
-      Status.where(id: status_ids).joins(:tags).reorder(nil).group('tags.id').count
+      profile = Status.where(id: status_ids).joins(:tags).reorder(nil).group('tags.id').count
+        .transform_keys { |tag_id| "t:#{tag_id}" }
+
+      word_counts = Hash.new(0)
+      fingerprints_for(status_ids).each_value do |terms|
+        terms.each { |term| word_counts[term] += 1 }
+      end
+
+      word_counts.sort_by { |_, count| -count }.take(INTEREST_PROFILE_TERMS).each do |term, count|
+        profile["w:#{term}"] = count
+      end
+
+      profile
     end
+  end
+
+  # Maps status id to its cached term fingerprint. Fingerprints are computed
+  # once per status and shared instance wide; posts by authors who have not
+  # opted into search indexing always have an empty fingerprint, so their
+  # words are never analyzed.
+  def fingerprints_for(status_ids)
+    keys   = status_ids.index_by { |id| "ranked_home_feed:fp:#{id}" }
+    cached = Rails.cache.read_multi(*keys.keys)
+
+    missing_ids = keys.filter_map { |key, id| id unless cached.key?(key) }
+
+    if missing_ids.any?
+      common   = common_terms
+      computed = missing_ids.index_with { [] }
+
+      Status.where(id: missing_ids)
+        .joins(:account)
+        .pluck(:id, :text, :local, :uri, 'accounts.indexable')
+        .each do |id, text, local, uri, indexable|
+          next unless indexable
+
+          computed[id] = InterestTerms.tokenize(text, local || uri.nil?).reject { |term| common.include?(term) }
+        end
+
+      Rails.cache.write_multi(computed.transform_keys { |id| "ranked_home_feed:fp:#{id}" }, expires_in: FINGERPRINT_TTL)
+      cached = cached.merge(computed.transform_keys { |id| "ranked_home_feed:fp:#{id}" })
+    end
+
+    cached.transform_keys { |key| keys[key] }
+  end
+
+  # Instance wide set of the most common words in recent posts, maintained
+  # by Scheduler::RankedCommonTermsScheduler; works for any language because
+  # it is derived from local usage instead of hardcoded lists
+  def common_terms
+    redis.smembers(InterestTerms::COMMON_TERMS_KEY).to_set
   end
 
   # Maps status id to the ids of the hashtags it carries
