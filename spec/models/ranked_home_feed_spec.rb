@@ -147,6 +147,20 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with a private mention in the feed' do
+      let(:dm)           { Fabricate(:status, account: bob, visibility: :direct) }
+      let(:plain_status) { Fabricate(:status, account: ana) }
+
+      before do
+        push(dm)
+        push(plain_status)
+      end
+
+      it 'never surfaces direct visibility statuses' do
+        expect(subject.get(20)).to eq [plain_status]
+      end
+    end
+
     context 'when a feed entry no longer exists in the database' do
       let(:status) { Fabricate(:status, account: bob) }
 

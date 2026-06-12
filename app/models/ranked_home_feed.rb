@@ -134,14 +134,19 @@ class RankedHomeFeed < HomeFeed
       .joins('INNER JOIN statuses AS targets ON targets.id = COALESCE(statuses.reblog_of_id, statuses.id)')
       .joins('LEFT JOIN status_stats ON status_stats.status_id = targets.id')
       .pluck(
-        'statuses.id', 'statuses.account_id', 'targets.id', 'targets.local', 'targets.uri',
+        'statuses.id', 'statuses.account_id', 'targets.id', 'targets.local', 'targets.uri', 'targets.visibility',
         'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
         'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count'
       )
 
-    scored = rows.filter_map do |id, account_id, target_id, local, uri, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
+    direct_visibility = Status.visibilities[:direct]
+
+    scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
       # A recommendation feed should not recommend the viewer's own posts or boosts
       next if account_id == @account.id
+
+      # Private mentions belong to the conversations view, not a ranked feed
+      next if visibility == direct_visibility
 
       # Remote statuses carry the origin instance's counts as untrusted counts;
       # prefer them so federated posts are scored on what the user actually sees
