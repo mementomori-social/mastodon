@@ -81,6 +81,7 @@ RSpec.describe 'Home', :inline_jobs do
         FeedManager.instance.push_to_home(user.account, plain_status, update: false)
         FeedManager.instance.push_to_home(user.account, popular_status, update: false)
         3.times { Fabricate(:favourite, status: popular_status) }
+        Fabricate(:favourite, status: plain_status)
       end
 
       it 'returns statuses ordered by score with offset-based pagination', :aggregate_failures do

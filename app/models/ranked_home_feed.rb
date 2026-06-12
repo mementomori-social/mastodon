@@ -28,6 +28,10 @@ class RankedHomeFeed < HomeFeed
   # A status loses half of its score every HALF_LIFE_HOURS after feed insertion
   HALF_LIFE_HOURS = ENV.fetch('RANKED_HALF_LIFE_HOURS', '6.0').to_f
 
+  # Posts with no engagement yet must be at least this old before they are
+  # eligible, so brand new posts get time to gather signal first
+  MIN_AGE_MINUTES = ENV.fetch('RANKED_MIN_AGE_MINUTES', '15').to_i
+
   AFFINITY_CACHE_TTL = 15.minutes
 
   # A refresh (offset 0) always recomputes the ranking so each one surfaces
@@ -157,6 +161,8 @@ class RankedHomeFeed < HomeFeed
       engagement = (REBLOG_WEIGHT * boost_count) +
                    (REPLY_WEIGHT * replies.to_i) +
                    (FAVOURITE_WEIGHT * fav_count)
+
+      next if engagement.zero? && entries[id] > now - MIN_AGE_MINUTES.minutes
 
       age_in_hours = [(now - entries[id]) / 1.hour, 0.0].max
       decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)

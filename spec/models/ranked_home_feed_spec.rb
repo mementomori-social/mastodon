@@ -14,6 +14,8 @@ RSpec.describe RankedHomeFeed do
   end
 
   describe '#get' do
+    before { stub_const('RankedHomeFeed::MIN_AGE_MINUTES', 0) }
+
     context 'when the feed is empty' do
       it 'returns an empty array' do
         expect(subject.get(20)).to eq []
@@ -158,6 +160,21 @@ RSpec.describe RankedHomeFeed do
 
       it 'never surfaces direct visibility statuses' do
         expect(subject.get(20)).to eq [plain_status]
+      end
+    end
+
+    context 'with a brand new post without engagement' do
+      before do
+        stub_const('RankedHomeFeed::MIN_AGE_MINUTES', 15)
+        push(fresh_zero)
+        push(older_zero)
+      end
+
+      let(:fresh_zero) { Fabricate(:status, account: bob) }
+      let(:older_zero) { Fabricate(:status, account: ana, id: Mastodon::Snowflake.id_at(20.minutes.ago, with_random: false)) }
+
+      it 'hides the post until it is old enough to have gathered signal' do
+        expect(subject.get(20)).to eq [older_zero]
       end
     end
 
