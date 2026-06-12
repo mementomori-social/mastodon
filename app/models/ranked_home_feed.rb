@@ -28,6 +28,10 @@ class RankedHomeFeed < HomeFeed
   # A status loses half of its score every HALF_LIFE_HOURS after feed insertion
   HALF_LIFE_HOURS = ENV.fetch('RANKED_HALF_LIFE_HOURS', '6.0').to_f
 
+  # Posts with no engagement yet must be at least this old before they are
+  # eligible, so brand new posts get time to gather signal first
+  MIN_AGE_MINUTES = ENV.fetch('RANKED_MIN_AGE_MINUTES', '15').to_i
+
   AFFINITY_CACHE_TTL = 15.minutes
 
   # A refresh (offset 0) always recomputes the ranking so each one surfaces
@@ -134,14 +138,19 @@ class RankedHomeFeed < HomeFeed
       .joins('INNER JOIN statuses AS targets ON targets.id = COALESCE(statuses.reblog_of_id, statuses.id)')
       .joins('LEFT JOIN status_stats ON status_stats.status_id = targets.id')
       .pluck(
-        'statuses.id', 'statuses.account_id', 'targets.id', 'targets.local', 'targets.uri',
+        'statuses.id', 'statuses.account_id', 'targets.id', 'targets.local', 'targets.uri', 'targets.visibility',
         'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
         'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count'
       )
 
-    scored = rows.filter_map do |id, account_id, target_id, local, uri, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
+    direct_visibility = Status.visibilities[:direct]
+
+    scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
       # A recommendation feed should not recommend the viewer's own posts or boosts
       next if account_id == @account.id
+
+      # Private mentions belong to the conversations view, not a ranked feed
+      next if visibility == direct_visibility
 
       # Remote statuses carry the origin instance's counts as untrusted counts;
       # prefer them so federated posts are scored on what the user actually sees
@@ -152,6 +161,8 @@ class RankedHomeFeed < HomeFeed
       engagement = (REBLOG_WEIGHT * boost_count) +
                    (REPLY_WEIGHT * replies.to_i) +
                    (FAVOURITE_WEIGHT * fav_count)
+
+      next if engagement.zero? && entries[id] > now - MIN_AGE_MINUTES.minutes
 
       age_in_hours = [(now - entries[id]) / 1.hour, 0.0].max
       decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
