@@ -44,9 +44,9 @@ class RankedHomeFeed < HomeFeed
   INTEREST_SAMPLE    = ENV.fetch('RANKED_INTEREST_SAMPLE', '1000').to_i
   INTEREST_CACHE_TTL = ENV.fetch('RANKED_INTEREST_CACHE_MINUTES', '60').to_i.minutes
 
-  # Term fingerprints are per status and shared by every user on the
-  # instance, so each post is tokenized once
-  FINGERPRINT_TTL = 2.days
+  # Term sets are per status and shared by every user on the instance, so
+  # each post is tokenized once
+  TERMS_TTL = 2.days
 
   # Cap on how many distinct words a profile keeps
   INTEREST_PROFILE_TERMS = ENV.fetch('RANKED_INTEREST_PROFILE_TERMS', '100').to_i
@@ -165,7 +165,7 @@ class RankedHomeFeed < HomeFeed
     direct_visibility = Status.visibilities[:direct]
     candidate_ids     = rows.pluck(2).uniq
     status_tags       = interests.empty? ? {} : tags_for(candidate_ids)
-    status_words      = interests.empty? ? {} : fingerprints_for(candidate_ids)
+    status_words      = interests.empty? ? {} : terms_for(candidate_ids)
 
     scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
       # A recommendation feed should not recommend the viewer's own posts or boosts
@@ -319,7 +319,7 @@ class RankedHomeFeed < HomeFeed
         .transform_keys { |tag_id| "t:#{tag_id}" }
 
       word_counts = Hash.new(0)
-      fingerprints_for(status_ids).each_value do |terms|
+      terms_for(status_ids).each_value do |terms|
         terms.each { |term| word_counts[term] += 1 }
       end
 
@@ -331,12 +331,11 @@ class RankedHomeFeed < HomeFeed
     end
   end
 
-  # Maps status id to its cached term fingerprint. Fingerprints are computed
-  # once per status and shared instance wide; posts by authors who have not
-  # opted into search indexing always have an empty fingerprint, so their
-  # words are never analyzed.
-  def fingerprints_for(status_ids)
-    keys   = status_ids.index_by { |id| "ranked_home_feed:fp:#{id}" }
+  # Maps status id to its cached set of significant terms. Term sets are
+  # computed once per status and shared instance wide; posts by authors who
+  # have not opted into search indexing always have an empty term set.
+  def terms_for(status_ids)
+    keys   = status_ids.index_by { |id| "ranked_home_feed:terms:#{id}" }
     cached = Rails.cache.read_multi(*keys.keys)
 
     missing_ids = keys.filter_map { |key, id| id unless cached.key?(key) }
@@ -354,8 +353,8 @@ class RankedHomeFeed < HomeFeed
           computed[id] = InterestTerms.tokenize(text, local || uri.nil?).reject { |term| common.include?(term) }
         end
 
-      Rails.cache.write_multi(computed.transform_keys { |id| "ranked_home_feed:fp:#{id}" }, expires_in: FINGERPRINT_TTL)
-      cached = cached.merge(computed.transform_keys { |id| "ranked_home_feed:fp:#{id}" })
+      Rails.cache.write_multi(computed.transform_keys { |id| "ranked_home_feed:terms:#{id}" }, expires_in: TERMS_TTL)
+      cached = cached.merge(computed.transform_keys { |id| "ranked_home_feed:terms:#{id}" })
     end
 
     cached.transform_keys { |key| keys[key] }
