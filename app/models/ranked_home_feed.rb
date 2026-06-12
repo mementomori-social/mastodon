@@ -34,6 +34,16 @@ class RankedHomeFeed < HomeFeed
 
   AFFINITY_CACHE_TTL = 15.minutes
 
+  # Hashtags on posts the viewer favourited, boosted or replied to form an
+  # interest profile; posts carrying those tags score higher
+  INTEREST_WEIGHT = ENV.fetch('RANKED_INTEREST_WEIGHT', '0.5').to_f
+
+  # Cap on how many recent interactions feed the interest profile, and how
+  # long the profile is reused; interests drift slowly, so this stays cheap
+  # even with very large accounts and instances
+  INTEREST_SAMPLE    = ENV.fetch('RANKED_INTEREST_SAMPLE', '1000').to_i
+  INTEREST_CACHE_TTL = ENV.fetch('RANKED_INTEREST_CACHE_MINUTES', '60').to_i.minutes
+
   # A refresh (offset 0) always recomputes the ranking so each one surfaces
   # posts not seen before; the cached copy only keeps offset pagination
   # consistent while the user scrolls
@@ -114,8 +124,9 @@ class RankedHomeFeed < HomeFeed
     timings = {}
     result  = nil
 
-    timings[:affinity] = Benchmark.realtime { affinity_map }
-    timings[:scoring]  = Benchmark.realtime { result = scored_status_ids }
+    timings[:affinity]  = Benchmark.realtime { affinity_map }
+    timings[:interests] = Benchmark.realtime { interest_map }
+    timings[:scoring]   = Benchmark.realtime { result = scored_status_ids }
     timings[:discover] = Benchmark.realtime { result = interleave_discovered(result) } if @discover
 
     Rails.logger.info do
@@ -127,10 +138,11 @@ class RankedHomeFeed < HomeFeed
   end
 
   def scored_status_ids
-    entries  = window_entries
-    affinity = affinity_map
-    seen     = seen_ids
-    now      = Time.now.utc
+    entries   = window_entries
+    affinity  = affinity_map
+    interests = interest_map
+    seen      = seen_ids
+    now       = Time.now.utc
 
     # Boosts sit in the feed as wrapper statuses with no engagement of their
     # own, so engagement and remoteness are read from the boosted target
@@ -144,6 +156,7 @@ class RankedHomeFeed < HomeFeed
       )
 
     direct_visibility = Status.visibilities[:direct]
+    status_tags       = interests.empty? ? {} : tags_for(rows.pluck(2).uniq)
 
     scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
       # A recommendation feed should not recommend the viewer's own posts or boosts
@@ -167,10 +180,15 @@ class RankedHomeFeed < HomeFeed
       age_in_hours = [(now - entries[id]) / 1.hour, 0.0].max
       decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
       jitter       = 1.0 + (JITTER * rand)
+      interest     = (status_tags[target_id] || []).sum { |tag_id| interests[tag_id].to_i }
 
       # Boosts are scored on their target and surface the target itself, so
       # the feed shows the post rather than an "x boosted" wrapper
-      [target_id, (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity[account_id].to_i)) * decay * jitter]
+      [target_id,
+       (1.0 + engagement) *
+         (1.0 + Math.log(1.0 + affinity[account_id].to_i)) *
+         (1.0 + (INTEREST_WEIGHT * Math.log(1.0 + interest))) *
+         decay * jitter]
     end
 
     unseen, already_seen = scored.partition { |id, _| seen.exclude?(id) }
@@ -263,6 +281,39 @@ class RankedHomeFeed < HomeFeed
       .filter_map { |status| status.id unless status.account_id == @account.id }
       .reject { |id| exclude.include?(id) || seen.include?(id) }
       .take(needed)
+  end
+
+  # Maps tag id to how often the viewer favourited, boosted or replied to
+  # posts carrying that tag within AFFINITY_PERIOD
+  def interest_map
+    Rails.cache.fetch("ranked_home_feed:interests:#{@account.id}", expires_in: INTEREST_CACHE_TTL) do
+      since_id = Mastodon::Snowflake.id_at(AFFINITY_PERIOD.ago, with_random: false)
+
+      favourited_ids = Favourite.where(account_id: @account.id)
+        .order(id: :desc)
+        .limit(AFFINITY_RECENT_FAVOURITES)
+        .pluck(:status_id)
+
+      interacted_ids = Status.where(account_id: @account.id)
+        .where(id: since_id..)
+        .reorder(nil)
+        .pluck(:reblog_of_id, :in_reply_to_id)
+        .flatten
+
+      status_ids = (favourited_ids + interacted_ids).compact.uniq.take(INTEREST_SAMPLE)
+
+      Status.where(id: status_ids).joins(:tags).reorder(nil).group('tags.id').count
+    end
+  end
+
+  # Maps status id to the ids of the hashtags it carries
+  def tags_for(status_ids)
+    Status.where(id: status_ids)
+      .joins(:tags)
+      .reorder(nil)
+      .pluck(:id, 'tags.id')
+      .group_by(&:first)
+      .transform_values { |pairs| pairs.map(&:last) }
   end
 
   # Maps author account id to the number of times the viewer favourited,

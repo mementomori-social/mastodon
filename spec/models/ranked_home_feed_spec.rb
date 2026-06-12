@@ -178,6 +178,26 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with hashtag interests' do
+      let(:tim)       { Fabricate(:account) }
+      let(:sauna_tag) { Fabricate(:tag, name: 'sauna') }
+      let(:tagged)    { Fabricate(:status, account: bob).tap { |status| status.tags << sauna_tag } }
+      let(:untagged)  { Fabricate(:status, account: ana) }
+
+      before do
+        liked = Fabricate(:status, account: tim)
+        liked.tags << sauna_tag
+        Fabricate(:favourite, account: viewer, status: liked)
+
+        push(tagged)
+        push(untagged)
+      end
+
+      it 'ranks posts carrying tags the viewer interacts with higher' do
+        expect(subject.get(20)).to eq [tagged, untagged]
+      end
+    end
+
     context 'when a feed entry no longer exists in the database' do
       let(:status) { Fabricate(:status, account: bob) }
 
