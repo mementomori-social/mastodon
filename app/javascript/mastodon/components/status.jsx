@@ -31,6 +31,7 @@ import { getHashtagBarForStatus } from './hashtag_bar';
 import StatusActionBar from './status_action_bar';
 import StatusContent from './status_content';
 import { StatusThreadLabel } from './status_thread_label';
+import { ReplyAncestor } from './reply_ancestor';
 import { CollectionPreviewCard } from '../features/collections/components/collection_preview_card';
 import { compareUrls } from '../utils/compare_urls';
 
@@ -454,9 +455,17 @@ class Status extends ImmutablePureComponent {
         </div>
       );
     } else if (showThread && status.get('in_reply_to_id')) {
-      prepend = (
-        <StatusThreadLabel accountId={status.getIn(['account', 'id'])} inReplyToAccountId={status.get('in_reply_to_account_id')} />
-      );
+      // Show the ancestor post above the reply for context (issue #25888);
+      // a self-reply (own thread) keeps the lighter label instead
+      if (status.get('in_reply_to_account_id') === status.getIn(['account', 'id'])) {
+        prepend = (
+          <StatusThreadLabel accountId={status.getIn(['account', 'id'])} inReplyToAccountId={status.get('in_reply_to_account_id')} />
+        );
+      } else {
+        prepend = (
+          <ReplyAncestor statusId={status.get('in_reply_to_id')} />
+        );
+      }
     }
 
     const expanded = (!matchedFilters || this.state.showDespiteFilter) && (!status.get('hidden') || status.get('spoiler_text').length === 0);

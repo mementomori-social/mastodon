@@ -1309,6 +1309,7 @@
   "status.revoke_quote": "Remove my post from @{name}’s post",
   "status.sensitive_warning": "Sensitive content",
   "status.share": "Share",
+  "status.show_earlier_in_thread": "Show earlier posts",
   "status.show_less_all": "Show less for all",
   "status.show_more_all": "Show more for all",
   "status.show_original": "Show original",
