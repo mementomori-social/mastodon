@@ -101,13 +101,16 @@ const parseTags = (tags = {}, mode) => {
 export function expandTimeline(timelineId, path, params = {}) {
   return async (dispatch, getState) => {
     const timeline = getState().getIn(['timelines', timelineId], ImmutableMap());
-    const isLoadingMore = !!params.max_id;
+    // A ranked feed is not ordered by id, so it paginates by offset and must
+    // never be merged by id; track that separately from chronological loads
+    const ordered = !!params.ranked;
+    const isLoadingMore = ordered ? Number(params.offset) > 0 : !!params.max_id;
 
     if (timeline.get('isLoading')) {
       return;
     }
 
-    if (!params.max_id && !params.pinned && (timeline.get('items', ImmutableList()).size + timeline.get('pendingItems', ImmutableList()).size) > 0) {
+    if (!params.max_id && !params.pinned && !ordered && (timeline.get('items', ImmutableList()).size + timeline.get('pendingItems', ImmutableList()).size) > 0) {
       const a = timeline.getIn(['pendingItems', 0]);
       const b = timeline.getIn(['items', 0]);
 
@@ -127,9 +130,9 @@ export function expandTimeline(timelineId, path, params = {}) {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
 
       dispatch(importFetchedStatuses(response.data));
-      dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.status === 206, isLoadingRecent, isLoadingMore, isLoadingRecent && preferPendingItems));
+      dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.status === 206, isLoadingRecent, isLoadingMore, isLoadingRecent && preferPendingItems, ordered));
 
-      if (timelineId === 'home' && !isLoadingMore && !isLoadingRecent) {
+      if (timelineId === 'home' && !isLoadingMore && !isLoadingRecent && !ordered) {
         const now = new Date();
         const fittingIndex = response.data.findIndex(status => now - (new Date(status.created_at)) > 4 * 3600 * 1000);
 
@@ -249,7 +252,7 @@ export function expandTimelineRequest(timeline, isLoadingMore) {
   };
 }
 
-export function expandTimelineSuccess(timeline, statuses, next, partial, isLoadingRecent, isLoadingMore, usePendingItems) {
+export function expandTimelineSuccess(timeline, statuses, next, partial, isLoadingRecent, isLoadingMore, usePendingItems, ordered = false) {
   return {
     type: TIMELINE_EXPAND_SUCCESS,
     timeline,
@@ -257,7 +260,9 @@ export function expandTimelineSuccess(timeline, statuses, next, partial, isLoadi
     next,
     partial,
     isLoadingRecent,
+    isLoadingMore,
     usePendingItems,
+    ordered,
     skipLoading: !isLoadingMore,
   };
 }
