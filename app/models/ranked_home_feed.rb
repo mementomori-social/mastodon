@@ -32,6 +32,11 @@ class RankedHomeFeed < HomeFeed
   # eligible, so brand new posts get time to gather signal first
   MIN_AGE_MINUTES = ENV.fetch('RANKED_MIN_AGE_MINUTES', '15').to_i
 
+  # Replies do not surface as themselves; they heat up the post they reply to.
+  # A post outside the feed window is pulled in (discovery only) once the
+  # combined heat of its repliers, weighted by viewer affinity, reaches this.
+  DISCUSSION_MIN_HEAT = ENV.fetch('RANKED_DISCUSSION_MIN_HEAT', '2.0').to_f
+
   AFFINITY_CACHE_TTL = 15.minutes
 
   # Hashtags on posts the viewer favourited, boosted or replied to form an
@@ -158,6 +163,7 @@ class RankedHomeFeed < HomeFeed
       .joins('LEFT JOIN status_stats ON status_stats.status_id = targets.id')
       .pluck(
         'statuses.id', 'statuses.account_id', 'targets.id', 'targets.local', 'targets.uri', 'targets.visibility',
+        'targets.in_reply_to_id',
         'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
         'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count'
       )
@@ -167,12 +173,25 @@ class RankedHomeFeed < HomeFeed
     status_tags       = interests.empty? ? {} : tags_for(candidate_ids)
     status_words      = interests.empty? ? {} : terms_for(candidate_ids)
 
-    scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
+    # Replies heat up the post they reply to instead of appearing themselves;
+    # a reply from an author the viewer interacts with carries more heat
+    reply_heat = Hash.new(0.0)
+
+    rows.each do |_id, account_id, _target_id, _local, _uri, visibility, in_reply_to_id, *|
+      next if in_reply_to_id.nil? || visibility == direct_visibility
+
+      reply_heat[in_reply_to_id] += 1.0 + Math.log(1.0 + affinity[account_id].to_i)
+    end
+
+    scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, in_reply_to_id, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
       # A recommendation feed should not recommend the viewer's own posts or boosts
       next if account_id == @account.id
 
       # Private mentions belong to the conversations view, not a ranked feed
       next if visibility == direct_visibility
+
+      # Replies only contribute heat; the discussed post is what surfaces
+      next unless in_reply_to_id.nil?
 
       # Remote statuses carry the origin instance's counts as untrusted counts;
       # prefer them so federated posts are scored on what the user actually sees
@@ -182,7 +201,8 @@ class RankedHomeFeed < HomeFeed
 
       engagement = (REBLOG_WEIGHT * boost_count) +
                    (REPLY_WEIGHT * replies.to_i) +
-                   (FAVOURITE_WEIGHT * fav_count)
+                   (FAVOURITE_WEIGHT * fav_count) +
+                   (REPLY_WEIGHT * reply_heat[target_id])
 
       next if engagement.zero? && entries[id] > now - MIN_AGE_MINUTES.minutes
 
@@ -201,6 +221,10 @@ class RankedHomeFeed < HomeFeed
          decay * jitter]
     end
 
+    # Pulling discussed posts from outside the window can surface authors the
+    # viewer does not follow, so it is gated behind the discovery toggle
+    scored += discussed_parents(reply_heat, scored.map(&:first), affinity, now) if @discover
+
     unseen, already_seen = scored.partition { |id, _| seen.exclude?(id) }
 
     # Already served posts go behind everything new, so the feed reads fresh
@@ -210,6 +234,44 @@ class RankedHomeFeed < HomeFeed
 
   def rank(scored)
     scored.sort_by { |id, score| [-score, -id] }.map(&:first)
+  end
+
+  # Posts outside the feed window whose discussion is hot right now, pulled
+  # into the candidate pool; public posts only, blocks and mutes respected
+  def discussed_parents(reply_heat, scored_ids, affinity, now)
+    hot           = reply_heat.select { |_, heat| heat >= DISCUSSION_MIN_HEAT }
+    candidate_ids = hot.keys - scored_ids
+
+    return [] if candidate_ids.empty?
+
+    rows = Status.where(id: candidate_ids, visibility: %i(public unlisted))
+      .not_excluded_by_account(@account)
+      .not_domain_blocked_by_account(@account)
+      .left_joins(:status_stat)
+      .pluck(
+        'statuses.id', 'statuses.account_id', 'statuses.local', 'statuses.uri',
+        'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
+        'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count'
+      )
+
+    rows.filter_map do |id, account_id, local, uri, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
+      next if account_id == @account.id
+
+      remote      = !(local || uri.nil?)
+      boost_count = remote ? (untrusted_reblogs || reblogs).to_i : reblogs.to_i
+      fav_count   = remote ? (untrusted_favourites || favourites).to_i : favourites.to_i
+
+      engagement = (REBLOG_WEIGHT * boost_count) +
+                   (REPLY_WEIGHT * replies.to_i) +
+                   (FAVOURITE_WEIGHT * fav_count) +
+                   (REPLY_WEIGHT * hot[id])
+
+      age_in_hours = [(now - Mastodon::Snowflake.to_time(id)) / 1.hour, 0.0].max
+      decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
+      jitter       = 1.0 + (JITTER * rand)
+
+      [id, (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity[account_id].to_i)) * decay * jitter]
+    end
   end
 
   # Maps status id to feed insertion time. The zset score is the snowflake id
