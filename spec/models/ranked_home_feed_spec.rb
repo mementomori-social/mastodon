@@ -277,6 +277,14 @@ RSpec.describe RankedHomeFeed do
           expect(subject.get(20)).to eq [parent]
         end
 
+        it 'does not pull in a discussed post that is itself a reply' do
+          midthread = Fabricate(:status, account: tim, thread: parent)
+          push(Fabricate(:status, account: ana, thread: midthread))
+          push(Fabricate(:status, account: bob, thread: midthread))
+
+          expect(subject.get(20)).to_not include(midthread)
+        end
+
         it 'does not pull in posts from blocked authors' do
           viewer.block!(tim)
           push(Fabricate(:status, account: ana, thread: parent))

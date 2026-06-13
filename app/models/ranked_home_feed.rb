@@ -244,7 +244,9 @@ class RankedHomeFeed < HomeFeed
 
     return [] if candidate_ids.empty?
 
-    rows = Status.where(id: candidate_ids, visibility: %i(public unlisted))
+    # Only thread roots are pulled in; a reply must never surface out of
+    # context, so a discussed mid-thread reply is skipped rather than shown
+    rows = Status.where(id: candidate_ids, visibility: %i(public unlisted), in_reply_to_id: nil)
       .not_excluded_by_account(@account)
       .not_domain_blocked_by_account(@account)
       .left_joins(:status_stat)
