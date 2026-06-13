@@ -22,6 +22,7 @@ class Scheduler::RankedCommonTermsScheduler
 
     while sampled < SAMPLE_SIZE
       batch = Status.where(id: since_id..)
+        .distributable_visibility
         .where(max_id ? ['statuses.id < ?', max_id] : '1=1')
         .reorder(id: :desc)
         .limit(BATCH_SIZE)

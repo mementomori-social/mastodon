@@ -232,6 +232,24 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with private posts and word interests' do
+      let(:writer) { Fabricate(:account, indexable: true) }
+      let(:public_match)  { Fabricate(:status, account: writer, text: 'Paras saunailta pitkaan aikaan', visibility: :public) }
+      let(:private_match) { Fabricate(:status, account: writer, text: 'Paras saunailta pitkaan aikaan', visibility: :private) }
+
+      before do
+        stub_const('RankedHomeFeed::JITTER', 0.0)
+        liked = Fabricate(:status, account: writer, text: 'Taas yksi mahtava saunailta', visibility: :public)
+        Fabricate(:favourite, account: viewer, status: liked)
+        push(public_match)
+        push(private_match)
+      end
+
+      it 'word boosts only the public post, never the private one' do
+        expect(subject.get(20)).to eq [public_match, private_match]
+      end
+    end
+
     context 'when a feed entry no longer exists in the database' do
       let(:status) { Fabricate(:status, account: bob) }
 

@@ -315,7 +315,9 @@ class RankedHomeFeed < HomeFeed
 
       status_ids = (favourited_ids + interacted_ids).compact.uniq.take(INTEREST_SAMPLE)
 
-      profile = Status.where(id: status_ids).joins(:tags).reorder(nil).group('tags.id').count
+      # Built only from public posts the viewer engaged with, matching the
+      # word tier; the profile is per user and never shared
+      profile = Status.where(id: status_ids).distributable_visibility.joins(:tags).reorder(nil).group('tags.id').count
         .transform_keys { |tag_id| "t:#{tag_id}" }
 
       word_counts = Hash.new(0)
@@ -344,7 +346,11 @@ class RankedHomeFeed < HomeFeed
       common   = common_terms
       computed = missing_ids.index_with { [] }
 
+      # Only public posts from authors who opted into search indexing are
+      # tokenized; the indexable flag covers public content only, so private
+      # and followers only posts are never analyzed
       Status.where(id: missing_ids)
+        .distributable_visibility
         .joins(:account)
         .pluck(:id, :text, :local, :uri, 'accounts.indexable')
         .each do |id, text, local, uri, indexable|
