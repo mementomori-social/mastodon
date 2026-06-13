@@ -34,6 +34,23 @@ class RankedHomeFeed < HomeFeed
 
   AFFINITY_CACHE_TTL = 15.minutes
 
+  # Hashtags on posts the viewer favourited, boosted or replied to form an
+  # interest profile; posts carrying those tags score higher
+  INTEREST_WEIGHT = ENV.fetch('RANKED_INTEREST_WEIGHT', '0.5').to_f
+
+  # Cap on how many recent interactions feed the interest profile, and how
+  # long the profile is reused; interests drift slowly, so this stays cheap
+  # even with very large accounts and instances
+  INTEREST_SAMPLE    = ENV.fetch('RANKED_INTEREST_SAMPLE', '1000').to_i
+  INTEREST_CACHE_TTL = ENV.fetch('RANKED_INTEREST_CACHE_MINUTES', '60').to_i.minutes
+
+  # Term sets are per status and shared by every user on the instance, so
+  # each post is tokenized once
+  TERMS_TTL = 2.days
+
+  # Cap on how many distinct words a profile keeps
+  INTEREST_PROFILE_TERMS = ENV.fetch('RANKED_INTEREST_PROFILE_TERMS', '100').to_i
+
   # A refresh (offset 0) always recomputes the ranking so each one surfaces
   # posts not seen before; the cached copy only keeps offset pagination
   # consistent while the user scrolls
@@ -114,8 +131,9 @@ class RankedHomeFeed < HomeFeed
     timings = {}
     result  = nil
 
-    timings[:affinity] = Benchmark.realtime { affinity_map }
-    timings[:scoring]  = Benchmark.realtime { result = scored_status_ids }
+    timings[:affinity]  = Benchmark.realtime { affinity_map }
+    timings[:interests] = Benchmark.realtime { interest_map }
+    timings[:scoring]   = Benchmark.realtime { result = scored_status_ids }
     timings[:discover] = Benchmark.realtime { result = interleave_discovered(result) } if @discover
 
     Rails.logger.info do
@@ -127,10 +145,11 @@ class RankedHomeFeed < HomeFeed
   end
 
   def scored_status_ids
-    entries  = window_entries
-    affinity = affinity_map
-    seen     = seen_ids
-    now      = Time.now.utc
+    entries   = window_entries
+    affinity  = affinity_map
+    interests = interest_map
+    seen      = seen_ids
+    now       = Time.now.utc
 
     # Boosts sit in the feed as wrapper statuses with no engagement of their
     # own, so engagement and remoteness are read from the boosted target
@@ -144,6 +163,9 @@ class RankedHomeFeed < HomeFeed
       )
 
     direct_visibility = Status.visibilities[:direct]
+    candidate_ids     = rows.pluck(2).uniq
+    status_tags       = interests.empty? ? {} : tags_for(candidate_ids)
+    status_words      = interests.empty? ? {} : terms_for(candidate_ids)
 
     scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
       # A recommendation feed should not recommend the viewer's own posts or boosts
@@ -167,10 +189,16 @@ class RankedHomeFeed < HomeFeed
       age_in_hours = [(now - entries[id]) / 1.hour, 0.0].max
       decay        = 2.0**(-age_in_hours / HALF_LIFE_HOURS)
       jitter       = 1.0 + (JITTER * rand)
+      interest     = (status_tags[target_id] || []).sum { |tag_id| interests["t:#{tag_id}"].to_i } +
+                     (status_words[target_id] || []).sum { |term| interests["w:#{term}"].to_i }
 
       # Boosts are scored on their target and surface the target itself, so
       # the feed shows the post rather than an "x boosted" wrapper
-      [target_id, (1.0 + engagement) * (1.0 + Math.log(1.0 + affinity[account_id].to_i)) * decay * jitter]
+      [target_id,
+       (1.0 + engagement) *
+         (1.0 + Math.log(1.0 + affinity[account_id].to_i)) *
+         (1.0 + (INTEREST_WEIGHT * Math.log(1.0 + interest))) *
+         decay * jitter]
     end
 
     unseen, already_seen = scored.partition { |id, _| seen.exclude?(id) }
@@ -263,6 +291,96 @@ class RankedHomeFeed < HomeFeed
       .filter_map { |status| status.id unless status.account_id == @account.id }
       .reject { |id| exclude.include?(id) || seen.include?(id) }
       .take(needed)
+  end
+
+  # Maps interest keys to how often the viewer favourited, boosted or
+  # replied to posts carrying them within AFFINITY_PERIOD. Keys are
+  # "t:<tag id>" for hashtags (taken from all posts, since tagging is the
+  # author labeling the post for discovery) and "w:<term>" for words, taken
+  # ONLY from posts whose authors opted into search indexing.
+  def interest_map
+    Rails.cache.fetch("ranked_home_feed:interests:#{@account.id}", expires_in: INTEREST_CACHE_TTL) do
+      since_id = Mastodon::Snowflake.id_at(AFFINITY_PERIOD.ago, with_random: false)
+
+      favourited_ids = Favourite.where(account_id: @account.id)
+        .order(id: :desc)
+        .limit(AFFINITY_RECENT_FAVOURITES)
+        .pluck(:status_id)
+
+      interacted_ids = Status.where(account_id: @account.id)
+        .where(id: since_id..)
+        .reorder(nil)
+        .pluck(:reblog_of_id, :in_reply_to_id)
+        .flatten
+
+      status_ids = (favourited_ids + interacted_ids).compact.uniq.take(INTEREST_SAMPLE)
+
+      # Built only from public posts the viewer engaged with, matching the
+      # word tier; the profile is per user and never shared
+      profile = Status.where(id: status_ids).distributable_visibility.joins(:tags).reorder(nil).group('tags.id').count
+        .transform_keys { |tag_id| "t:#{tag_id}" }
+
+      word_counts = Hash.new(0)
+      terms_for(status_ids).each_value do |terms|
+        terms.each { |term| word_counts[term] += 1 }
+      end
+
+      word_counts.sort_by { |_, count| -count }.take(INTEREST_PROFILE_TERMS).each do |term, count|
+        profile["w:#{term}"] = count
+      end
+
+      profile
+    end
+  end
+
+  # Maps status id to its cached set of significant terms. Term sets are
+  # computed once per status and shared instance wide; posts by authors who
+  # have not opted into search indexing always have an empty term set.
+  def terms_for(status_ids)
+    keys   = status_ids.index_by { |id| "ranked_home_feed:terms:#{id}" }
+    cached = Rails.cache.read_multi(*keys.keys)
+
+    missing_ids = keys.filter_map { |key, id| id unless cached.key?(key) }
+
+    if missing_ids.any?
+      common   = common_terms
+      computed = missing_ids.index_with { [] }
+
+      # Only public posts from authors who opted into search indexing are
+      # tokenized; the indexable flag covers public content only, so private
+      # and followers only posts are never analyzed
+      Status.where(id: missing_ids)
+        .distributable_visibility
+        .joins(:account)
+        .pluck(:id, :text, :local, :uri, 'accounts.indexable')
+        .each do |id, text, local, uri, indexable|
+          next unless indexable
+
+          computed[id] = InterestTerms.tokenize(text, local || uri.nil?).reject { |term| common.include?(term) }
+        end
+
+      Rails.cache.write_multi(computed.transform_keys { |id| "ranked_home_feed:terms:#{id}" }, expires_in: TERMS_TTL)
+      cached = cached.merge(computed.transform_keys { |id| "ranked_home_feed:terms:#{id}" })
+    end
+
+    cached.transform_keys { |key| keys[key] }
+  end
+
+  # Instance wide set of the most common words in recent posts, maintained
+  # by Scheduler::RankedCommonTermsScheduler; works for any language because
+  # it is derived from local usage instead of hardcoded lists
+  def common_terms
+    redis.smembers(InterestTerms::COMMON_TERMS_KEY).to_set
+  end
+
+  # Maps status id to the ids of the hashtags it carries
+  def tags_for(status_ids)
+    Status.where(id: status_ids)
+      .joins(:tags)
+      .reorder(nil)
+      .pluck(:id, 'tags.id')
+      .group_by(&:first)
+      .transform_values { |pairs| pairs.map(&:last) }
   end
 
   # Maps author account id to the number of times the viewer favourited,

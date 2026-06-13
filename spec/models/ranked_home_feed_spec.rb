@@ -178,6 +178,78 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with hashtag interests' do
+      let(:tim)       { Fabricate(:account) }
+      let(:sauna_tag) { Fabricate(:tag, name: 'sauna') }
+      let(:tagged)    { Fabricate(:status, account: bob).tap { |status| status.tags << sauna_tag } }
+      let(:untagged)  { Fabricate(:status, account: ana) }
+
+      before do
+        liked = Fabricate(:status, account: tim)
+        liked.tags << sauna_tag
+        Fabricate(:favourite, account: viewer, status: liked)
+
+        push(tagged)
+        push(untagged)
+      end
+
+      it 'ranks posts carrying tags the viewer interacts with higher' do
+        expect(subject.get(20)).to eq [tagged, untagged]
+      end
+    end
+
+    context 'with word interests' do
+      let(:tim)      { Fabricate(:account, indexable: true) }
+      let(:writer)   { Fabricate(:account, indexable: true) }
+      let(:tagged)   { Fabricate(:status, account: writer, text: 'Paras saunailta pitkaan aikaan') }
+      let(:untagged) { Fabricate(:status, account: ana, text: 'Jotain ihan muuta sisaltoa') }
+
+      before do
+        stub_const('RankedHomeFeed::JITTER', 0.0)
+
+        liked = Fabricate(:status, account: tim, text: 'Taas yksi mahtava saunailta rannalla')
+        Fabricate(:favourite, account: viewer, status: liked)
+
+        push(tagged)
+        push(untagged)
+      end
+
+      it 'ranks posts sharing words with liked posts higher' do
+        expect(subject.get(20)).to eq [tagged, untagged]
+      end
+
+      it 'ignores words of authors who have not opted into search indexing' do
+        writer.update!(indexable: false)
+
+        expect(subject.get(20)).to eq [untagged, tagged]
+      end
+
+      it 'ignores instance wide common words' do
+        feed = subject
+        feed.send(:redis).sadd(InterestTerms::COMMON_TERMS_KEY, %w(saunailta))
+
+        expect(feed.get(20)).to eq [untagged, tagged]
+      end
+    end
+
+    context 'with private posts and word interests' do
+      let(:writer) { Fabricate(:account, indexable: true) }
+      let(:public_match)  { Fabricate(:status, account: writer, text: 'Paras saunailta pitkaan aikaan', visibility: :public) }
+      let(:private_match) { Fabricate(:status, account: writer, text: 'Paras saunailta pitkaan aikaan', visibility: :private) }
+
+      before do
+        stub_const('RankedHomeFeed::JITTER', 0.0)
+        liked = Fabricate(:status, account: writer, text: 'Taas yksi mahtava saunailta', visibility: :public)
+        Fabricate(:favourite, account: viewer, status: liked)
+        push(public_match)
+        push(private_match)
+      end
+
+      it 'word boosts only the public post, never the private one' do
+        expect(subject.get(20)).to eq [public_match, private_match]
+      end
+    end
+
     context 'when a feed entry no longer exists in the database' do
       let(:status) { Fabricate(:status, account: bob) }
 
