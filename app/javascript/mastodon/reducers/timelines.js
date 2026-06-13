@@ -44,6 +44,28 @@ const initialTimeline = ImmutableMap({
 });
 
 
+// A ranked feed is not ordered by id, so it cannot be merged with the
+// id-based gap logic below. Preserve the exact order the server returned:
+// replace on a fresh load, append unseen ids on load more.
+const expandOrderedTimeline = (state, timeline, statuses, next, isLoadingMore) => {
+  return state.update(timeline, initialTimeline, map => map.withMutations(mMap => {
+    mMap.set('isLoading', false);
+    mMap.set('isPartial', false);
+    mMap.set('hasMore', !!next);
+
+    const newIds = statuses.map(status => status.get('id'));
+
+    if (isLoadingMore) {
+      mMap.update('items', ImmutableList(), oldIds => {
+        const existing = oldIds.toSet();
+        return oldIds.concat(newIds.filterNot(id => existing.includes(id)));
+      });
+    } else {
+      mMap.set('items', newIds);
+    }
+  }));
+};
+
 const expandNormalizedTimeline = (state, timeline, statuses, next, isPartial, isLoadingRecent, usePendingItems) => {
   // This method is pretty tricky because:
   // - existing items in the timeline might be out of order
@@ -211,6 +233,9 @@ export default function timelines(state = initialState, action) {
   case TIMELINE_EXPAND_FAIL:
     return state.update(action.timeline, initialTimeline, map => map.set('isLoading', false));
   case TIMELINE_EXPAND_SUCCESS:
+    if (action.ordered) {
+      return expandOrderedTimeline(state, action.timeline, fromJS(action.statuses), action.next, action.isLoadingMore);
+    }
     return expandNormalizedTimeline(state, action.timeline, fromJS(action.statuses), action.next, action.partial, action.isLoadingRecent, action.usePendingItems);
   case TIMELINE_UPDATE:
     return updateTimeline(state, action.timeline, fromJS(action.status), action.usePendingItems);

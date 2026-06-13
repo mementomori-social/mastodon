@@ -66,6 +66,10 @@ ko:
         setting_display_media_show_all: 민감함으로 표시된 미디어를 포함하여 모든 미디어를 경고 없이 보여줍니다
         setting_emoji_style: 에모지 표현 방식. "자동"은 시스템 기본 에모지를 적용하고 그렇지 못하는 오래된 브라우저의 경우 트웨모지를 사용합니다.
         setting_quick_boosting_html: 활성화하면 %{boost_icon}부스트 아이콘을 클릭했을 때 부스트/인용 드롭다운 메뉴가 뜨지 않고 바로 부스트하게 됩니다. 인용은 %{options_icon} (옵션) 메뉴 안으로 이동합니다.
+        setting_system_scrollbars_ui: 사파리와 크롬 기반의 데스크탑 브라우저만 적용됩니다
+        setting_use_stars: 좋아하는 하트 아이콘을 반짝임과 울림 애니메이션이 있는 트위터 스타일의 노란색 별 모양으로 바꾸기
+        setting_hide_finnish_translate_links: 핀란드어로 작성된 상태 게시물 아래에 '번역' 버튼을 숨깁니다
+        setting_hide_all_translate_links: 언어 태그가 있는 모든 상태 게시물 아래에 '번역' 버튼을 숨깁니다
         setting_use_blurhash: 그라디언트는 숨겨진 내용의 색상을 기반으로 하지만 상세 내용은 보이지 않게 합니다
         setting_use_pending_items: 타임라인의 새 게시물을 자동으로 보여 주는 대신, 클릭해서 나타내도록 합니다
         username: 문자, 숫자, 밑줄을 사용할 수 있습니다
@@ -264,6 +268,9 @@ ko:
         setting_reduce_motion: 애니메이션 줄이기
         setting_system_font_ui: 시스템의 기본 글꼴을 사용
         setting_system_scrollbars_ui: 시스템 기본 스크롤바 사용
+        setting_use_stars: 즐겨찾기에 하트 대신 별표 사용
+        setting_hide_finnish_translate_links: 핀란드어 글에서 번역 링크 숨기기
+        setting_hide_all_translate_links: 모든 번역 링크 숨기기
         setting_theme: 사이트 테마
         setting_trends: 오늘의 유행 보이기
         setting_unfollow_modal: 누군가를 언팔로우 할 때 확인란 표시하기
