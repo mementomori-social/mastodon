@@ -58,13 +58,16 @@ export function updateTimeline(timeline, status, { accept = undefined, bogusQuot
       timeline === 'home' &&
       getState().getIn(['settings', 'home', 'ranked'], false);
     const isReply = !!status.in_reply_to_id;
-    const isOwn = status.account?.id === me;
+    const isBoost = !!status.reblog;
+    // Only your own new *original* post earns a place at the top of the ranked
+    // column; your boosts and replies do not belong in the ranked feed.
+    const isOwnPost = status.account?.id === me && !isReply && !isBoost;
 
     // In the ranked home column, other people's chronological top-level posts
     // are dropped so the scored order stays stable. Replies must still flow
     // through, because open threads update off this same action (the contexts
     // reducer), and your own new top-level posts still appear at the top.
-    if (rankedHome && !isReply && !isOwn) {
+    if (rankedHome && !isReply && !isOwnPost) {
       return;
     }
 
@@ -75,10 +78,9 @@ export function updateTimeline(timeline, status, { accept = undefined, bogusQuot
       timeline,
       status,
       usePendingItems: preferPendingItems,
-      // Only your own new top-level posts are prepended to the ranked column;
-      // everything else here is a reply that belongs in the thread, not the
-      // ranked feed.
-      skipHomeColumn: rankedHome && !(isOwn && !isReply),
+      // Only your own new original posts are prepended to the ranked column;
+      // replies belong in the thread and boosts don't belong in the feed.
+      skipHomeColumn: rankedHome && !isOwnPost,
     });
 
     if (timeline === 'home') {
