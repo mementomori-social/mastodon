@@ -238,6 +238,11 @@ export default function timelines(state = initialState, action) {
     }
     return expandNormalizedTimeline(state, action.timeline, fromJS(action.statuses), action.next, action.partial, action.isLoadingRecent, action.usePendingItems);
   case TIMELINE_UPDATE:
+    if (action.skipHomeColumn) {
+      // The status reached an open thread via the contexts reducer, but must
+      // not be prepended to the ranked home column (replies, others' posts)
+      return state;
+    }
     return updateTimeline(state, action.timeline, fromJS(action.status), action.usePendingItems);
   case TIMELINE_CLEAR:
     return clearTimeline(state, action.timeline);
