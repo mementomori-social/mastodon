@@ -2,7 +2,7 @@ import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
 
 import api, { getLinks } from 'mastodon/api';
 import { compareId } from 'mastodon/compare_id';
-import { usePendingItems as preferPendingItems } from 'mastodon/initial_state';
+import { me, usePendingItems as preferPendingItems } from 'mastodon/initial_state';
 
 import { fetchRelationships } from './accounts';
 import { importFetchedStatus, importFetchedStatuses } from './importer';
@@ -54,10 +54,17 @@ export function updateTimeline(timeline, status, { accept = undefined, bogusQuot
       return;
     }
 
-    if (timeline === 'home' && getState().getIn(['settings', 'home', 'ranked'], false)) {
-      // Streaming updates are chronological and would corrupt the ranked
-      // order; the ranked view only changes on explicit reload
+    const rankedHome =
+      timeline === 'home' &&
+      getState().getIn(['settings', 'home', 'ranked'], false);
+    const isReply = !!status.in_reply_to_id;
+    const isOwn = status.account?.id === me;
 
+    // In the ranked home column, other people's chronological top-level posts
+    // are dropped so the scored order stays stable. Replies must still flow
+    // through, because open threads update off this same action (the contexts
+    // reducer), and your own new top-level posts still appear at the top.
+    if (rankedHome && !isReply && !isOwn) {
       return;
     }
 
@@ -68,6 +75,10 @@ export function updateTimeline(timeline, status, { accept = undefined, bogusQuot
       timeline,
       status,
       usePendingItems: preferPendingItems,
+      // Only your own new top-level posts are prepended to the ranked column;
+      // everything else here is a reply that belongs in the thread, not the
+      // ranked feed.
+      skipHomeColumn: rankedHome && !(isOwn && !isReply),
     });
 
     if (timeline === 'home') {
