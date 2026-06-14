@@ -165,7 +165,8 @@ class RankedHomeFeed < HomeFeed
         'statuses.id', 'statuses.account_id', 'targets.id', 'targets.local', 'targets.uri', 'targets.visibility',
         'targets.in_reply_to_id',
         'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
-        'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count'
+        'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count',
+        'targets.account_id'
       )
 
     direct_visibility = Status.visibilities[:direct]
@@ -183,9 +184,11 @@ class RankedHomeFeed < HomeFeed
       reply_heat[in_reply_to_id] += 1.0 + Math.log(1.0 + affinity[account_id].to_i)
     end
 
-    scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, in_reply_to_id, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites|
-      # A recommendation feed should not recommend the viewer's own posts or boosts
-      next if account_id == @account.id
+    scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, in_reply_to_id, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites, target_account_id|
+      # A recommendation feed should not recommend the viewer's own posts or
+      # boosts, nor a boost of one of the viewer's own posts (where the booster
+      # differs but the boosted post's author is the viewer)
+      next if account_id == @account.id || target_account_id == @account.id
 
       # Private mentions belong to the conversations view, not a ranked feed
       next if visibility == direct_visibility
