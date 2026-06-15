@@ -82,6 +82,21 @@ class RankedHomeFeed < HomeFeed
   # behind everything not yet seen, so refreshes surface new content first
   SEEN_TTL = 2.days
 
+  # Wider in-network candidate pass (see network_candidate_entries). Disable
+  # instantly without a deploy via RANKED_NETWORK_CANDIDATES=false.
+  NETWORK_CANDIDATES_ENABLED = ENV.fetch('RANKED_NETWORK_CANDIDATES', 'true') != 'false'
+  NETWORK_WINDOW_HOURS       = ENV.fetch('RANKED_NETWORK_WINDOW_HOURS', '48').to_f
+  NETWORK_CANDIDATE_LIMIT    = ENV.fetch('RANKED_NETWORK_CANDIDATE_LIMIT', '400').to_i
+  NETWORK_MIN_ENGAGEMENT     = ENV.fetch('RANKED_NETWORK_MIN_ENGAGEMENT', '1').to_i
+
+  # Skip the wider pass for accounts following more than this; the IN-list query
+  # gets expensive past it and they still get the full Redis window
+  NETWORK_MAX_FOLLOWS = ENV.fetch('RANKED_NETWORK_MAX_FOLLOWS', '10000').to_i
+
+  NETWORK_ENGAGEMENT_SUM = 'COALESCE(status_stats.reblogs_count, 0) + ' \
+                           'COALESCE(status_stats.replies_count, 0) + ' \
+                           'COALESCE(status_stats.favourites_count, 0)'
+
   def initialize(account, discover: false)
     @discover = discover
 
@@ -138,6 +153,7 @@ class RankedHomeFeed < HomeFeed
 
     timings[:affinity]  = Benchmark.realtime { affinity_map }
     timings[:interests] = Benchmark.realtime { interest_map }
+    timings[:network]   = Benchmark.realtime { @network_entries = network_candidate_entries }
     timings[:scoring]   = Benchmark.realtime { result = scored_status_ids }
     timings[:discover] = Benchmark.realtime { result = interleave_discovered(result) } if @discover
 
@@ -150,7 +166,11 @@ class RankedHomeFeed < HomeFeed
   end
 
   def scored_status_ids
-    entries   = window_entries
+    # The Redis window covers only the freshest feed entries; the network pass
+    # adds higher-traction posts from follows that have scrolled out of it.
+    # Window entries win on overlap so their feed-insertion time keeps driving
+    # decay there.
+    entries   = (@network_entries || network_candidate_entries).merge(window_entries)
     affinity  = affinity_map
     interests = interest_map
     seen      = seen_ids
@@ -285,6 +305,60 @@ class RankedHomeFeed < HomeFeed
   def window_entries
     redis.zrevrange(key, 0, WINDOW_SIZE - 1, with_scores: true).to_h do |member, score|
       [member.to_i, Mastodon::Snowflake.to_time(score.to_i)]
+    end
+  end
+
+  # CHALLENGE: window_entries only sees the most recent WINDOW_SIZE entries of
+  # the Redis home feed. On a busy account that can be just a few hours, so a
+  # post from someone you follow that gained traction over a day or two - but
+  # has since scrolled out of that window - can never be ranked, however well
+  # every other signal matches. Decay compounds it: it is measured from feed
+  # insertion time, so even an in-window older post is pushed down regardless of
+  # how it is doing right now.
+  #
+  # SOLUTION: a second, wider candidate set - original public/unlisted posts by
+  # accounts the viewer follows, created within NETWORK_WINDOW_HOURS, that
+  # actually gathered engagement. The INNER join to status_stats restricts to
+  # posts that have a stats row (i.e. were boosted/replied/favourited at least
+  # once), a small fraction of all posts, which keeps the query cheap. They are
+  # ordered by raw engagement and capped at NETWORK_CANDIDATE_LIMIT. Each is
+  # keyed by its last engagement time (status_stats.updated_at), not feed
+  # insertion or creation time, so a still-surging older post decays slowly
+  # while one that has gone quiet fades - the scorer needs no other change, it
+  # just reads entries[id].
+  #
+  # PERFORMANCE / SAFETY: one indexed account_id + id-range query over the
+  # follow set, inner-joined to status_stats, capped, and reused via the same
+  # RANKING_CACHE_TTL cache as the rest of the ranking. Skipped for accounts
+  # over NETWORK_MAX_FOLLOWS, behind the RANKED_NETWORK_CANDIDATES kill switch,
+  # and any error returns {} so the feed silently falls back to the Redis
+  # window. Timed as the :network phase in the compute log.
+  def network_candidate_entries
+    return {} unless NETWORK_CANDIDATES_ENABLED
+
+    followed = followed_account_ids
+    return {} if followed.empty? || followed.size > NETWORK_MAX_FOLLOWS
+
+    since_id = Mastodon::Snowflake.id_at(NETWORK_WINDOW_HOURS.hours.ago, with_random: false)
+
+    Status.where(account_id: followed, reblog_of_id: nil, visibility: %i(public unlisted))
+      .where(id: since_id..)
+      .joins(:status_stat)
+      .where("#{NETWORK_ENGAGEMENT_SUM} >= ?", NETWORK_MIN_ENGAGEMENT)
+      .reorder(Arel.sql("#{NETWORK_ENGAGEMENT_SUM} DESC"))
+      .limit(NETWORK_CANDIDATE_LIMIT)
+      .pluck('statuses.id', Arel.sql('COALESCE(status_stats.updated_at, statuses.created_at)'))
+      .to_h
+  rescue => e
+    Rails.logger.warn("RankedHomeFeed network candidates failed account=#{@account.id}: #{e.class}: #{e.message}")
+    {}
+  end
+
+  # The viewer's followed account ids, cached briefly; the wider candidate query
+  # needs them and they change slowly
+  def followed_account_ids
+    Rails.cache.fetch("ranked_home_feed:following:#{@account.id}", expires_in: AFFINITY_CACHE_TTL) do
+      @account.following_ids
     end
   end
 
