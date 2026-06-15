@@ -305,31 +305,38 @@ class RankedHomeFeed < HomeFeed
     end
   end
 
-  # CHALLENGE: window_entries only sees the most recent WINDOW_SIZE entries of
-  # the Redis home feed. On a busy account that can be just a few hours, so a
-  # post from someone you follow that gained traction over a day or two - but
-  # has since scrolled out of that window - can never be ranked, however well
-  # every other signal matches. Decay compounds it: it is measured from feed
-  # insertion time, so even an in-window older post is pushed down regardless of
-  # how it is doing right now.
+  # CHALLENGE: window_entries only scores the newest WINDOW_SIZE (default 400)
+  # entries of the Redis home feed. On an account following many active people
+  # that window can span only a few hours, so a followed-author post that
+  # gathered engagement over a day or two but has since scrolled past entry 400
+  # is never even a candidate, regardless of how well it matches affinity or
+  # interest. Decay compounds it: it is measured from feed-insertion time, so an
+  # in-window post that arrived two days ago already sits at 2^(-48h/HALF_LIFE)
+  # of its score (~1/256 at the 6h default) no matter how it is doing now.
   #
-  # SOLUTION: a second, wider candidate set - original public/unlisted posts by
-  # accounts the viewer follows, created within NETWORK_WINDOW_HOURS, that
-  # actually gathered engagement. The INNER join to status_stats restricts to
-  # posts that have a stats row (i.e. were boosted/replied/favourited at least
-  # once), a small fraction of all posts, which keeps the query cheap. They are
-  # ordered by raw engagement and capped at NETWORK_CANDIDATE_LIMIT. Each is
-  # keyed by its last engagement time (status_stats.updated_at), not feed
-  # insertion or creation time, so a still-surging older post decays slowly
-  # while one that has gone quiet fades - the scorer needs no other change, it
-  # just reads entries[id].
+  # SOLUTION: a second candidate source, merged into `entries` and run through
+  # the exact same scorer - it must still out-score the window on
+  # engagement x affinity x interest x decay, so this only widens the pool, it
+  # never forces a post in. It selects ORIGINAL posts (boosts already arrive via
+  # the Redis window), public or unlisted, authored by accounts the viewer
+  # follows, created within the last NETWORK_WINDOW_HOURS (default 48h; bounded
+  # by snowflake id range so it uses the (account_id, id) index). The INNER join
+  # to status_stats means only posts that have a stats row - boosted, replied or
+  # favourited at least once, a small fraction of all posts - are considered;
+  # they are ordered by reblogs + replies + favourites and capped at
+  # NETWORK_CANDIDATE_LIMIT (default 400). Each id is keyed by
+  # status_stats.updated_at (bumped on every count change, so roughly the time
+  # of last engagement) rather than feed-insertion or creation time, so the
+  # scorer's decay keeps a still-surging older post alive and lets a quiet one
+  # fade. window_entries wins on overlap, so genuinely-fresh posts keep their
+  # feed-insertion timing.
   #
-  # PERFORMANCE / SAFETY: one indexed account_id + id-range query over the
-  # follow set, inner-joined to status_stats, capped, and reused via the same
-  # RANKING_CACHE_TTL cache as the rest of the ranking. Skipped for accounts
-  # over NETWORK_MAX_FOLLOWS, behind the RANKED_NETWORK_CANDIDATES kill switch,
-  # and any error returns {} so the feed silently falls back to the Redis
-  # window. Timed as the :network phase in the compute log.
+  # COST / SAFETY: a single indexed account_id + id-range query, inner-joined to
+  # status_stats, capped, and computed at most once per account per
+  # RANKING_CACHE_TTL (it shares the ranking cache). It returns {} - a silent
+  # fallback to the Redis window - when disabled via RANKED_NETWORK_CANDIDATES,
+  # when the viewer follows more than NETWORK_MAX_FOLLOWS, or on any error. No
+  # writes, no schema change. Logged as the :network phase of the compute line.
   def network_candidate_entries
     return {} unless NETWORK_CANDIDATES_ENABLED
 
