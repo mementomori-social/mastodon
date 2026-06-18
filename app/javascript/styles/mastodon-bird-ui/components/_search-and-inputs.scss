@@ -76,24 +76,24 @@
 
   // Input texts
   .search.active .search__input,
-  .poll__option input[type='text'],
+  .poll__option input[type="text"],
   input.setting-text:focus,
   .search__input:focus {
     color: var(--color-light-text);
   }
 
   // Poll input
-  .poll__option input[type='text'] {
+  .poll__option input[type="text"] {
     background-color: transparent;
     border-color: var(--color-border);
   }
 
-  .poll__option input[type='text']:focus {
+  .poll__option input[type="text"]:focus {
     border-color: var(--color-accent);
   }
 
   // Placeholders
-  .poll__option input[type='text']::placeholder,
+  .poll__option input[type="text"]::placeholder,
   .search__input::placeholder,
   input::placeholder,
   input.setting-text::placeholder {
