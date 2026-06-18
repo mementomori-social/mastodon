@@ -44,6 +44,7 @@ interface InitialStateMeta {
   landing_page: 'about' | 'trends' | 'local_feed';
   use_blurhash: boolean;
   use_pending_items?: boolean;
+  favourite_with_heart?: boolean;
   version: string;
   sso_redirect: string;
   status_page_url: string;
@@ -143,6 +144,7 @@ export const title = getMeta('title');
 export const landingPage = getMeta('landing_page');
 export const useBlurhash = getMeta('use_blurhash');
 export const usePendingItems = getMeta('use_pending_items');
+export const favouriteWithHeart = getMeta('favourite_with_heart');
 export const version = getMeta('version');
 export const criticalUpdatesPending = initialState?.critical_updates_pending;
 export const statusPageUrl = getMeta('status_page_url');

@@ -31,6 +31,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:advanced_layout]   = object_account_user.setting_advanced_layout
       store[:use_blurhash]      = object_account_user.setting_use_blurhash
       store[:use_pending_items] = object_account_user.setting_use_pending_items
+      store[:favourite_with_heart] = object_account_user.settings['web.favourite_with_heart']
       store[:show_trends]       = Setting.trends && object_account_user.setting_trends
       store[:emoji_style]       = object_account_user.settings['web.emoji_style']
       store[:wrapstodon]        = wrapstodon
