@@ -7,6 +7,7 @@ interface InitialStateMeta {
   access_token: string;
   advanced_layout?: boolean;
   auto_play_gif: boolean;
+  auto_play_video: boolean;
   activity_api_enabled: boolean;
   admin: string;
   boost_modal?: boolean;
@@ -107,6 +108,7 @@ function getMeta<K extends keyof InitialStateMeta>(
 
 export const activityApiEnabled = getMeta('activity_api_enabled');
 export const autoPlayGif = getMeta('auto_play_gif');
+export const autoPlayVideo = getMeta('auto_play_video');
 export const boostModal = getMeta('boost_modal');
 export const quickBoosting = getMeta('quick_boosting');
 export const deleteModal = getMeta('delete_modal');

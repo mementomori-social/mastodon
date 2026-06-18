@@ -66,6 +66,10 @@ en:
         setting_display_media_show_all: Show all media without warning, including media marked as sensitive
         setting_emoji_style: How to display emojis. "Auto" will try using native emoji, but falls back to Twemoji for legacy browsers.
         setting_quick_boosting_html: When enabled, clicking on the %{boost_icon} Boost icon will immediately boost instead of opening the boost/quote dropdown menu. Relocates the quoting action to the %{options_icon} (Options) menu.
+        setting_system_scrollbars_ui: Applies only to desktop browsers based on Safari and Chrome
+        setting_use_stars: Replace the favourite heart icon with a Twitter-style yellow star, with sparkle and ring animations
+        setting_hide_finnish_translate_links: Hides the "Translate" button below status posts that are written in Finnish
+        setting_hide_all_translate_links: Hides the "Translate" button below every status post that has a language tag
         setting_use_blurhash: Gradients are based on the colors of the hidden visuals but obfuscate any details
         setting_use_pending_items: Hide timeline updates behind a click instead of automatically scrolling the feed
         username: You can use letters, numbers, and underscores
@@ -243,6 +247,7 @@ en:
         setting_aggregate_reblogs: Group boosts in timelines
         setting_always_send_emails: Always send e-mail notifications
         setting_auto_play_gif: Auto-play animated GIFs
+        setting_auto_play_video: Auto-play videos (muted)
         setting_boost_modal: Control boosting visibility
         setting_color_scheme: Color scheme
         setting_contrast: Contrast
@@ -265,6 +270,9 @@ en:
         setting_reduce_motion: Reduce motion in animations
         setting_system_font_ui: Use system's default font
         setting_system_scrollbars_ui: Use system's default scrollbar
+        setting_use_stars: Use stars instead of hearts for favourites
+        setting_hide_finnish_translate_links: Hide Translate links on Finnish posts
+        setting_hide_all_translate_links: Hide all Translate links
         setting_theme: Site theme
         setting_trends: Show today's trends
         setting_unfollow_modal: Show confirmation dialog before unfollowing someone

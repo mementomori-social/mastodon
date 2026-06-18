@@ -1,5 +1,5 @@
-import { joinShortcodes } from 'emojibase';
-import type { CompactEmoji, Locale, ShortcodesDataset } from 'emojibase';
+import { joinShortcodes } from "emojibase";
+import type { CompactEmoji, Locale, ShortcodesDataset } from "emojibase";
 
 import {
   putEmojiData,
@@ -7,20 +7,20 @@ import {
   putCacheValue,
   putLegacyShortcodes,
   loadCacheValue,
-} from './database';
-import { toSupportedLocale, toValidCacheKey } from './locale';
-import type { CustomEmojiData } from './types';
-import { emojiLogger } from './utils';
+} from "./database";
+import { toSupportedLocale, toValidCacheKey } from "./locale";
+import type { CustomEmojiData } from "./types";
+import { emojiLogger } from "./utils";
 
-const log = emojiLogger('loader');
+const log = emojiLogger("loader");
 
 export async function importEmojiData(localeString: string, shortcodes = true) {
   const locale = toSupportedLocale(localeString);
 
   log(
-    'importing emoji data for locale %s%s',
+    "importing emoji data for locale %s%s",
     locale,
-    shortcodes ? ' and shortcodes' : '',
+    shortcodes ? " and shortcodes" : "",
   );
 
   let emojis = await fetchIfNotLoaded<CompactEmoji[]>({
@@ -52,20 +52,20 @@ export async function importEmojiData(localeString: string, shortcodes = true) {
 
 export async function importCustomEmojiData() {
   const response = await fetchAndCheckEtag({
-    oldEtag: await loadCacheValue('custom'),
-    path: '/api/v1/custom_emojis',
+    oldEtag: await loadCacheValue("custom"),
+    path: "/api/v1/custom_emojis",
   });
 
   if (!response) {
     return;
   }
 
-  const etag = response.headers.get('ETag');
+  const etag = response.headers.get("ETag");
   if (etag) {
-    log('Custom emoji data fetched successfully, storing etag %s', etag);
-    await putCacheValue('custom', etag);
+    log("Custom emoji data fetched successfully, storing etag %s", etag);
+    await putCacheValue("custom", etag);
   } else {
-    log('No etag found in response for custom emoji data');
+    log("No etag found in response for custom emoji data");
   }
 
   const emojis = (await response.json()) as CustomEmojiData[];
@@ -76,15 +76,15 @@ export async function importCustomEmojiData() {
 export async function importLegacyShortcodes() {
   const globPaths = import.meta.glob<string>(
     // We use import.meta.glob to eagerly load the URL, as the regular import() doesn't work inside the Web Worker.
-    '../../../../../node_modules/emojibase-data/en/shortcodes/iamcal.json',
-    { eager: true, import: 'default', query: '?url' },
+    "../../../../../node_modules/emojibase-data/en/shortcodes/iamcal.json",
+    { eager: true, import: "default", query: "?url" },
   );
   const path = Object.values(globPaths)[0];
   if (!path) {
-    throw new Error('IAMCAL shortcodes path not found');
+    throw new Error("IAMCAL shortcodes path not found");
   }
   const shortcodesData = await fetchIfNotLoaded<ShortcodesDataset>({
-    key: 'shortcodes',
+    key: "shortcodes",
     path,
   });
   if (!shortcodesData) {
@@ -97,10 +97,10 @@ export async function importLegacyShortcodes() {
 function localeToEmojiPath(locale: Locale) {
   const key = `../../../../../node_modules/emojibase-data/${locale}/compact.json`;
   const emojiModules = import.meta.glob<string>(
-    '../../../../../node_modules/emojibase-data/**/compact.json',
+    "../../../../../node_modules/emojibase-data/**/compact.json",
     {
-      query: '?url',
-      import: 'default',
+      query: "?url",
+      import: "default",
       eager: true,
     },
   );
@@ -114,10 +114,10 @@ function localeToEmojiPath(locale: Locale) {
 function localeToShortcodesPath(locale: Locale) {
   const key = `../../../../../node_modules/emojibase-data/${locale}/shortcodes/cldr.json`;
   const shortcodesModules = import.meta.glob<string>(
-    '../../../../../node_modules/emojibase-data/**/shortcodes/cldr.json',
+    "../../../../../node_modules/emojibase-data/**/shortcodes/cldr.json",
     {
-      query: '?url',
-      import: 'default',
+      query: "?url",
+      import: "default",
       eager: true,
     },
   );
@@ -140,7 +140,7 @@ async function fetchIfNotLoaded<ResultType extends object[] | object>({
   const value = await loadCacheValue(key);
 
   if (value === path) {
-    log('data for %s already loaded, skipping fetch', key);
+    log("data for %s already loaded, skipping fetch", key);
     return null;
   }
 
@@ -149,7 +149,7 @@ async function fetchIfNotLoaded<ResultType extends object[] | object>({
     return null;
   }
 
-  log('data for %s fetched successfully, storing etag', key);
+  log("data for %s fetched successfully, storing etag", key);
   await putCacheValue(key, path);
 
   return (await response.json()) as ResultType;
@@ -163,10 +163,10 @@ async function fetchAndCheckEtag({
   path: string;
 }) {
   const headers = new Headers({
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   });
   if (oldEtag) {
-    headers.set('If-None-Match', oldEtag);
+    headers.set("If-None-Match", oldEtag);
   }
 
   // Use location.origin as this script may be loaded from a CDN domain.
@@ -177,7 +177,7 @@ async function fetchAndCheckEtag({
 
   // If not modified, return null
   if (response.status === 304) {
-    log('etag not modified for %s', path);
+    log("etag not modified for %s", path);
     return null;
   }
 
