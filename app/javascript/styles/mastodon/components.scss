@@ -2625,19 +2625,165 @@ a.account__display-name {
   color: var(--color-text-bookmark-highlight);
 }
 
-.no-reduce-motion .icon-button.star-icon {
-  &.activate {
-    & > .icon {
-      animation: spring-rotate-in 1s linear;
-      transform-origin: 50% 52%;
-    }
+.icon-button.star-icon {
+  position: relative;
+
+  // The whole favourite star and its burst are a single SVG; let the burst
+  // spill past the icon box instead of being clipped to it.
+  & > .icon {
+    overflow: visible;
+    transform-box: fill-box;
+    transform-origin: center;
   }
 
-  &.deactivate {
-    & > .icon {
-      animation: spring-rotate-out 1s linear;
-      transform-origin: 50% 52%;
-    }
+  .icon-button__counter {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// The star shape itself: outline when not favourited, solid when favourited.
+// Colour is inherited from the button, so it greys when inactive and turns
+// gold when active.
+.favourite-burst__star {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.icon-button.star-icon:not(.active) .favourite-burst__star--fill,
+.icon-button.star-icon.active .favourite-burst__star--outline {
+  display: none;
+}
+
+// Ring, spark rays, and balls: the burst. Hidden at rest, revealed only while
+// the favourite animation runs.
+.favourite-burst__ring {
+  fill: none;
+  stroke: #ffa017;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+
+.favourite-burst__rays,
+.favourite-burst__balls {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+
+.favourite-burst__rays line {
+  stroke: #f0602a;
+  stroke-width: 40;
+  stroke-linecap: round;
+}
+
+.favourite-burst__balls circle {
+  fill: #ffac33;
+}
+
+.no-reduce-motion .icon-button.star-icon.activate {
+  .favourite-burst__star {
+    animation: favourite-pop 0.85s cubic-bezier(0.17, 0.89, 0.32, 1.28);
+  }
+
+  .favourite-burst__ring {
+    animation: favourite-flash 0.52s ease-out forwards;
+  }
+
+  .favourite-burst__rays {
+    animation: favourite-rays 0.36s ease-out 0.08s forwards;
+  }
+
+  .favourite-burst__balls {
+    animation: favourite-balls 0.5s ease-out 0.28s forwards;
+  }
+}
+
+@keyframes favourite-pop {
+  0%,
+  18% {
+    transform: scale(1);
+  }
+
+  28% {
+    transform: scale(0);
+  }
+
+  55% {
+    transform: scale(1.2);
+  }
+
+  72% {
+    transform: scale(0.92);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes favourite-flash {
+  0% {
+    transform: scale(0.3);
+    opacity: 1;
+    stroke-width: 530;
+  }
+
+  18% {
+    transform: scale(1);
+    opacity: 1;
+    stroke-width: 507;
+  }
+
+  27% {
+    transform: scale(1.05);
+    opacity: 1;
+    stroke-width: 58;
+  }
+
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+    stroke-width: 0;
+  }
+}
+
+@keyframes favourite-rays {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  30% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes favourite-balls {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.15);
+    opacity: 0;
   }
 }
 
