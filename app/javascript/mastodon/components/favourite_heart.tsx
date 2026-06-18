@@ -1,22 +1,15 @@
-// The favourite button's heart, as a single SVG, used when the viewer opts to
-// favourite with a heart instead of a star. The heart shape is always visible
-// (grey outline when not favourited, solid pink when favourited, matching our
-// Bird UI heart); the ring flash and two waves of multicolour confetti are the
-// burst, hidden at rest and only animated on favourite.
-//
-// Faithful port of the approved demo (mastodon-bird-ui/tests/svg-fav-demo.html).
-// The demo drew the burst in a 360px -100..100 viewBox over a 150px heart, so
-// one burst unit is 0.288 units in the heart's own 24px viewBox; the demo radii
-// below are scaled by that factor and centred on (12, 12). The icon's overflow
-// is made visible in CSS so the confetti can fly past the icon box.
+// The favourite heart as a single SVG, used when the heart option is on: the
+// heart itself (grey outline when not favourited, solid pink when favourited)
+// plus a burst of a ring and two confetti waves shown only while it animates.
+// Laid out in the heart's 24-unit viewBox; CSS makes the icon overflow visible
+// so the confetti can spill past it.
 import type { IconProp } from './icon';
 
 const CX = 12;
 const CY = 12;
-const SCALE = 0.288;
+const SCALE = 0.288; // confetti radii, in the heart's 24-unit viewBox
 
-// Two confetti waves, offset in angle, size and colour, so they read as
-// clustered bursts rather than a single ring (the demo's A and B palettes).
+// Two confetti waves, offset in angle, size and colour.
 const WAVE_1_COLORS = ['#ff8ac5', '#66c8f5', '#f5c542', '#71d4c2', '#cc8ef5'];
 const WAVE_2_COLORS = ['#9b8af5', '#7ed9c3', '#f59ec5', '#66c8f5', '#ffb347'];
 
