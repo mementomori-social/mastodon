@@ -1,23 +1,15 @@
-// The favourite button's star, as a single SVG. The star shape itself is
-// always visible (outline when not favourited, solid when favourited). It is a
-// sharp five-point star matching our Bird UI theme, not Mastodon's rounded
-// Material star. The ring, spark rays, and balls are the burst: hidden at rest,
-// they only animate when the post is favourited.
-//
-// The geometry is a faithful port of the approved standalone demo
-// (mastodon-bird-ui/tests/svg-fav-demo.html). The demo drew the burst in a
-// 360px -100..100 viewBox over a 150px star, so one burst unit is 11.52 units
-// in the star's own `0 -960 960 960` viewBox; every demo radius below is scaled
-// by that factor and centred on (480, -480). The icon's `overflow` is made
-// visible in CSS so the burst can extend past the icon box.
+// The favourite star as a single SVG: the star itself (outline when not
+// favourited, solid when favourited) plus a burst of a ring, spark rays and
+// balls shown only while it animates. Laid out in the star's 0 -960 960 960
+// viewBox; CSS makes the icon overflow visible so the burst can spill past it.
 import type { IconProp } from './icon';
 
 const CX = 480;
 const CY = -480;
 const POINTS = 7;
-const SCALE = 11.52;
+const SCALE = 11.52; // burst radii, in the star's 960-unit viewBox
 
-// Spark rays close to the star centre (demo: 16 -> 30).
+// Spark rays just outside the star.
 const RAYS = Array.from({ length: POINTS }, (_, i) => {
   const angle = (i / POINTS) * Math.PI * 2;
   return {
@@ -28,8 +20,7 @@ const RAYS = Array.from({ length: POINTS }, (_, i) => {
   };
 });
 
-// Balls fly further out, past the star's points (demo: radius 60).
-// Every third ball is a deeper orange, like the demo.
+// Balls fly out past the rays; every third one is a deeper orange.
 const BALLS = Array.from({ length: POINTS }, (_, i) => {
   const angle = (i / POINTS) * Math.PI * 2;
   return {
