@@ -12,6 +12,13 @@
     padding-top: 0;
   }
 
+  // Collection preview card: shift and narrow the box (margin, not padding) so
+  // its edge aligns with the status content. Full width in single posts.
+  .status:not(.status--in-thread) .collection-preview {
+    margin-left: calc(var(--size-avatar) + var(--gap-default));
+    max-width: calc(100% - var(--size-avatar) - var(--gap-default));
+  }
+
   // Translate link and other padding resets
   .conversation .attachment-list,
   .translate ~ .status__content__read-more-button {
