@@ -10,6 +10,7 @@ import { FormattedMessage } from 'react-intl';
 import { useAppSelector, useAppDispatch } from 'mastodon/store';
 
 import { changeSetting } from '../../../actions/settings';
+import { clearTimeline, expandHomeTimeline } from '../../../actions/timelines';
 import SettingToggle from '../../notifications/components/setting_toggle';
 
 export const ColumnSettings: React.FC = () => {
@@ -23,48 +24,94 @@ export const ColumnSettings: React.FC = () => {
     [dispatch],
   );
 
+  const onRankedChange = useCallback(
+    (key: string[], checked: boolean) => {
+      dispatch(changeSetting(['home', ...key], checked));
+      dispatch(clearTimeline('home'));
+      dispatch(expandHomeTimeline({ forceRefresh: true }));
+    },
+    [dispatch],
+  );
+
+  const rankedEnabled = Boolean(settings.get('ranked'));
+
   return (
     <div className='column-settings'>
       <section>
         <div className='column-settings__row'>
-          <SettingToggle
-            prefix='home_timeline'
-            settings={settings}
-            settingPath={['shows', 'reblog']}
-            onChange={onChange}
-            label={
-              <FormattedMessage
-                id='home.column_settings.show_reblogs'
-                defaultMessage='Show boosts'
+          {/* The display filters only apply to the chronological feed; the
+              ranked feed surfaces boosted posts directly so they cannot be
+              filtered client side */}
+          {!rankedEnabled && (
+            <>
+              <SettingToggle
+                prefix='home_timeline'
+                settings={settings}
+                settingPath={['shows', 'reblog']}
+                onChange={onChange}
+                label={
+                  <FormattedMessage
+                    id='home.column_settings.show_reblogs'
+                    defaultMessage='Show boosts'
+                  />
+                }
               />
-            }
-          />
+
+              <SettingToggle
+                prefix='home_timeline'
+                settings={settings}
+                settingPath={['shows', 'quote']}
+                onChange={onChange}
+                label={
+                  <FormattedMessage
+                    id='home.column_settings.show_quotes'
+                    defaultMessage='Show quotes'
+                  />
+                }
+              />
+
+              <SettingToggle
+                prefix='home_timeline'
+                settings={settings}
+                settingPath={['shows', 'reply']}
+                onChange={onChange}
+                label={
+                  <FormattedMessage
+                    id='home.column_settings.show_replies'
+                    defaultMessage='Show replies'
+                  />
+                }
+              />
+            </>
+          )}
 
           <SettingToggle
             prefix='home_timeline'
             settings={settings}
-            settingPath={['shows', 'quote']}
-            onChange={onChange}
+            settingPath={['ranked']}
+            onChange={onRankedChange}
             label={
               <FormattedMessage
-                id='home.column_settings.show_quotes'
-                defaultMessage='Show quotes'
+                id='home.column_settings.ranked'
+                defaultMessage='Ranked order (experimental)'
               />
             }
           />
 
-          <SettingToggle
-            prefix='home_timeline'
-            settings={settings}
-            settingPath={['shows', 'reply']}
-            onChange={onChange}
-            label={
-              <FormattedMessage
-                id='home.column_settings.show_replies'
-                defaultMessage='Show replies'
-              />
-            }
-          />
+          {rankedEnabled && (
+            <SettingToggle
+              prefix='home_timeline'
+              settings={settings}
+              settingPath={['rankedDiscover']}
+              onChange={onRankedChange}
+              label={
+                <FormattedMessage
+                  id='home.column_settings.ranked_discover'
+                  defaultMessage="Include posts from people you don't follow (experimental)"
+                />
+              }
+            />
+          )}
         </div>
       </section>
     </div>

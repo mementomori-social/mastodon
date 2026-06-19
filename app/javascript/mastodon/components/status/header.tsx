@@ -10,6 +10,7 @@ import type { Account } from '@/mastodon/models/account';
 import type { Status } from '@/mastodon/models/status';
 
 import { Avatar } from '../avatar';
+import { AvatarFollowBadge } from '../avatar_follow_badge';
 import { AvatarOverlay } from '../avatar_overlay';
 import type { DisplayNameProps } from '../display_name';
 import { LinkedDisplayName } from '../display_name';
@@ -27,6 +28,7 @@ export interface StatusHeaderProps {
   onHeaderClick?: MouseEventHandler<HTMLDivElement>;
   className?: string;
   featured?: boolean;
+  showFollowBadge?: boolean;
 }
 
 export type StatusHeaderRenderFn = (args: StatusHeaderProps) => ReactNode;
@@ -40,6 +42,7 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
   contentBeforeDate,
   contentAfterDate,
   onHeaderClick,
+  showFollowBadge,
 }) => {
   const statusAccount = status.get('account') as Account | undefined;
   const editedAt = status.get('edited_at') as string;
@@ -57,6 +60,7 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
         statusAccount={statusAccount}
         friendAccount={account}
         avatarSize={avatarSize}
+        showFollowBadge={showFollowBadge}
       />
 
       {contentBeforeDate}
@@ -117,7 +121,8 @@ export const StatusDisplayName: FC<{
   statusAccount?: Account;
   friendAccount?: Account;
   avatarSize: number;
-}> = ({ statusAccount, friendAccount, avatarSize }) => {
+  showFollowBadge?: boolean;
+}> = ({ statusAccount, friendAccount, avatarSize, showFollowBadge }) => {
   const AccountComponent = friendAccount ? AvatarOverlay : Avatar;
   return (
     <LinkedDisplayName
@@ -130,6 +135,7 @@ export const StatusDisplayName: FC<{
           friend={friendAccount}
           size={avatarSize}
         />
+        {showFollowBadge && <AvatarFollowBadge accountId={statusAccount?.id} />}
       </div>
     </LinkedDisplayName>
   );

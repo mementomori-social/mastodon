@@ -460,6 +460,7 @@
   "column.firehose_local": "Flux en direct pour ce serveur",
   "column.firehose_singular": "Flux en direct",
   "column.follow_requests": "Demandes d'abonnement",
+  "column.for_you": "Pour vous",
   "column.home": "Accueil",
   "column.list_members": "Gérer les membres de la liste",
   "column.lists": "Listes",
