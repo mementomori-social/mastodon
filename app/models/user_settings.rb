@@ -27,7 +27,6 @@ class UserSettings
     setting :use_pending_items, default: false
     setting :use_system_font, default: false
     setting :use_system_scrollbars, default: false
-    setting :favourite_with_heart, default: false
     setting :use_stars, default: false
     setting :hide_finnish_translate_links, default: false
     setting :hide_all_translate_links, default: false
