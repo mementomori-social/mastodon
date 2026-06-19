@@ -2194,7 +2194,10 @@ en:
     review_link: Review terms of service
     title: The terms of service of %{domain} are changing
   themes:
-    default: Mastodon
+    mastodon-bird-ui-accessible-plus: Mastodon Bird UI (Accessible Plus)
+    mastodon-bird-ui-accessible: Mastodon Bird UI (Accessible)
+    mastodon-dark: Mastodon
+    default: Mastodon Bird UI
   time:
     formats:
       default: "%b %d, %Y, %H:%M"

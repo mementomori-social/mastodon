@@ -2177,7 +2177,10 @@ fi:
     review_link: Käy käyttöehdot läpi
     title: Palvelimen %{domain} käyttöehdot muuttuvat
   themes:
-    default: Mastodon
+    mastodon-bird-ui-accessible-plus: Mastodon Bird UI (saavutettava Plus)
+    mastodon-bird-ui-accessible: Mastodon Bird UI (saavutettava)
+    mastodon-dark: Mastodon
+    default: Mastodon Bird UI
   time:
     formats:
       default: "%-d.%-m.%Y klo %-H.%M"
