@@ -8,6 +8,7 @@ const CX = 480;
 const CY = -480;
 const POINTS = 7;
 const SCALE = 11.52; // burst radii, in the star's 960-unit viewBox
+const GLOW_R = 910; // hover glow, roughly 36px at the icon's rendered size
 
 // Spark rays just outside the star.
 const RAYS = Array.from({ length: POINTS }, (_, i) => {
@@ -38,6 +39,7 @@ const STAR_OUTLINE =
 
 export const FavouriteStar: IconProp = (props) => (
   <svg viewBox='0 -960 960 960' {...props}>
+    <circle className='favourite-glow' cx={CX} cy={CY} r={GLOW_R} />
     <circle className='favourite-burst__ring' cx={CX} cy={CY} r='230' />
     <g className='favourite-burst__rays'>
       {RAYS.map((ray, i) => (

@@ -2752,6 +2752,46 @@ a.account__display-name {
   }
 }
 
+// Hover glow tied to the SVG so it stays centred on the favourite icon. The Bird
+// UI theme draws a glow on the button itself, which sits behind the icon and the
+// counter together and so pulls off-centre; disable that for the favourite and
+// let this one stand in. No effect on the default theme, which has no glow.
+.icon-button.star-icon::after {
+  display: none !important;
+}
+
+.favourite-glow {
+  fill: transparent;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.icon-button.star-icon:hover .favourite-glow {
+  fill: rgba(96, 105, 132, 0.15);
+}
+
+// The rest of the action bar (reply, boost, etc.) uses plain Material Symbol
+// icons, not custom SVGs, so anchor the same glow to the icon box with a hover
+// box-shadow. Like the favourite's glow it tracks the icon, so the counter
+// cannot pull it off-centre. Replaces Bird UI's button-level glow here.
+.status__action-bar .icon-button:not(.star-icon)::after,
+.detailed-status__action-bar .icon-button:not(.star-icon)::after {
+  display: none !important;
+}
+
+.status__action-bar .icon-button:not(.star-icon) .icon,
+.detailed-status__action-bar .icon-button:not(.star-icon) .icon {
+  border-radius: 50%;
+}
+
+.status__action-bar .icon-button:not(.star-icon):hover .icon,
+.detailed-status__action-bar .icon-button:not(.star-icon):hover .icon {
+  // Background fills the icon box, box-shadow fills the ring around it: together
+  // a solid disc (an outset shadow alone leaves the box centre hollow).
+  background-color: rgba(96, 105, 132, 0.15);
+  box-shadow: 0 0 0 8.5px rgba(96, 105, 132, 0.15);
+}
+
 // The star shape itself: outline when not favourited, solid when favourited.
 // Colour is inherited from the button, so it greys when inactive and turns
 // gold when active.
