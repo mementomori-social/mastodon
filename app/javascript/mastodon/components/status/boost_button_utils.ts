@@ -25,7 +25,7 @@ export const messages = defineMessages({
   },
   quote_cannot: {
     id: 'status.cannot_quote',
-    defaultMessage: 'You are not allowed to quote this post',
+    defaultMessage: 'Forbidden',
   },
   quote_followers_only: {
     id: 'status.quote_followers_only',
