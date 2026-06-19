@@ -2725,6 +2725,12 @@ a.account__display-name {
   color: var(--color-text-favourite-highlight);
 }
 
+// In heart mode the heart is pink, so the favourite counter must match it
+// rather than inheriting the star's gold highlight.
+.icon-button.star-icon.favourite-heart.active {
+  color: #f91880;
+}
+
 .icon-button.bookmark-icon.active {
   color: var(--color-text-bookmark-highlight);
 }
@@ -2758,6 +2764,32 @@ a.account__display-name {
 .icon-button.star-icon:not(.active) .favourite-burst__star--fill,
 .icon-button.star-icon.active .favourite-burst__star--outline {
   display: none;
+}
+
+// On hover, tint the whole favourite shape and its counter with the favourited
+// colour rather than the default icon hover accent: gold star, pink heart.
+.icon-button.star-icon:hover {
+  color: var(--color-text-favourite-highlight);
+}
+
+.icon-button.star-icon:hover .favourite-burst__star {
+  fill: var(--color-text-favourite-highlight);
+}
+
+.icon-button.star-icon:hover .icon-button__counter {
+  color: var(--color-text-favourite-highlight);
+}
+
+.icon-button.star-icon.favourite-heart:hover {
+  color: #f91880;
+}
+
+.icon-button.star-icon.favourite-heart:hover .favourite-burst__heart {
+  fill: #f91880;
+}
+
+.icon-button.star-icon.favourite-heart:hover .icon-button__counter {
+  color: #f91880;
 }
 
 // Ring, spark rays, and balls: the burst. Hidden at rest, revealed only while
