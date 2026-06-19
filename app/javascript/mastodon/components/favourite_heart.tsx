@@ -8,6 +8,7 @@ import type { IconProp } from './icon';
 const CX = 12;
 const CY = 12;
 const SCALE = 0.288; // confetti radii, in the heart's 24-unit viewBox
+const GLOW_R = 22.7; // hover glow, roughly 36px at the icon's rendered size
 
 // Two confetti waves, offset in angle, size and colour.
 const WAVE_1_COLORS = ['#ff8ac5', '#66c8f5', '#f5c542', '#71d4c2', '#cc8ef5'];
@@ -39,6 +40,7 @@ const HEART_FILL =
 
 export const FavouriteHeart: IconProp = (props) => (
   <svg viewBox='0 0 24 24' {...props}>
+    <circle className='favourite-glow' cx={CX} cy={CY} r={GLOW_R} />
     <circle
       className='favourite-burst__ring favourite-burst__ring--heart'
       cx={CX}
