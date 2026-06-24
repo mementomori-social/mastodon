@@ -20,6 +20,10 @@ import type { BaseConfirmationModalProps } from './confirmation_modal';
 
 const messages = defineMessages({
   follow: { id: 'account.follow', defaultMessage: 'Follow' },
+  followRequest: {
+    id: 'account.follow_request',
+    defaultMessage: 'Request to follow',
+  },
 });
 
 export const ConfirmFollowModal: React.FC<
@@ -46,11 +50,15 @@ export const ConfirmFollowModal: React.FC<
     [dispatch, accountId, onClose],
   );
 
+  // Locked accounts approve followers manually, so make it clear the action is a
+  // follow request rather than an immediate follow before the user commits
+  const followLabel = account?.locked ? messages.followRequest : messages.follow;
+
   return (
     <ModalShell
       className='follow-confirmation-modal'
       onSubmit={handleSubmit}
-      aria-label={intl.formatMessage(messages.follow)}
+      aria-label={intl.formatMessage(followLabel)}
     >
       <ModalShellBody className='follow-confirmation-card'>
         {account ? (
@@ -84,7 +92,7 @@ export const ConfirmFollowModal: React.FC<
               className='follow-confirmation-card__button'
               onClick={handleSubmit}
             >
-              {intl.formatMessage(messages.follow)}
+              {intl.formatMessage(followLabel)}
             </Button>
           </>
         ) : (
