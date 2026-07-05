@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 
 import classNames from 'classnames';
-import { Helmet } from 'react-helmet';
+import { Helmet } from '@unhead/react/helmet';
 import { NavLink, withRouter } from 'react-router-dom';
 
 import { isFulfilled, isRejected } from '@reduxjs/toolkit';
