@@ -1,16 +1,16 @@
 // @ts-check
 (function (allowedPrefixes) {
-  'use strict';
+  "use strict";
 
   /**
    * @param {() => void} loaded
    */
   var ready = function (loaded) {
-    if (document.readyState === 'complete') {
+    if (document.readyState === "complete") {
       loaded();
     } else {
-      document.addEventListener('readystatechange', function () {
-        if (document.readyState === 'complete') {
+      document.addEventListener("readystatechange", function () {
+        if (document.readyState === "complete") {
           loaded();
         }
       });
@@ -43,12 +43,12 @@
     /** @type {Map<number, HTMLQuoteElement | HTMLIFrameElement>} */
     var embeds = new Map();
 
-    window.addEventListener('message', function (e) {
+    window.addEventListener("message", function (e) {
       var data = e.data || {};
 
       if (
-        typeof data !== 'object' ||
-        data.type !== 'setHeight' ||
+        typeof data !== "object" ||
+        data.type !== "setHeight" ||
         !embeds.has(data.id)
       ) {
         return;
@@ -61,15 +61,15 @@
       }
 
       if (embed instanceof HTMLQuoteElement) {
-        var iframe = embed.querySelector('iframe');
+        var iframe = embed.querySelector("iframe");
 
-        if (!iframe || ('source' in e && iframe.contentWindow !== e.source)) {
+        if (!iframe || ("source" in e && iframe.contentWindow !== e.source)) {
           return;
         }
 
         iframe.height = data.height;
 
-        var placeholder = embed.querySelector('a');
+        var placeholder = embed.querySelector("a");
 
         if (!placeholder) return;
 
@@ -78,24 +78,24 @@
     });
 
     // Legacy embeds
-    document.querySelectorAll('iframe.mastodon-embed').forEach((iframe) => {
+    document.querySelectorAll("iframe.mastodon-embed").forEach((iframe) => {
       var id = generateId(embeds);
 
       embeds.set(id, iframe);
 
-      iframe.allow = 'fullscreen';
-      iframe.sandbox = 'allow-scripts allow-same-origin allow-popups';
+      iframe.allow = "fullscreen";
+      iframe.sandbox = "allow-scripts allow-same-origin allow-popups";
       iframe.style.border = 0;
-      iframe.style.overflow = 'hidden';
-      iframe.style.display = 'block';
+      iframe.style.overflow = "hidden";
+      iframe.style.display = "block";
 
       iframe.onload = function () {
         iframe.contentWindow.postMessage(
           {
-            type: 'setHeight',
+            type: "setHeight",
             id: id,
           },
-          '*',
+          "*",
         );
       };
 
@@ -104,16 +104,16 @@
 
     // New generation of embeds
     document
-      .querySelectorAll('blockquote.mastodon-embed')
+      .querySelectorAll("blockquote.mastodon-embed")
       .forEach((container) => {
         var id = generateId(embeds);
 
         embeds.set(id, container);
 
-        var iframe = document.createElement('iframe');
-        var embedUrl = new URL(container.getAttribute('data-embed-url'));
+        var iframe = document.createElement("iframe");
+        var embedUrl = new URL(container.getAttribute("data-embed-url"));
 
-        if (embedUrl.protocol !== 'https:' && embedUrl.protocol !== 'http:')
+        if (embedUrl.protocol !== "https:" && embedUrl.protocol !== "http:")
           return;
         if (
           allowedPrefixes.every(
@@ -125,19 +125,19 @@
         iframe.src = embedUrl.toString();
         iframe.width = container.clientWidth;
         iframe.height = 0;
-        iframe.allow = 'fullscreen';
-        iframe.sandbox = 'allow-scripts allow-same-origin allow-popups';
+        iframe.allow = "fullscreen";
+        iframe.sandbox = "allow-scripts allow-same-origin allow-popups";
         iframe.style.border = 0;
-        iframe.style.overflow = 'hidden';
-        iframe.style.display = 'block';
+        iframe.style.overflow = "hidden";
+        iframe.style.display = "block";
 
         iframe.onload = function () {
           iframe.contentWindow.postMessage(
             {
-              type: 'setHeight',
+              type: "setHeight",
               id: id,
             },
-            '*',
+            "*",
           );
         };
 
@@ -146,8 +146,8 @@
   });
 })(
   document.currentScript &&
-    document.currentScript.tagName.toUpperCase() === 'SCRIPT' &&
+    document.currentScript.tagName.toUpperCase() === "SCRIPT" &&
     document.currentScript.dataset.allowedPrefixes
-    ? document.currentScript.dataset.allowedPrefixes.split(' ')
+    ? document.currentScript.dataset.allowedPrefixes.split(" ")
     : [],
 );

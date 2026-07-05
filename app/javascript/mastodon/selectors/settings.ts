@@ -64,4 +64,10 @@ export const selectSettingsNotificationsMinimizeFilteredBanner = (
 export const selectSettingsNotificationsGroupFollows = (state: RootState) =>
   state.settings.getIn(['notifications', 'group', 'follow']) as boolean;
 
+export const isRankedHomeEnabled = (state: RootState): boolean =>
+  !!state.settings.getIn(['home', 'ranked'], false);
+
+export const isRankedDiscoverEnabled = (state: RootState): boolean =>
+  !!state.settings.getIn(['home', 'rankedDiscover'], false);
+
 /* eslint-enable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */

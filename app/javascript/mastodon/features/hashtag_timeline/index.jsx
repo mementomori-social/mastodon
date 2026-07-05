@@ -211,11 +211,11 @@ class HashtagTimeline extends PureComponent {
             )
           }
           bindToDocument={!multiColumn}
+          withCounters
         />
 
         <Helmet>
           <title>#{id}</title>
-          <meta name='robots' content='noindex' />
         </Helmet>
       </Column>
     );

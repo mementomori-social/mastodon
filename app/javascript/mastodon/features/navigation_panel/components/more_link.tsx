@@ -2,16 +2,26 @@ import { useMemo } from 'react';
 
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
+import { useAccount } from '@/mastodon/hooks/useAccount';
 import MoreHorizIcon from '@/material-icons/400-24px/more_horiz.svg?react';
 import { openModal } from 'mastodon/actions/modal';
 import { Dropdown } from 'mastodon/components/dropdown_menu';
 import { Icon } from 'mastodon/components/icon';
 import { useIdentity } from 'mastodon/identity_context';
+import { me } from 'mastodon/initial_state';
 import type { MenuItem } from 'mastodon/models/dropdown_menu';
 import { canManageReports, canViewAdminDashboard } from 'mastodon/permissions';
 import { useAppDispatch } from 'mastodon/store';
 
 const messages = defineMessages({
+  collections: {
+    id: 'navigation_bar.collections',
+    defaultMessage: 'Collections',
+  },
+  followedTags: {
+    id: 'navigation_bar.followed_tags',
+    defaultMessage: 'Followed hashtags',
+  },
   blocks: { id: 'navigation_bar.blocks', defaultMessage: 'Blocked users' },
   domainBlocks: {
     id: 'navigation_bar.domain_blocks',
@@ -47,9 +57,23 @@ export const MoreLink: React.FC = () => {
   const intl = useIntl();
   const { permissions } = useIdentity();
   const dispatch = useAppDispatch();
+  const account = useAccount(me);
 
   const menu = useMemo(() => {
     const arr: MenuItem[] = [
+      ...(account
+        ? [
+            {
+              to: `/@${account.acct}/collections`,
+              text: intl.formatMessage(messages.collections),
+            },
+          ]
+        : []),
+      {
+        to: '/followed_tags',
+        text: intl.formatMessage(messages.followedTags),
+      },
+      null,
       {
         href: '/filters',
         text: intl.formatMessage(messages.filters),
@@ -109,7 +133,7 @@ export const MoreLink: React.FC = () => {
     });
 
     return arr;
-  }, [intl, dispatch, permissions]);
+  }, [intl, dispatch, permissions, account]);
 
   return (
     <Dropdown items={menu} placement='bottom-start'>
