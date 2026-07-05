@@ -4,10 +4,8 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import classNames from 'classnames';
 
-import type { OverlayProps } from 'react-overlays/Overlay';
-import Overlay from 'react-overlays/Overlay';
-
 import type { ApiQuotePolicy } from '@/mastodon/api_types/quotes';
+import { Popover } from '@/mastodon/components/popover';
 import FormatQuoteIcon from '@/material-icons/400-24px/format_quote.svg?react';
 import GroupIcon from '@/material-icons/400-24px/group.svg?react';
 import LockIcon from '@/material-icons/400-24px/lock.svg?react';
@@ -45,18 +43,18 @@ const messages = defineMessages({
 interface QuotePolicyDropdownProps {
   value: ApiQuotePolicy;
   onChange: (value: ApiQuotePolicy) => void;
-  container?: OverlayProps['container'];
   disabled?: boolean;
 }
 
 const QuotePolicyDropdown: React.FC<QuotePolicyDropdownProps> = ({
   value,
   onChange,
-  container,
   disabled,
 }) => {
   const intl = useIntl();
-  const overlayTargetRef = useRef<HTMLDivElement | null>(null);
+  const [popoverTarget, setPopoverTarget] = useState<HTMLDivElement | null>(
+    null,
+  );
   const previousFocusTargetRef = useRef<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -117,7 +115,7 @@ const QuotePolicyDropdown: React.FC<QuotePolicyDropdownProps> = ({
     options.find((item) => item.value === value) ?? options[0];
 
   return (
-    <div ref={overlayTargetRef}>
+    <div ref={setPopoverTarget}>
       <button
         type='button'
         title={intl.formatMessage(messages.change_quote_policy)}
@@ -141,14 +139,11 @@ const QuotePolicyDropdown: React.FC<QuotePolicyDropdownProps> = ({
         )}
       </button>
 
-      <Overlay
-        show={isOpen}
-        offset={[5, 5]}
-        placement='bottom'
-        flip
-        target={overlayTargetRef}
-        container={container}
-        popperConfig={{ strategy: 'fixed' }}
+      <Popover
+        isOpen={isOpen}
+        offset={5}
+        reference={popoverTarget}
+        onClose={handleClose}
       >
         {({ props, placement }) => (
           <div {...props}>
@@ -164,7 +159,7 @@ const QuotePolicyDropdown: React.FC<QuotePolicyDropdownProps> = ({
             </div>
           </div>
         )}
-      </Overlay>
+      </Popover>
     </div>
   );
 };
