@@ -14,8 +14,10 @@
   // full-screen drawer that scrolls on its own; applying this there makes it
   // overflow, so keep it out of the mobile breakpoint entirely.
   @media screen and (width >= 760px) {
-    .columns-area__panels__pane--navigational .columns-area__panels__pane__inner {
+    .columns-area__panels__pane--navigational
+      .columns-area__panels__pane__inner {
       height: 100dvh;
+
       // Vertical scroll only; an explicit overflow-x stops the browser turning
       // overflow-x into auto, which would add a horizontal scrollbar from the
       // column-link hover pills that extend sideways.
@@ -42,7 +44,6 @@
   // Upstream PR mastodon#39145 wrapped each nav item in an <li>. Make the menu
   // a flex column so the items stack and CSS `order` works (used below to keep
   // More last).
-  //
   // `flex: 1 1 auto` + `min-height: 0` + `overflow-y: auto` make the menu itself
   // the scroll region (upstream's model), so when the list is taller than the
   // viewport (e.g. the accessible theme at 200% zoom) the items below Bookmarks,
@@ -55,6 +56,31 @@
     overflow-y: auto;
     scrollbar-color: var(--color-border) transparent;
     scrollbar-width: thin;
+  }
+
+  // The navigation pane scroll (bounded height + overflow) exists only to keep
+  // items reachable when the pane outgrows the viewport, which happens at high
+  // browser zoom and on very short screens. On a screen with room the whole nav
+  // fits (it self-compacts below 980px and 830px height), so scrolling is never
+  // needed and the overflow clipping only serves to shave the inline-start
+  // rounded end of the column-link hover pills, worst on the advanced
+  // multi-column layout. Restore overflow: visible on the pane inner, the panel
+  // and the menu there so the pills render in full. Mastodon core scopes its own
+  // overflow rules to .pane__inner .navigation-panel[__menu] (three classes), so
+  // these overrides must repeat that chain to outrank it; a plain
+  // .navigation-panel__menu (two classes) loses and the pill stays clipped.
+  // Gated to the desktop layout so the mobile drawer keeps its own scroll.
+  @media screen and (width >= 760px) and (height >= 800px) {
+    .columns-area__panels__pane--navigational
+      .columns-area__panels__pane__inner,
+    .columns-area__panels__pane--navigational
+      .columns-area__panels__pane__inner
+      .navigation-panel,
+    .columns-area__panels__pane--navigational
+      .columns-area__panels__pane__inner
+      .navigation-panel__menu {
+      overflow: visible;
+    }
   }
 
   // Minimal scrollbar on the menu (matches Bird UI's compact aesthetic, not
@@ -85,7 +111,7 @@
   }
 
   // Hide the list-item separators that replaced the old <hr> elements.
-  .navigation-panel__menu > li[role="separator"] {
+  .navigation-panel__menu > li[role='separator'] {
     display: none;
   }
 
@@ -95,12 +121,12 @@
   }
 
   // Home first nav link.
-  .navigation-panel__menu > li:has(a[href="/home"]) {
+  .navigation-panel__menu > li:has(a[href='/home']) {
     order: 1;
   }
 
   // Notifications second.
-  .navigation-panel__menu > li:has(a[href="/notifications"]) {
+  .navigation-panel__menu > li:has(a[href='/notifications']) {
     order: 2;
   }
 
@@ -146,7 +172,7 @@
     width: 100%;
   }
 
-  [dir="rtl"] .column-link {
+  [dir='rtl'] .column-link {
     margin-left: auto;
     margin-right: 0;
   }
@@ -163,7 +189,7 @@
     background-color: var(--color-column-link-hover);
     border-radius: 32px;
     bottom: calc(2px - var(--gap-column-link) * 1.5);
-    content: "";
+    content: '';
     inset-inline-end: calc(0px - (var(--gap-column-link) * 2));
     inset-inline-start: calc(-1.28571429em - var(--gap-column-link) - 7px * 2);
     opacity: 0;
@@ -248,7 +274,7 @@
     border-top-left-radius: 9999px;
     border-top-right-radius: 9999px;
     bottom: -1px;
-    content: "";
+    content: '';
     display: block;
     height: 4px;
     left: 50%;
