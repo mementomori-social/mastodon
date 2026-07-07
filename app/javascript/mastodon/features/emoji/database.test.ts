@@ -116,6 +116,47 @@ describe('emoji database', () => {
       );
     });
 
+    test('ranks name word-matches (native first) above tag-only matches', async () => {
+      await putEmojiData(
+        [
+          // "sweat" is a whole word in the name.
+          rawEmojiFactory({
+            hexcode: '1F605',
+            label: 'grinning face with sweat',
+            shortcodes: ['grinning_face_with_sweat'],
+            unicode: '😅',
+            tags: [],
+          }),
+          // "sweat" only appears as a keyword/tag, not in the name.
+          rawEmojiFactory({
+            hexcode: '1F625',
+            label: 'sad but relieved face',
+            shortcodes: ['sad_but_relieved_face'],
+            unicode: '😥',
+            tags: ['sweat'],
+          }),
+        ],
+        'en',
+      );
+      await putCustomEmojiData({
+        emojis: [customEmojiFactory({ shortcode: 'blob_sweat' })],
+      });
+
+      const results = await search({ query: 'sweat', locale: 'en' });
+      const ids = results.map((emoji) =>
+        'shortcode' in emoji ? emoji.shortcode : emoji.hexcode,
+      );
+
+      // The native emoji with the word in its name ranks first.
+      expect(ids[0]).toBe('1F605');
+      // The word-matching custom emoji is present...
+      expect(ids).toContain('blob_sweat');
+      // ...and both name/word matches rank ahead of the tag-only native, which
+      // would otherwise crowd them out.
+      expect(ids.indexOf('1F605')).toBeLessThan(ids.indexOf('1F625'));
+      expect(ids.indexOf('blob_sweat')).toBeLessThan(ids.indexOf('1F625'));
+    });
+
     test('limit test', async () => {
       await putCustomEmojiData({
         emojis: [
