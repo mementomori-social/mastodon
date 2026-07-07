@@ -197,13 +197,30 @@ function getScoreForEmoji(
     return 0;
   }
 
+  // Name sources (the shortcode/label and any alternate shortcodes) are more
+  // relevant than tag/keyword tokens, so they are scored first.
+  const nameSources = [id];
+  if (checkTokens && 'shortcodes' in emoji) {
+    nameSources.push(...emoji.shortcodes);
+  }
+
+  // A whole-word match anywhere in the name ranks just after an exact id
+  // match, no matter where the word sits: "sweat" strongly matches both
+  // "grinning_face_with_sweat" and "blob_sweat". Without this, that native
+  // emoji is scored only on the substring's position deep in its label
+  // (~1.79), so an unrelated custom emoji that merely contains "sweat" outranks
+  // it and it falls past the result limit. Matching only the name (not tags)
+  // keeps tag-only matches (e.g. a face whose keywords include "sweat") from
+  // crowding out the emoji that actually have the word in their name.
+  if (checkTokens && nameSources.some((name) => hasWholeWord(name, query))) {
+    return 0.5;
+  }
+
+  // Otherwise fall back to positional substring scoring: name sources first
+  // (index 1+), then tag/keyword tokens (a later index means a weaker match).
   let index = 1;
-  const searchTokens = [id];
+  const searchTokens = [...nameSources];
   if (checkTokens) {
-    // Check shortcodes before tokens as they are more important.
-    if ('shortcodes' in emoji) {
-      searchTokens.push(...emoji.shortcodes);
-    }
     searchTokens.push(...emoji.tokens);
   }
   for (const token of searchTokens) {
@@ -215,6 +232,26 @@ function getScoreForEmoji(
   }
 
   return null;
+}
+
+// True if `query` appears as a whole word in `text`, where words are delimited
+// by spaces, underscores or hyphens (matching how labels and shortcodes read).
+function hasWholeWord(text: string, query: string) {
+  const isBoundary = (char: string) =>
+    char === '' || char === ' ' || char === '_' || char === '-';
+  let from = 0;
+  for (;;) {
+    const at = text.indexOf(query, from);
+    if (at === -1) {
+      return false;
+    }
+    const before = at === 0 ? '' : text[at - 1];
+    const after = text[at + query.length] ?? '';
+    if (isBoundary(before) && isBoundary(after)) {
+      return true;
+    }
+    from = at + 1;
+  }
 }
 
 async function fullCustomSearch(query: string, existing = new Set<string>()) {
