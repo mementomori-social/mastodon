@@ -13,11 +13,15 @@ RSpec.describe RankedHomeFeed do
     FeedManager.instance.push_to_home(viewer, status, update: false)
   end
 
+  # The ranking is computed off-band by RankedHomeFeedWorker in production; in
+  # specs we run it inline, then read it back through #get the way a request
+  # does.
   describe '#get' do
     before { stub_const('RankedHomeFeed::MIN_AGE_MINUTES', 0) }
 
     context 'when the feed is empty' do
       it 'returns an empty array' do
+        subject.recompute!
         expect(subject.get(20)).to eq []
       end
     end
@@ -33,10 +37,12 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'returns the more engaged status first' do
+        subject.recompute!
         expect(subject.get(20)).to eq [popular_status, plain_status]
       end
 
       it 'slices with limit and offset' do
+        subject.recompute!
         expect(subject.get(1)).to eq [popular_status]
         expect(subject.get(1, 1)).to eq [plain_status]
         expect(subject.get(1, 5)).to eq []
@@ -54,6 +60,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'ranks the favoured author first' do
+        subject.recompute!
         expect(subject.get(20)).to eq [ana_status, bob_status]
       end
     end
@@ -69,6 +76,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'lets recency decay outweigh stale engagement' do
+        subject.recompute!
         expect(subject.get(20)).to eq [fresh_status, old_popular]
       end
     end
@@ -86,6 +94,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'surfaces the boosted status itself ranked by its engagement' do
+        subject.recompute!
         expect(subject.get(20)).to eq [popular_status, plain_status]
       end
     end
@@ -104,6 +113,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'excludes the viewer posts and boosts' do
+        subject.recompute!
         expect(subject.get(20)).to eq [bob_status]
       end
     end
@@ -128,6 +138,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'scores the remote status on its origin instance counts' do
+        subject.recompute!
         expect(subject.get(20)).to eq [remote_status, local_status]
       end
     end
@@ -143,6 +154,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'surfaces unseen posts first on every refresh and cycles back when all are seen' do
+        subject.recompute!
         expect(subject.get(1)).to eq [popular_status]
         expect(subject.get(1)).to eq [plain_status]
         expect(subject.get(2)).to eq [popular_status, plain_status]
@@ -159,6 +171,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'never surfaces direct visibility statuses' do
+        subject.recompute!
         expect(subject.get(20)).to eq [plain_status]
       end
     end
@@ -174,6 +187,7 @@ RSpec.describe RankedHomeFeed do
       let(:older_zero) { Fabricate(:status, account: ana, id: Mastodon::Snowflake.id_at(20.minutes.ago, with_random: false)) }
 
       it 'hides the post until it is old enough to have gathered signal' do
+        subject.recompute!
         expect(subject.get(20)).to eq [older_zero]
       end
     end
@@ -185,6 +199,8 @@ RSpec.describe RankedHomeFeed do
       let(:untagged)  { Fabricate(:status, account: ana) }
 
       before do
+        stub_const('RankedHomeFeed::JITTER', 0.0)
+
         liked = Fabricate(:status, account: tim)
         liked.tags << sauna_tag
         Fabricate(:favourite, account: viewer, status: liked)
@@ -194,6 +210,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'ranks posts carrying tags the viewer interacts with higher' do
+        subject.recompute!
         expect(subject.get(20)).to eq [tagged, untagged]
       end
     end
@@ -215,12 +232,14 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'ranks posts sharing words with liked posts higher' do
+        subject.recompute!
         expect(subject.get(20)).to eq [tagged, untagged]
       end
 
       it 'ignores words of authors who have not opted into search indexing' do
         writer.update!(indexable: false)
 
+        subject.recompute!
         expect(subject.get(20)).to eq [untagged, tagged]
       end
 
@@ -228,6 +247,7 @@ RSpec.describe RankedHomeFeed do
         feed = subject
         feed.send(:redis).sadd(InterestTerms::COMMON_TERMS_KEY, %w(saunailta))
 
+        feed.recompute!
         expect(feed.get(20)).to eq [untagged, tagged]
       end
     end
@@ -246,6 +266,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'word boosts only the public post, never the private one' do
+        subject.recompute!
         expect(subject.get(20)).to eq [public_match, private_match]
       end
     end
@@ -257,6 +278,7 @@ RSpec.describe RankedHomeFeed do
       it 'does not surface a reply as itself' do
         push(Fabricate(:status, account: ana, thread: parent))
 
+        subject.recompute!
         expect(subject.get(20)).to eq []
       end
 
@@ -264,6 +286,7 @@ RSpec.describe RankedHomeFeed do
         push(Fabricate(:status, account: ana, thread: parent))
         push(Fabricate(:status, account: bob, thread: parent))
 
+        subject.recompute!
         expect(subject.get(20)).to eq []
       end
 
@@ -274,6 +297,7 @@ RSpec.describe RankedHomeFeed do
           push(Fabricate(:status, account: ana, thread: parent))
           push(Fabricate(:status, account: bob, thread: parent))
 
+          subject.recompute!
           expect(subject.get(20)).to eq [parent]
         end
 
@@ -282,6 +306,7 @@ RSpec.describe RankedHomeFeed do
           push(Fabricate(:status, account: ana, thread: midthread))
           push(Fabricate(:status, account: bob, thread: midthread))
 
+          subject.recompute!
           expect(subject.get(20)).to_not include(midthread)
         end
 
@@ -290,6 +315,7 @@ RSpec.describe RankedHomeFeed do
           push(Fabricate(:status, account: ana, thread: parent))
           push(Fabricate(:status, account: bob, thread: parent))
 
+          subject.recompute!
           expect(subject.get(20)).to eq []
         end
 
@@ -298,6 +324,7 @@ RSpec.describe RankedHomeFeed do
           push(Fabricate(:status, account: ana, thread: private_parent))
           push(Fabricate(:status, account: bob, thread: private_parent))
 
+          subject.recompute!
           expect(subject.get(20)).to eq []
         end
       end
@@ -312,31 +339,8 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'skips the missing status' do
+        subject.recompute!
         expect(subject.get(20)).to eq []
-      end
-    end
-
-    context 'with a remote status eligible for reply backfill' do
-      let(:remote_account) { Fabricate(:account, domain: 'example.com') }
-      let(:remote_status)  { Fabricate(:status, account: remote_account, uri: 'https://example.com/statuses/2', created_at: 1.hour.ago) }
-      let(:local_status)   { Fabricate(:status, account: bob) }
-
-      before do
-        push(remote_status)
-        push(local_status)
-      end
-
-      it 'enqueues a reply backfill for the remote status only on the first page' do
-        subject.get(20)
-
-        expect(ActivityPub::FetchAllRepliesWorker).to have_enqueued_sidekiq_job(remote_status.id)
-        expect(ActivityPub::FetchAllRepliesWorker).to_not have_enqueued_sidekiq_job(local_status.id)
-      end
-
-      it 'does not enqueue backfills for later pages' do
-        subject.get(20, 20)
-
-        expect(ActivityPub::FetchAllRepliesWorker).to_not have_enqueued_sidekiq_job(remote_status.id)
       end
     end
 
@@ -352,6 +356,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'interleaves trending statuses into the feed' do
+        subject.recompute!
         results = subject.get(20)
 
         expect(results).to include(trending_status)
@@ -361,6 +366,7 @@ RSpec.describe RankedHomeFeed do
       it 'does not duplicate statuses already in the feed' do
         push(trending_status)
 
+        subject.recompute!
         expect(subject.get(20).count { |status| status.id == trending_status.id }).to eq 1
       end
 
@@ -368,6 +374,7 @@ RSpec.describe RankedHomeFeed do
         own_trending = Fabricate(:status, account: viewer)
         Fabricate(:status_trend, status: own_trending, account: viewer, allowed: true, rank: 0, score: 99.0)
 
+        subject.recompute!
         expect(subject.get(20)).to_not include(own_trending)
       end
     end
@@ -391,8 +398,88 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'continues into the trending pool beyond the ranked list' do
+        subject.recompute!
         expect(subject.get(2)).to eq [followed_status, trends[0]]
         expect(subject.get(2, 2)).to eq [trends[1], trends[2]]
+      end
+    end
+
+    context 'when the ranking has not been computed yet' do
+      let(:newest) { Fabricate(:status, account: bob) }
+      let(:oldest) { Fabricate(:status, account: ana) }
+
+      before do
+        push(oldest)
+        push(newest)
+      end
+
+      it 'serves the reverse-chronological window as a fast fallback' do
+        expect(subject.get(20)).to eq [newest, oldest]
+      end
+
+      it 'enqueues a recompute so the next refresh is ranked' do
+        subject.get(20)
+
+        expect(RankedHomeFeedWorker).to have_enqueued_sidekiq_job(viewer.id, false)
+      end
+    end
+
+    context 'when the ranking is already cached' do
+      let(:status) { Fabricate(:status, account: bob) }
+
+      before do
+        Fabricate(:status_stat, status: status, favourites_count: 5)
+        push(status)
+      end
+
+      it 'serves the cache instead of computing on the request path' do
+        subject.recompute!
+
+        # A high-engagement post pushed after the ranking was cached would top
+        # the feed if serving recomputed; since it does not, the post stays out
+        # until the async recompute runs.
+        later = Fabricate(:status, account: ana)
+        Fabricate(:status_stat, status: later, favourites_count: 99)
+        push(later)
+
+        expect(subject.get(20)).to_not include(later)
+      end
+
+      it 'throttles recompute enqueues to one per window' do
+        RankedHomeFeedWorker.clear
+
+        subject.get(20)
+        subject.get(20)
+
+        expect(RankedHomeFeedWorker.jobs.size).to eq 1
+      end
+    end
+  end
+
+  describe '#recompute!' do
+    before { stub_const('RankedHomeFeed::MIN_AGE_MINUTES', 0) }
+
+    context 'with a remote status eligible for reply backfill' do
+      let(:remote_account) { Fabricate(:account, domain: 'example.com') }
+      let(:remote_status)  { Fabricate(:status, account: remote_account, uri: 'https://example.com/statuses/2', created_at: 1.hour.ago) }
+      let(:local_status)   { Fabricate(:status, account: bob) }
+
+      before do
+        push(remote_status)
+        push(local_status)
+      end
+
+      it 'enqueues a reply backfill for the remote status only' do
+        subject.recompute!
+
+        expect(ActivityPub::FetchAllRepliesWorker).to have_enqueued_sidekiq_job(remote_status.id)
+        expect(ActivityPub::FetchAllRepliesWorker).to_not have_enqueued_sidekiq_job(local_status.id)
+      end
+
+      it 'does not enqueue backfills when only serving a page' do
+        subject.get(20, 20)
+
+        expect(ActivityPub::FetchAllRepliesWorker).to_not have_enqueued_sidekiq_job(remote_status.id)
       end
     end
   end

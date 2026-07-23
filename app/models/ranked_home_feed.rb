@@ -56,10 +56,16 @@ class RankedHomeFeed < HomeFeed
   # Cap on how many distinct words a profile keeps
   INTEREST_PROFILE_TERMS = ENV.fetch('RANKED_INTEREST_PROFILE_TERMS', '100').to_i
 
-  # A refresh (offset 0) always recomputes the ranking so each one surfaces
-  # posts not seen before; the cached copy only keeps offset pagination
-  # consistent while the user scrolls
-  RANKING_CACHE_TTL = ENV.fetch('RANKED_CACHE_TTL_SECONDS', '60').to_i.seconds
+  # The ranking is computed off the request path by RankedHomeFeedWorker and
+  # cached; serving only reads this. Retention is generous because active users
+  # get refreshed far more often than this (see RECOMPUTE_THROTTLE); the TTL
+  # only bounds memory for accounts that stop opening the feed.
+  RANKING_CACHE_TTL = ENV.fetch('RANKED_CACHE_TTL_SECONDS', '600').to_i.seconds
+
+  # Smallest gap between async recomputes for one account, so a burst of
+  # refreshes or client polling cannot stampede the worker; also the effective
+  # freshness of the ranking for someone refreshing continuously
+  RECOMPUTE_THROTTLE = ENV.fetch('RANKED_RECOMPUTE_THROTTLE_SECONDS', '30').to_i.seconds
 
   # How many top candidates may get their remote reply trees backfilled per request
   REPLY_BACKFILL_LIMIT = ENV.fetch('RANKED_REPLY_BACKFILL_LIMIT', '50').to_i
@@ -107,18 +113,21 @@ class RankedHomeFeed < HomeFeed
     limit  = limit.to_i
     offset = offset.to_i
 
-    ranked_ids = offset.zero? ? refreshed_ranked_ids : cached_ranked_ids
+    ranked_ids = ranked_ids_for(offset)
 
-    backfill_replies!(ranked_ids) if offset.zero?
+    # A refresh shows unseen posts first and falls back to already-served ones
+    # only once the unseen run out, so every refresh reads fresh without ever
+    # dead-ending, even though the ranking itself is recomputed asynchronously
+    # and reused between refreshes. Scrolling (offset > 0) serves the next unseen
+    # batch. The seen set is the cursor either way, so pages stay stable across
+    # recomputes.
+    seen = seen_ids
 
-    # A refresh serves the top of the ranking; scrolling serves the next
-    # batch that has not been served yet. The seen set is the cursor, so
-    # pagination cannot drift when the ranking is recomputed mid scroll.
     page_ids =
       if offset.zero?
-        ranked_ids.take(limit)
+        unseen, already_seen = ranked_ids.partition { |id| seen.exclude?(id) }
+        (unseen + already_seen).take(limit)
       else
-        seen = seen_ids
         ranked_ids.reject { |id| seen.include?(id) }.take(limit)
       end
 
@@ -131,20 +140,49 @@ class RankedHomeFeed < HomeFeed
     page_ids.filter_map { |id| statuses[id] }
   end
 
-  private
-
-  def refreshed_ranked_ids
+  # Recomputes the ranking and caches it, and warms remote reply trees for the
+  # top candidates. Called by RankedHomeFeedWorker so this cost stays off the
+  # web request path.
+  def recompute!
     ids = compute_ranked_ids
     Rails.cache.write(ranking_cache_key, ids, expires_in: RANKING_CACHE_TTL)
+    backfill_replies!(ids)
     ids
   end
 
-  def cached_ranked_ids
-    Rails.cache.fetch(ranking_cache_key, expires_in: RANKING_CACHE_TTL) { compute_ranked_ids }
+  private
+
+  # Serving reads the cached ranking; a refresh also triggers a throttled async
+  # recompute so the next one is fresh. Until the cache is warm (a first ever
+  # load, or after a long idle) the reverse-chronological window stands in, so
+  # the response is always fast and never blocks on scoring.
+  def ranked_ids_for(offset)
+    enqueue_recompute if offset.zero?
+
+    Rails.cache.read(ranking_cache_key) || chronological_window_ids
+  end
+
+  # Kicks off a recompute at most once per RECOMPUTE_THROTTLE per account; the
+  # worker additionally holds a single-flight lock, so concurrent refreshes
+  # collapse to one running recompute.
+  def enqueue_recompute
+    return unless redis.set(recompute_throttle_key, 1, nx: true, ex: RECOMPUTE_THROTTLE.to_i)
+
+    RankedHomeFeedWorker.perform_async(@account.id, @discover)
+  end
+
+  # The freshest window of the underlying Redis home feed, reverse
+  # chronological: the fallback shown until the async ranking lands.
+  def chronological_window_ids
+    redis.zrevrange(key, 0, WINDOW_SIZE - 1).map(&:to_i)
   end
 
   def ranking_cache_key
     "ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}"
+  end
+
+  def recompute_throttle_key
+    "ranked_home_feed:recompute:#{@account.id}:#{@discover ? 1 : 0}"
   end
 
   def compute_ranked_ids
