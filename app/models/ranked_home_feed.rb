@@ -56,10 +56,16 @@ class RankedHomeFeed < HomeFeed
   # Cap on how many distinct words a profile keeps
   INTEREST_PROFILE_TERMS = ENV.fetch('RANKED_INTEREST_PROFILE_TERMS', '100').to_i
 
-  # A refresh (offset 0) always recomputes the ranking so each one surfaces
-  # posts not seen before; the cached copy only keeps offset pagination
-  # consistent while the user scrolls
-  RANKING_CACHE_TTL = ENV.fetch('RANKED_CACHE_TTL_SECONDS', '60').to_i.seconds
+  # The ranking is computed off the request path by RankedHomeFeedWorker and
+  # cached; serving only reads this. Retention is generous because active users
+  # get refreshed far more often than this (see RECOMPUTE_THROTTLE); the TTL
+  # only bounds memory for accounts that stop opening the feed.
+  RANKING_CACHE_TTL = ENV.fetch('RANKED_CACHE_TTL_SECONDS', '600').to_i.seconds
+
+  # Smallest gap between async recomputes for one account, so a burst of
+  # refreshes or client polling cannot stampede the worker; also the effective
+  # freshness of the ranking for someone refreshing continuously
+  RECOMPUTE_THROTTLE = ENV.fetch('RANKED_RECOMPUTE_THROTTLE_SECONDS', '30').to_i.seconds
 
   # How many top candidates may get their remote reply trees backfilled per request
   REPLY_BACKFILL_LIMIT = ENV.fetch('RANKED_REPLY_BACKFILL_LIMIT', '50').to_i
@@ -107,18 +113,23 @@ class RankedHomeFeed < HomeFeed
     limit  = limit.to_i
     offset = offset.to_i
 
-    ranked_ids = offset.zero? ? refreshed_ranked_ids : cached_ranked_ids
+    ranked_ids = ranked_ids_for(offset)
 
     backfill_replies!(ranked_ids) if offset.zero?
 
-    # A refresh serves the top of the ranking; scrolling serves the next
-    # batch that has not been served yet. The seen set is the cursor, so
-    # pagination cannot drift when the ranking is recomputed mid scroll.
+    # A refresh shows unseen posts first and falls back to already-served ones
+    # only once the unseen run out, so every refresh reads fresh without ever
+    # dead-ending, even though the ranking itself is recomputed asynchronously
+    # and reused between refreshes. Scrolling (offset > 0) serves the next unseen
+    # batch. The seen set is the cursor either way, so pages stay stable across
+    # recomputes.
+    seen = seen_ids
+
     page_ids =
       if offset.zero?
-        ranked_ids.take(limit)
+        unseen, already_seen = ranked_ids.partition { |id| seen.exclude?(id) }
+        (unseen + already_seen).take(limit)
       else
-        seen = seen_ids
         ranked_ids.reject { |id| seen.include?(id) }.take(limit)
       end
 
@@ -131,20 +142,47 @@ class RankedHomeFeed < HomeFeed
     page_ids.filter_map { |id| statuses[id] }
   end
 
-  private
-
-  def refreshed_ranked_ids
+  # Recomputes the ranking and caches it. Called by RankedHomeFeedWorker to keep
+  # the cache warm off the request path, and inline by the feed itself when the
+  # cache is cold, so a load is always ranked and never falls back to chronological.
+  def recompute!
     ids = compute_ranked_ids
     Rails.cache.write(ranking_cache_key, ids, expires_in: RANKING_CACHE_TTL)
     ids
   end
 
-  def cached_ranked_ids
-    Rails.cache.fetch(ranking_cache_key, expires_in: RANKING_CACHE_TTL) { compute_ranked_ids }
+  private
+
+  # Serving reads the cached ranking. When the cache is warm, a refresh also
+  # triggers a throttled async recompute so the next load stays off the request
+  # path. When it is cold (a first ever load, a long idle, or the async recompute
+  # has not landed yet) we compute inline instead, so the feed is ALWAYS ranked
+  # and never falls back to chronological. Cold is rare because the async
+  # recompute keeps active accounts warm, so inline is the exception, not the rule.
+  def ranked_ids_for(offset)
+    cached = Rails.cache.read(ranking_cache_key)
+
+    enqueue_recompute if cached && offset.zero?
+
+    cached || recompute!
+  end
+
+  # Kicks off a background recompute at most once per RECOMPUTE_THROTTLE per
+  # account; the worker additionally holds a single-flight lock, so concurrent
+  # refreshes collapse to one running recompute. It only warms the cache; the
+  # feed never depends on it for correctness.
+  def enqueue_recompute
+    return unless redis.set(recompute_throttle_key, 1, nx: true, ex: RECOMPUTE_THROTTLE.to_i)
+
+    RankedHomeFeedWorker.perform_async(@account.id, @discover)
   end
 
   def ranking_cache_key
     "ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}"
+  end
+
+  def recompute_throttle_key
+    "ranked_home_feed:recompute:#{@account.id}:#{@discover ? 1 : 0}"
   end
 
   def compute_ranked_ids
