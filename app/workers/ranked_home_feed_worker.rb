@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 # Computes a viewer's ranked home timeline off the web request path and caches
-# it, so opening or refreshing the feed only reads the cache. Enqueued
-# (throttled) by RankedHomeFeed on refresh; the lock collapses a burst of
-# refreshes into one running recompute per account and discovery mode.
+# it, so opening or refreshing the feed only reads the cache. Enqueued by
+# RankedHomeFeed on a warm refresh; that enqueue is throttled to once per account
+# per window (a Redis key with a short TTL), which handles de-duplication on its
+# own. No sidekiq-unique-jobs lock: a lock that outlived a failed run (for
+# example a deploy where the class was not loaded yet) could wedge shut and stop
+# the worker from ever running again, which is exactly the failure to avoid.
 class RankedHomeFeedWorker
   include Sidekiq::Worker
   include DatabaseHelper
 
-  sidekiq_options queue: 'pull', retry: 0, lock: :until_executed, lock_ttl: 5.minutes.to_i
+  sidekiq_options queue: 'pull', retry: 0
 
   def perform(account_id, discover)
     with_primary do

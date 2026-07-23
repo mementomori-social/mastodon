@@ -115,6 +115,8 @@ class RankedHomeFeed < HomeFeed
 
     ranked_ids = ranked_ids_for(offset)
 
+    backfill_replies!(ranked_ids) if offset.zero?
+
     # A refresh shows unseen posts first and falls back to already-served ones
     # only once the unseen run out, so every refresh reads fresh without ever
     # dead-ending, even though the ranking itself is recomputed asynchronously
@@ -140,41 +142,39 @@ class RankedHomeFeed < HomeFeed
     page_ids.filter_map { |id| statuses[id] }
   end
 
-  # Recomputes the ranking and caches it, and warms remote reply trees for the
-  # top candidates. Called by RankedHomeFeedWorker so this cost stays off the
-  # web request path.
+  # Recomputes the ranking and caches it. Called by RankedHomeFeedWorker to keep
+  # the cache warm off the request path, and inline by the feed itself when the
+  # cache is cold, so a load is always ranked and never falls back to chronological.
   def recompute!
     ids = compute_ranked_ids
     Rails.cache.write(ranking_cache_key, ids, expires_in: RANKING_CACHE_TTL)
-    backfill_replies!(ids)
     ids
   end
 
   private
 
-  # Serving reads the cached ranking; a refresh also triggers a throttled async
-  # recompute so the next one is fresh. Until the cache is warm (a first ever
-  # load, or after a long idle) the reverse-chronological window stands in, so
-  # the response is always fast and never blocks on scoring.
+  # Serving reads the cached ranking. When the cache is warm, a refresh also
+  # triggers a throttled async recompute so the next load stays off the request
+  # path. When it is cold (a first ever load, a long idle, or the async recompute
+  # has not landed yet) we compute inline instead, so the feed is ALWAYS ranked
+  # and never falls back to chronological. Cold is rare because the async
+  # recompute keeps active accounts warm, so inline is the exception, not the rule.
   def ranked_ids_for(offset)
-    enqueue_recompute if offset.zero?
+    cached = Rails.cache.read(ranking_cache_key)
 
-    Rails.cache.read(ranking_cache_key) || chronological_window_ids
+    enqueue_recompute if cached && offset.zero?
+
+    cached || recompute!
   end
 
-  # Kicks off a recompute at most once per RECOMPUTE_THROTTLE per account; the
-  # worker additionally holds a single-flight lock, so concurrent refreshes
-  # collapse to one running recompute.
+  # Kicks off a background recompute at most once per RECOMPUTE_THROTTLE per
+  # account; the worker additionally holds a single-flight lock, so concurrent
+  # refreshes collapse to one running recompute. It only warms the cache; the
+  # feed never depends on it for correctness.
   def enqueue_recompute
     return unless redis.set(recompute_throttle_key, 1, nx: true, ex: RECOMPUTE_THROTTLE.to_i)
 
     RankedHomeFeedWorker.perform_async(@account.id, @discover)
-  end
-
-  # The freshest window of the underlying Redis home feed, reverse
-  # chronological: the fallback shown until the async ranking lands.
-  def chronological_window_ids
-    redis.zrevrange(key, 0, WINDOW_SIZE - 1).map(&:to_i)
   end
 
   def ranking_cache_key

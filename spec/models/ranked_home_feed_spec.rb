@@ -405,22 +405,24 @@ RSpec.describe RankedHomeFeed do
     end
 
     context 'when the ranking has not been computed yet' do
-      let(:newest) { Fabricate(:status, account: bob) }
-      let(:oldest) { Fabricate(:status, account: ana) }
+      let(:popular) { Fabricate(:status, account: bob, id: Mastodon::Snowflake.id_at(1.hour.ago, with_random: false)) }
+      let(:plain)   { Fabricate(:status, account: ana) }
 
       before do
-        push(oldest)
-        push(newest)
+        Fabricate(:status_stat, status: popular, favourites_count: 10, reblogs_count: 3)
+        push(popular) # older, pushed first
+        push(plain)   # newer, pushed last, so reverse chronological would lead with it
       end
 
-      it 'serves the reverse-chronological window as a fast fallback' do
-        expect(subject.get(20)).to eq [newest, oldest]
+      it 'computes inline and returns ranked order, never chronological' do
+        # Reverse chronological would be [plain, popular]; ranked is [popular, plain].
+        expect(subject.get(20)).to eq [popular, plain]
       end
 
-      it 'enqueues a recompute so the next refresh is ranked' do
+      it 'computes inline rather than enqueuing a worker on a cold load' do
         subject.get(20)
 
-        expect(RankedHomeFeedWorker).to have_enqueued_sidekiq_job(viewer.id, false)
+        expect(RankedHomeFeedWorker).to_not have_enqueued_sidekiq_job(viewer.id, false)
       end
     end
 
@@ -445,7 +447,17 @@ RSpec.describe RankedHomeFeed do
         expect(subject.get(20)).to_not include(later)
       end
 
+      it 'enqueues a background recompute on a warm refresh' do
+        subject.recompute!
+        RankedHomeFeedWorker.clear
+
+        subject.get(20)
+
+        expect(RankedHomeFeedWorker).to have_enqueued_sidekiq_job(viewer.id, false)
+      end
+
       it 'throttles recompute enqueues to one per window' do
+        subject.recompute!
         RankedHomeFeedWorker.clear
 
         subject.get(20)
@@ -456,7 +468,7 @@ RSpec.describe RankedHomeFeed do
     end
   end
 
-  describe '#recompute!' do
+  describe 'reply backfill' do
     before { stub_const('RankedHomeFeed::MIN_AGE_MINUTES', 0) }
 
     context 'with a remote status eligible for reply backfill' do
@@ -469,14 +481,14 @@ RSpec.describe RankedHomeFeed do
         push(local_status)
       end
 
-      it 'enqueues a reply backfill for the remote status only' do
-        subject.recompute!
+      it 'enqueues a reply backfill for the remote status only on a refresh' do
+        subject.get(20)
 
         expect(ActivityPub::FetchAllRepliesWorker).to have_enqueued_sidekiq_job(remote_status.id)
         expect(ActivityPub::FetchAllRepliesWorker).to_not have_enqueued_sidekiq_job(local_status.id)
       end
 
-      it 'does not enqueue backfills when only serving a page' do
+      it 'does not enqueue backfills when paginating' do
         subject.get(20, 20)
 
         expect(ActivityPub::FetchAllRepliesWorker).to_not have_enqueued_sidekiq_job(remote_status.id)
