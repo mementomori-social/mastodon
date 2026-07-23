@@ -29,4 +29,20 @@ RSpec.describe RankedHomeFeedWorker do
       expect { subject.perform(-1, false) }.to_not raise_error
     end
   end
+
+  describe 'end to end' do
+    it 'fills the cache so the feed serves the ranking without recomputing' do
+      viewer = Fabricate(:account)
+      author = Fabricate(:account)
+      viewer.follow!(author)
+      status = Fabricate(:status, account: author)
+      Fabricate(:status_stat, status: status, favourites_count: 7)
+      FeedManager.instance.push_to_home(viewer, status, update: false)
+
+      described_class.new.perform(viewer.id, false)
+
+      expect(Rails.cache.read("ranked_home_feed:ids:#{viewer.id}:0")).to include(status.id)
+      expect(RankedHomeFeed.new(viewer).get(20)).to eq [status]
+    end
+  end
 end
