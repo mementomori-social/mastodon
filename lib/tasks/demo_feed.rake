@@ -223,4 +223,62 @@ namespace :demo_feed do
 
     puts "Marked #{statuses.size} statuses as trending."
   end
+
+  desc 'Fill a home feed with posts in several languages to test the ranked feed language filter (refuses to run in production)'
+  task languages: :environment do
+    abort 'demo_feed:languages refuses to run in production' if Rails.env.production?
+
+    # Throwaway dev-box test content, not translations meant for the interface
+    samples = {
+      'fi' => 'Testiviesti suomeksi, kielisuodattimen testausta varten.',
+      'en' => 'Test post in English for checking the ranked feed language filter.',
+      'ja' => '日本語のテスト投稿です。言語フィルターの確認用。',
+      'de' => 'Testbeitrag auf Deutsch, um den Sprachfilter zu prüfen.',
+      'fr' => 'Message de test en français pour vérifier le filtre de langue.',
+      'es' => 'Publicación de prueba en español para probar el filtro de idioma.',
+      'sv' => 'Testinlägg på svenska för att kontrollera språkfiltret.',
+    }
+
+    per_language = (ENV['COUNT'] || 3).to_i
+    username     = ENV.fetch('VIEWER', nil).presence
+
+    viewer =
+      if username
+        Account.find_by(username: username.delete_prefix('@'), domain: nil) || abort("No local account @#{username}")
+      else
+        User.find_by(email: 'demo_viewer@localhost')&.account ||
+          abort('No demo viewer found. Pass VIEWER=<username> or run demo_feed:seed first.')
+      end
+
+    created = 0
+
+    samples.each do |code, text|
+      author = Account.find_by(username: "demo_lang_#{code}", domain: nil) || Account.create!(username: "demo_lang_#{code}")
+      viewer.follow!(author) unless viewer.following?(author)
+
+      per_language.times do |n|
+        status = PostStatusService.new.call(author, text: "#{text} (#{n + 1})", language: code)
+
+        # A post with no engagement is held back until MIN_AGE_MINUTES has
+        # passed, so give these some so they are rankable right away
+        status.status_stat.update(
+          favourites_count: rand(5..40),
+          reblogs_count: rand(0..8),
+          replies_count: rand(0..5)
+        )
+
+        # Fan-out runs in Sidekiq, which may not be running on a dev box
+        FeedManager.instance.push_to_home(viewer, status, update: false)
+        created += 1
+      end
+    end
+
+    puts <<~INSTRUCTIONS
+      Created #{created} posts in #{samples.size} languages (#{samples.keys.join(', ')}) for @#{viewer.username}.
+
+      Turn on "Ranked order" in the home column settings, then add languages under
+      "Show only these languages" and refresh. Only posts in the selected languages
+      should remain.
+    INSTRUCTIONS
+  end
 end
