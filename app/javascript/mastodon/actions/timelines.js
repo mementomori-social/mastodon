@@ -184,13 +184,19 @@ export const expandHomeTimeline            = ({ maxId, forceRefresh = false } = 
   const ranked   = getState().getIn(['settings', 'home', 'ranked'], false);
   const discover = getState().getIn(['settings', 'home', 'rankedDiscover'], false);
 
+  // Stored as an Immutable List once rehydrated, as a plain array right after
+  // the setting is changed
+  const storedLanguages = getState().getIn(['settings', 'home', 'rankedLanguages']);
+  const languages       = storedLanguages?.toJS ? storedLanguages.toJS() : (storedLanguages || []);
+  const languageParams  = languages.length > 0 ? { languages } : {};
+
   let params = { max_id: maxId };
 
   if (ranked && maxId) {
     // Ranked order paginates by offset; count loaded statuses, skipping gaps and special markers
     const items  = getState().getIn(['timelines', 'home', 'items'], ImmutableList());
 
-    params = { ranked: true, discover, offset: items.count(id => id !== null && /^\d+$/.test(id)) };
+    params = { ranked: true, discover, ...languageParams, offset: items.count(id => id !== null && /^\d+$/.test(id)) };
   } else if (ranked) {
     const hasItems  = getState().getIn(['timelines', 'home', 'items'], ImmutableList()).size > 0;
     const isPartial = getState().getIn(['timelines', 'home', 'isPartial'], false);
@@ -208,7 +214,7 @@ export const expandHomeTimeline            = ({ maxId, forceRefresh = false } = 
       dispatch(clearTimeline('home'));
     }
 
-    params = { ranked: true, discover, offset: 0 };
+    params = { ranked: true, discover, ...languageParams, offset: 0 };
   }
 
   const promise = dispatch(expandTimeline('home', '/api/v1/timelines/home', params));

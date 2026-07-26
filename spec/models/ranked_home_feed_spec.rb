@@ -404,6 +404,56 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with preferred languages' do
+      subject { described_class.new(viewer, languages: %w(fi en)) }
+
+      let(:finnish) { Fabricate(:status, account: bob, language: 'fi') }
+      let(:english) { Fabricate(:status, account: ana, language: 'en') }
+      let(:japanese) { Fabricate(:status, account: bob, language: 'ja') }
+      let(:unknown) { Fabricate(:status, account: ana, language: nil) }
+
+      before do
+        [finnish, english, japanese, unknown].each { |status| push(status) }
+      end
+
+      it 'keeps only posts in the chosen languages' do
+        subject.recompute!
+
+        expect(subject.get(20)).to contain_exactly(finnish, english)
+      end
+
+      it 'matches languages case insensitively' do
+        feed = described_class.new(viewer, languages: %w(FI))
+        feed.recompute!
+
+        expect(feed.get(20)).to eq [finnish]
+      end
+
+      it 'surfaces the boosted post language, not the booster one' do
+        boost = Fabricate(:status, account: ana, reblog: japanese)
+        push(boost)
+
+        subject.recompute!
+
+        expect(subject.get(20)).to_not include(japanese)
+      end
+
+      it 'does not filter when no languages are chosen' do
+        feed = described_class.new(viewer)
+        feed.recompute!
+
+        expect(feed.get(20)).to contain_exactly(finnish, english, japanese, unknown)
+      end
+
+      it 'caches separately per language selection' do
+        described_class.new(viewer, languages: %w(fi)).recompute!
+        described_class.new(viewer, languages: %w(ja)).recompute!
+
+        expect(described_class.new(viewer, languages: %w(fi)).get(20)).to eq [finnish]
+        expect(described_class.new(viewer, languages: %w(ja)).get(20)).to eq [japanese]
+      end
+    end
+
     context 'when the ranking has not been computed yet' do
       let(:popular) { Fabricate(:status, account: bob, id: Mastodon::Snowflake.id_at(1.hour.ago, with_random: false)) }
       let(:plain)   { Fabricate(:status, account: ana) }
@@ -422,7 +472,7 @@ RSpec.describe RankedHomeFeed do
       it 'computes inline rather than enqueuing a worker on a cold load' do
         subject.get(20)
 
-        expect(RankedHomeFeedWorker).to_not have_enqueued_sidekiq_job(viewer.id, false)
+        expect(RankedHomeFeedWorker).to_not have_enqueued_sidekiq_job(viewer.id, false, [])
       end
     end
 
@@ -453,7 +503,7 @@ RSpec.describe RankedHomeFeed do
 
         subject.get(20)
 
-        expect(RankedHomeFeedWorker).to have_enqueued_sidekiq_job(viewer.id, false)
+        expect(RankedHomeFeedWorker).to have_enqueued_sidekiq_job(viewer.id, false, [])
       end
 
       it 'throttles recompute enqueues to one per window' do
