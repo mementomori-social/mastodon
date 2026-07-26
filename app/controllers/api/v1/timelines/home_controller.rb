@@ -50,11 +50,31 @@ class Api::V1::Timelines::HomeController < Api::V1::Timelines::BaseController
   end
 
   def account_home_feed
-    @account_home_feed ||= ranked? ? RankedHomeFeed.new(current_account, discover: truthy_param?(:discover)) : HomeFeed.new(current_account)
+    @account_home_feed ||= if ranked?
+                             RankedHomeFeed.new(current_account, discover: truthy_param?(:discover), languages: language_params)
+                           else
+                             HomeFeed.new(current_account)
+                           end
   end
 
   def ranked?
     truthy_param?(:ranked)
+  end
+
+  # Only a plain array of language codes is accepted; anything else (a scalar, a
+  # nested hash) is treated as no preference rather than an error
+  def language_params
+    value = params[:languages]
+
+    value.is_a?(Array) ? value.grep(String) : []
+  end
+
+  # The inherited implementation cannot express an array parameter, and leaving
+  # languages out would make the "load more" link drop the language filter
+  def permitted_params
+    params
+      .slice(*PERMITTED_PARAMS, :languages)
+      .permit(*PERMITTED_PARAMS, languages: [])
   end
 
   def offset_param

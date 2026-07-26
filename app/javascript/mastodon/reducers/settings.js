@@ -1,4 +1,4 @@
-import { Map as ImmutableMap, fromJS } from 'immutable';
+import { List as ImmutableList, Map as ImmutableMap, fromJS } from 'immutable';
 
 import { COLUMN_ADD, COLUMN_REMOVE, COLUMN_MOVE, COLUMN_PARAMS_CHANGE } from '../actions/columns';
 import { COMPOSE_LANGUAGE_CHANGE } from '../actions/compose';
@@ -21,6 +21,7 @@ const initialState = ImmutableMap({
   home: ImmutableMap({
     ranked: false,
     rankedDiscover: false,
+    rankedLanguages: ImmutableList(),
 
     shows: ImmutableMap({
       quote: true,

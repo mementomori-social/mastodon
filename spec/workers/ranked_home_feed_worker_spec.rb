@@ -12,7 +12,7 @@ RSpec.describe RankedHomeFeedWorker do
 
       subject.perform(account.id, false)
 
-      expect(RankedHomeFeed).to have_received(:new).with(account, discover: false)
+      expect(RankedHomeFeed).to have_received(:new).with(account, discover: false, languages: nil)
       expect(feed).to have_received(:recompute!)
     end
 
@@ -22,7 +22,7 @@ RSpec.describe RankedHomeFeedWorker do
 
       subject.perform(account.id, true)
 
-      expect(RankedHomeFeed).to have_received(:new).with(account, discover: true)
+      expect(RankedHomeFeed).to have_received(:new).with(account, discover: true, languages: nil)
     end
 
     it 'does nothing when the account no longer exists' do

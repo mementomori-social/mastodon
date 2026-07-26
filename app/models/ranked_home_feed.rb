@@ -103,8 +103,13 @@ class RankedHomeFeed < HomeFeed
                            'COALESCE(status_stats.replies_count, 0) + ' \
                            'COALESCE(status_stats.favourites_count, 0)'
 
-  def initialize(account, discover: false)
-    @discover = discover
+  # Cap on how many preferred languages are honoured; the setting is a short
+  # list in practice and this bounds both the query and the cache key
+  MAX_LANGUAGES = ENV.fetch('RANKED_MAX_LANGUAGES', '20').to_i
+
+  def initialize(account, discover: false, languages: nil)
+    @discover  = discover
+    @languages = normalize_languages(languages)
 
     super(account)
   end
@@ -174,15 +179,37 @@ class RankedHomeFeed < HomeFeed
   def enqueue_recompute
     return unless redis.set(recompute_throttle_key, 1, nx: true, ex: RECOMPUTE_THROTTLE.to_i)
 
-    RankedHomeFeedWorker.perform_async(@account.id, @discover)
+    RankedHomeFeedWorker.perform_async(@account.id, @discover, @languages)
+  end
+
+  # Language codes the viewer wants to see, lowercased, de-duplicated and
+  # sorted so the same selection always yields the same cache key. Empty means
+  # no language filtering at all, which is the default.
+  def normalize_languages(languages)
+    return [] unless languages.is_a?(Array)
+
+    languages.grep(String).filter_map { |code| code.strip.downcase.presence }.uniq.sort.take(MAX_LANGUAGES)
+  end
+
+  # Posts are kept only when they carry one of the preferred languages. A post
+  # with no language set is dropped as well, matching how "preferred languages"
+  # filters the public timelines in core.
+  def language_allowed?(language)
+    @languages.empty? || @languages.include?(language&.downcase)
   end
 
   def ranking_cache_key
-    "ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}"
+    "ranked_home_feed:ids:#{@account.id}:#{@discover ? 1 : 0}#{language_key_suffix}"
+  end
+
+  # A different language selection ranks differently, so the two cannot share a
+  # cached ranking
+  def language_key_suffix
+    @languages.empty? ? '' : ":#{@languages.join(',')}"
   end
 
   def recompute_throttle_key
-    "ranked_home_feed:recompute:#{@account.id}:#{@discover ? 1 : 0}"
+    "ranked_home_feed:recompute:#{@account.id}:#{@discover ? 1 : 0}#{language_key_suffix}"
   end
 
   def compute_ranked_ids
@@ -224,7 +251,7 @@ class RankedHomeFeed < HomeFeed
         'targets.in_reply_to_id',
         'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
         'status_stats.untrusted_reblogs_count', 'status_stats.untrusted_favourites_count',
-        'targets.account_id'
+        'targets.account_id', 'targets.language'
       )
 
     direct_visibility = Status.visibilities[:direct]
@@ -242,7 +269,7 @@ class RankedHomeFeed < HomeFeed
       reply_heat[in_reply_to_id] += 1.0 + Math.log(1.0 + affinity[account_id].to_i)
     end
 
-    scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, in_reply_to_id, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites, target_account_id|
+    scored = rows.filter_map do |id, account_id, target_id, local, uri, visibility, in_reply_to_id, reblogs, replies, favourites, untrusted_reblogs, untrusted_favourites, target_account_id, language|
       # A recommendation feed should not recommend the viewer's own posts or
       # boosts, nor a boost of one of the viewer's own posts (where the booster
       # differs but the boosted post's author is the viewer)
@@ -253,6 +280,9 @@ class RankedHomeFeed < HomeFeed
 
       # Replies only contribute heat; the discussed post is what surfaces
       next unless in_reply_to_id.nil?
+
+      # Boosts surface their target, so the target's language is what counts
+      next unless language_allowed?(language)
 
       # Remote statuses carry the origin instance's counts as untrusted counts;
       # prefer them so federated posts are scored on what the user actually sees
@@ -307,10 +337,14 @@ class RankedHomeFeed < HomeFeed
 
     # Only thread roots are pulled in; a reply must never surface out of
     # context, so a discussed mid-thread reply is skipped rather than shown
-    rows = Status.where(id: candidate_ids, visibility: %i(public unlisted), in_reply_to_id: nil)
+    scope = Status.where(id: candidate_ids, visibility: %i(public unlisted), in_reply_to_id: nil)
       .not_excluded_by_account(@account)
       .not_domain_blocked_by_account(@account)
       .left_joins(:status_stat)
+
+    scope = scope.where(language: @languages) if @languages.any?
+
+    rows = scope
       .pluck(
         'statuses.id', 'statuses.account_id', 'statuses.local', 'statuses.uri',
         'status_stats.reblogs_count', 'status_stats.replies_count', 'status_stats.favourites_count',
@@ -459,7 +493,7 @@ class RankedHomeFeed < HomeFeed
 
     Trends.statuses.query.allowed.filtered_for(@account)
       .limit(DISCOVER_CANDIDATES * 2)
-      .filter_map { |status| status.id unless status.account_id == @account.id }
+      .filter_map { |status| status.id if status.account_id != @account.id && language_allowed?(status.language) }
       .reject { |id| seen.include?(id) }
       .take(DISCOVER_CANDIDATES)
   end
@@ -474,7 +508,7 @@ class RankedHomeFeed < HomeFeed
 
     Trends.statuses.query.allowed.filtered_for(@account)
       .limit(DISCOVERY_TAIL_FETCH)
-      .filter_map { |status| status.id unless status.account_id == @account.id }
+      .filter_map { |status| status.id if status.account_id != @account.id && language_allowed?(status.language) }
       .reject { |id| exclude.include?(id) || seen.include?(id) }
       .take(needed)
   end

@@ -13,13 +13,15 @@ class RankedHomeFeedWorker
 
   sidekiq_options queue: 'pull', retry: 0
 
-  def perform(account_id, discover)
+  # languages defaults to nil so jobs enqueued by an older revision, which pass
+  # only two arguments, keep working across a deploy
+  def perform(account_id, discover, languages = nil)
     with_primary do
       @account = Account.find(account_id)
     end
 
     with_read_replica do
-      RankedHomeFeed.new(@account, discover: discover).recompute!
+      RankedHomeFeed.new(@account, discover: discover, languages: languages).recompute!
     end
   rescue ActiveRecord::RecordNotFound
     true
