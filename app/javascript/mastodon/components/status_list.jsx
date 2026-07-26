@@ -34,6 +34,7 @@ export default class StatusList extends ImmutablePureComponent {
     emptyMessage: PropTypes.node,
     alwaysPrepend: PropTypes.bool,
     withCounters: PropTypes.bool,
+    showFollowBadge: PropTypes.bool,
     timelineId: PropTypes.string,
     lastId: PropTypes.string,
     bindToDocument: PropTypes.bool,
@@ -86,6 +87,7 @@ export default class StatusList extends ImmutablePureComponent {
               scrollKey={this.props.scrollKey}
               showThread
               withCounters={this.props.withCounters}
+              showFollowBadge={this.props.showFollowBadge}
               {...statusProps}
             />
           );
@@ -106,6 +108,7 @@ export default class StatusList extends ImmutablePureComponent {
             contextType={timelineId}
             showThread
             withCounters={this.props.withCounters}
+            showFollowBadge={this.props.showFollowBadge}
             {...statusProps} />
         );
       }).concat(scrollableContent);
