@@ -12,6 +12,8 @@ import MenuIcon from '@/material-icons/400-24px/menu.svg?react';
 import NotificationsActiveIcon from '@/material-icons/400-24px/notifications-fill.svg?react';
 import NotificationsIcon from '@/material-icons/400-24px/notifications.svg?react';
 import SearchIcon from '@/material-icons/400-24px/search.svg?react';
+import WandStarsActiveIcon from '@/material-icons/400-24px/wand_stars-fill.svg?react';
+import WandStarsIcon from '@/material-icons/400-24px/wand_stars.svg?react';
 import { openModal } from 'mastodon/actions/modal';
 import { toggleNavigation } from 'mastodon/actions/navigation';
 import { fetchServer } from 'mastodon/actions/server';
@@ -21,10 +23,12 @@ import type { MastodonLocationDescriptor } from 'mastodon/components/router';
 import { useIdentity } from 'mastodon/identity_context';
 import { registrationsOpen, sso_redirect } from 'mastodon/initial_state';
 import { selectUnreadNotificationGroupsCount } from 'mastodon/selectors/notifications';
+import { isRankedHomeEnabled } from 'mastodon/selectors/settings';
 import { useAppDispatch, useAppSelector } from 'mastodon/store';
 
 export const messages = defineMessages({
   home: { id: 'tabs_bar.home', defaultMessage: 'Home' },
+  forYou: { id: 'column.for_you', defaultMessage: 'For you' },
   search: { id: 'tabs_bar.search', defaultMessage: 'Search' },
   publish: { id: 'tabs_bar.publish', defaultMessage: 'New Post' },
   notifications: {
@@ -162,6 +166,7 @@ export const NavigationBar: React.FC = () => {
   const { signedIn } = useIdentity();
   const dispatch = useAppDispatch();
   const open = useAppSelector((state) => state.navigation.open);
+  const rankedHome = useAppSelector(isRankedHomeEnabled);
   const intl = useIntl();
 
   const handleClick = useCallback(() => {
@@ -180,10 +185,17 @@ export const NavigationBar: React.FC = () => {
         {signedIn && (
           <>
             <IconLabelButton
-              title={intl.formatMessage(messages.home)}
+              title={intl.formatMessage(
+                rankedHome ? messages.forYou : messages.home,
+              )}
               to='/home'
-              icon={<Icon id='' icon={HomeIcon} />}
-              activeIcon={<Icon id='' icon={HomeActiveIcon} />}
+              icon={<Icon id='' icon={rankedHome ? WandStarsIcon : HomeIcon} />}
+              activeIcon={
+                <Icon
+                  id=''
+                  icon={rankedHome ? WandStarsActiveIcon : HomeActiveIcon}
+                />
+              }
             />
             <IconLabelButton
               title={intl.formatMessage(messages.search)}
