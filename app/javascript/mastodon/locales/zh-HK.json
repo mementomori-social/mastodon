@@ -205,6 +205,7 @@
   "column.firehose_local": "本伺服器的即時動態",
   "column.firehose_singular": "即時動態",
   "column.follow_requests": "追蹤請求",
+  "column.for_you": "為你推薦",
   "column.home": "主頁",
   "column.lists": "列表",
   "column.mutes": "靜音名單",

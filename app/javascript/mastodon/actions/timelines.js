@@ -2,8 +2,9 @@ import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
 
 import api, { getLinks } from 'mastodon/api';
 import { compareId } from 'mastodon/compare_id';
-import { usePendingItems as preferPendingItems } from 'mastodon/initial_state';
+import { me, usePendingItems as preferPendingItems } from 'mastodon/initial_state';
 
+import { fetchRelationships } from './accounts';
 import { importFetchedStatus, importFetchedStatuses } from './importer';
 import { submitMarkers } from './markers';
 import { timelineDelete } from './timelines_typed';
@@ -53,6 +54,23 @@ export function updateTimeline(timeline, status, { accept = undefined, bogusQuot
       return;
     }
 
+    const rankedHome =
+      timeline === 'home' &&
+      getState().getIn(['settings', 'home', 'ranked'], false);
+    const isReply = !!status.in_reply_to_id;
+    const isBoost = !!status.reblog;
+    // Only your own new *original* post earns a place at the top of the ranked
+    // column; your boosts and replies do not belong in the ranked feed.
+    const isOwnPost = status.account?.id === me && !isReply && !isBoost;
+
+    // In the ranked home column, other people's chronological top-level posts
+    // are dropped so the scored order stays stable. Replies must still flow
+    // through, because open threads update off this same action (the contexts
+    // reducer), and your own new top-level posts still appear at the top.
+    if (rankedHome && !isReply && !isOwnPost) {
+      return;
+    }
+
     dispatch(importFetchedStatus(status, { bogusQuotePolicy }));
 
     dispatch({
@@ -60,6 +78,9 @@ export function updateTimeline(timeline, status, { accept = undefined, bogusQuot
       timeline,
       status,
       usePendingItems: preferPendingItems,
+      // Only your own new original posts are prepended to the ranked column;
+      // replies belong in the thread and boosts don't belong in the feed.
+      skipHomeColumn: rankedHome && !isOwnPost,
     });
 
     if (timeline === 'home') {
@@ -93,13 +114,16 @@ const parseTags = (tags = {}, mode) => {
 export function expandTimeline(timelineId, path, params = {}) {
   return async (dispatch, getState) => {
     const timeline = getState().getIn(['timelines', timelineId], ImmutableMap());
-    const isLoadingMore = !!params.max_id;
+    // A ranked feed is not ordered by id, so it paginates by offset and must
+    // never be merged by id; track that separately from chronological loads
+    const ordered = !!params.ranked;
+    const isLoadingMore = ordered ? Number(params.offset) > 0 : !!params.max_id;
 
     if (timeline.get('isLoading')) {
       return;
     }
 
-    if (!params.max_id && !params.pinned && (timeline.get('items', ImmutableList()).size + timeline.get('pendingItems', ImmutableList()).size) > 0) {
+    if (!params.max_id && !params.pinned && !ordered && (timeline.get('items', ImmutableList()).size + timeline.get('pendingItems', ImmutableList()).size) > 0) {
       const a = timeline.getIn(['pendingItems', 0]);
       const b = timeline.getIn(['items', 0]);
 
@@ -119,9 +143,9 @@ export function expandTimeline(timelineId, path, params = {}) {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
 
       dispatch(importFetchedStatuses(response.data));
-      dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.status === 206, isLoadingRecent, isLoadingMore, isLoadingRecent && preferPendingItems));
+      dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.status === 206, isLoadingRecent, isLoadingMore, isLoadingRecent && preferPendingItems, ordered));
 
-      if (timelineId === 'home' && !isLoadingMore && !isLoadingRecent) {
+      if (timelineId === 'home' && !isLoadingMore && !isLoadingRecent && !ordered) {
         const now = new Date();
         const fittingIndex = response.data.findIndex(status => now - (new Date(status.created_at)) > 4 * 3600 * 1000);
 
@@ -153,7 +177,70 @@ export function fillTimelineGaps(timelineId, path, params = {}) {
   };
 }
 
-export const expandHomeTimeline            = ({ maxId } = {}) => expandTimeline('home', '/api/v1/timelines/home', { max_id: maxId });
+/**
+ * @param {{ maxId?: string, forceRefresh?: boolean }} [options]
+ */
+export const expandHomeTimeline            = ({ maxId, forceRefresh = false } = {}) => (dispatch, getState) => {
+  const ranked   = getState().getIn(['settings', 'home', 'ranked'], false);
+  const discover = getState().getIn(['settings', 'home', 'rankedDiscover'], false);
+
+  // Stored as an Immutable List once rehydrated, as a plain array right after
+  // the setting is changed
+  const storedLanguages = getState().getIn(['settings', 'home', 'rankedLanguages']);
+  const languages       = storedLanguages?.toJS ? storedLanguages.toJS() : (storedLanguages || []);
+  const languageParams  = languages.length > 0 ? { languages } : {};
+
+  let params = { max_id: maxId };
+
+  if (ranked && maxId) {
+    // Ranked order paginates by offset; count loaded statuses, skipping gaps and special markers
+    const items  = getState().getIn(['timelines', 'home', 'items'], ImmutableList());
+
+    params = { ranked: true, discover, ...languageParams, offset: items.count(id => id !== null && /^\d+$/.test(id)) };
+  } else if (ranked) {
+    const hasItems  = getState().getIn(['timelines', 'home', 'items'], ImmutableList()).size > 0;
+    const isPartial = getState().getIn(['timelines', 'home', 'isPartial'], false);
+
+    // Background catch-ups (stream reconnects, focus) must not wipe the
+    // ranked column and reset the scroll position; only explicit refreshes
+    // re-rank the feed
+    if (!forceRefresh && hasItems && !isPartial) {
+      return Promise.resolve();
+    }
+
+    // A fetch from the top re-ranks the whole column so new posts are
+    // included at their scored position instead of prepended chronologically
+    if (hasItems) {
+      dispatch(clearTimeline('home'));
+    }
+
+    params = { ranked: true, discover, ...languageParams, offset: 0 };
+  }
+
+  const promise = dispatch(expandTimeline('home', '/api/v1/timelines/home', params));
+
+  if (ranked) {
+    // The follow badge needs relationships for every author on the page
+    void promise.then(() => {
+      const state = getState();
+      const accountIds = state
+        .getIn(['timelines', 'home', 'items'], ImmutableList())
+        .filter(id => id !== null && /^\d+$/.test(id))
+        .map(id => state.getIn(['statuses', id, 'account']))
+        .filter(accountId => accountId && state.getIn(['relationships', accountId], null) === null)
+        .toSet()
+        .toArray();
+
+      if (accountIds.length > 0) {
+        dispatch(fetchRelationships(accountIds));
+      }
+
+      return undefined;
+    });
+  }
+
+  return promise;
+};
 export const expandPublicTimeline          = ({ maxId, onlyMedia, onlyRemote } = {}) => expandTimeline(`public${onlyRemote ? ':remote' : ''}${onlyMedia ? ':media' : ''}`, '/api/v1/timelines/public', { remote: !!onlyRemote, max_id: maxId, only_media: !!onlyMedia });
 export const expandCommunityTimeline       = ({ maxId, onlyMedia } = {}) => expandTimeline(`community${onlyMedia ? ':media' : ''}`, '/api/v1/timelines/public', { local: true, max_id: maxId, only_media: !!onlyMedia });
 export const expandAccountTimeline         = (accountId, { maxId, withReplies, tagged } = {}) => expandTimeline(`account:${accountId}${withReplies ? ':with_replies' : ''}${tagged ? `:${tagged}` : ''}`, `/api/v1/accounts/${accountId}/statuses`, { exclude_replies: !withReplies, exclude_reblogs: withReplies, tagged, max_id: maxId });
@@ -184,7 +271,7 @@ export function expandTimelineRequest(timeline, isLoadingMore) {
   };
 }
 
-export function expandTimelineSuccess(timeline, statuses, next, partial, isLoadingRecent, isLoadingMore, usePendingItems) {
+export function expandTimelineSuccess(timeline, statuses, next, partial, isLoadingRecent, isLoadingMore, usePendingItems, ordered = false) {
   return {
     type: TIMELINE_EXPAND_SUCCESS,
     timeline,
@@ -192,7 +279,9 @@ export function expandTimelineSuccess(timeline, statuses, next, partial, isLoadi
     next,
     partial,
     isLoadingRecent,
+    isLoadingMore,
     usePendingItems,
+    ordered,
     skipLoading: !isLoadingMore,
   };
 }
