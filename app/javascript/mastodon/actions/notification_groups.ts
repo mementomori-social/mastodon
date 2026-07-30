@@ -3,6 +3,7 @@ import { createAction } from '@reduxjs/toolkit';
 import {
   apiClearNotifications,
   apiFetchNotificationGroups,
+  apiFetchNotificationsUnreadCount,
 } from 'mastodon/api/notifications';
 import type { ApiAccountJSON } from 'mastodon/api_types/accounts';
 import type { ApiCollectionJSON } from 'mastodon/api_types/collections';
@@ -174,6 +175,27 @@ export const pollRecentNotifications = createDataLoadingThunk(
 
     return { notifications };
   },
+  {
+    useLoadingBar: false,
+  },
+);
+
+// Only one page is ever loaded, so the badge needs the server's count. It is
+// stored with the read position it was taken at, so it is dropped once anything
+// has been read.
+export const fetchNotificationsUnreadCount = createDataLoadingThunk(
+  'notificationGroups/fetchUnreadCount',
+  async (_params, { getState }) => {
+    // Recorded before the request, so anything read while it is in flight
+    // invalidates the result instead of overriding it
+    const readId = getState().notificationGroups.lastReadId;
+    const count = await apiFetchNotificationsUnreadCount({
+      grouped_types: selectNotificationGroupedTypes(getState()),
+    });
+
+    return { count, readId };
+  },
+  (data: { count: number; readId: string }) => data,
   {
     useLoadingBar: false,
   },
