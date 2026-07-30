@@ -302,8 +302,12 @@ function updateLastReadId(
     if (
       group?.page_max_id &&
       compareId(state.lastReadId, group.page_max_id) < 0
-    )
+    ) {
       state.lastReadId = group.page_max_id;
+      // The loaded groups are the newest ones, so reading up to them leaves
+      // nothing older unread
+      state.serverUnreadCount = 0;
+    }
   }
 }
 
