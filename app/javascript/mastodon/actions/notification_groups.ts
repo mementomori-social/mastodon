@@ -3,7 +3,6 @@ import { createAction } from '@reduxjs/toolkit';
 import {
   apiClearNotifications,
   apiFetchNotificationGroups,
-  apiFetchNotificationsUnreadCount,
 } from 'mastodon/api/notifications';
 import type { ApiAccountJSON } from 'mastodon/api_types/accounts';
 import type { ApiCollectionJSON } from 'mastodon/api_types/collections';
@@ -175,19 +174,6 @@ export const pollRecentNotifications = createDataLoadingThunk(
 
     return { notifications };
   },
-  {
-    useLoadingBar: false,
-  },
-);
-
-// The store only ever holds one page, so the real unread count comes from the server
-export const fetchNotificationsUnreadCount = createDataLoadingThunk(
-  'notificationGroups/fetchUnreadCount',
-  async (_params, { getState }) =>
-    apiFetchNotificationsUnreadCount({
-      grouped_types: selectNotificationGroupedTypes(getState()),
-    }),
-  (count: number) => ({ count }),
   {
     useLoadingBar: false,
   },

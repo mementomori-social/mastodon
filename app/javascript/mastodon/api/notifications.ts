@@ -52,18 +52,6 @@ export const apiFetchNotificationGroups = async (params?: {
   };
 };
 
-export const apiFetchNotificationsUnreadCount = async (params?: {
-  grouped_types?: string[];
-}) => {
-  const response = await api().request<{ count: number }>({
-    method: 'GET',
-    url: '/api/v2/notifications/unread_count',
-    params: { limit: 1000, ...params },
-  });
-
-  return response.data.count;
-};
-
 export const apiClearNotifications = () =>
   apiRequest<undefined>('POST', 'v1/notifications/clear');
 

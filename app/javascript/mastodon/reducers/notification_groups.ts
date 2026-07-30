@@ -13,7 +13,6 @@ import {
   clearNotifications,
   fetchNotifications,
   fetchNotificationsGap,
-  fetchNotificationsUnreadCount,
   processNewNotificationForGroups,
   loadPending,
   updateScrollPosition,
@@ -59,7 +58,6 @@ interface NotificationGroupsState {
   mounted: number;
   isTabVisible: boolean;
   mergedNotifications: 'ok' | 'pending' | 'needs-reload';
-  serverUnreadCount: number; // unread count from the server, not just loaded groups
 }
 
 const initialState: NotificationGroupsState = {
@@ -74,7 +72,6 @@ const initialState: NotificationGroupsState = {
   readMarkerId: '0', // user-facing and updated when focus changes
   mounted: 0, // number of mounted notification list components, usually 0 or 1
   isTabVisible: true,
-  serverUnreadCount: 0,
 };
 
 function filterNotificationsForAccounts(
@@ -302,12 +299,8 @@ function updateLastReadId(
     if (
       group?.page_max_id &&
       compareId(state.lastReadId, group.page_max_id) < 0
-    ) {
+    )
       state.lastReadId = group.page_max_id;
-      // The loaded groups are the newest ones, so reading up to them leaves
-      // nothing older unread
-      state.serverUnreadCount = 0;
-    }
   }
 }
 
@@ -492,10 +485,6 @@ export const notificationGroupsReducer = createReducer<NotificationGroupsState>(
             notification,
             groupedTypes,
           );
-
-          if (!shouldMarkNewNotificationsAsRead(state))
-            state.serverUnreadCount += 1;
-
           updateLastReadId(state);
           trimNotifications(state);
         }
@@ -569,9 +558,6 @@ export const notificationGroupsReducer = createReducer<NotificationGroupsState>(
         updateLastReadId(state);
         trimNotifications(state);
       })
-      .addCase(fetchNotificationsUnreadCount.fulfilled, (state, action) => {
-        state.serverUnreadCount = action.payload.count;
-      })
       .addCase(markNotificationsAsRead, (state) => {
         const mostRecentGroup = state.groups.find(isNotificationGroup);
         if (
@@ -583,7 +569,6 @@ export const notificationGroupsReducer = createReducer<NotificationGroupsState>(
         // We don't call `commitLastReadId`, because that is conditional
         // and we want to unconditionally update the state instead.
         state.readMarkerId = state.lastReadId;
-        state.serverUnreadCount = 0;
       })
       .addCase(fetchMarkers.fulfilled, (state, action) => {
         if (

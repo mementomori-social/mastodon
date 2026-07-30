@@ -61,10 +61,9 @@ export const selectUnreadNotificationGroupsCount = createSelector(
     (s: RootState) => s.notificationGroups.lastReadId,
     selectNotificationGroups,
     selectPendingNotificationGroups,
-    (s: RootState) => s.notificationGroups.serverUnreadCount,
   ],
-  (notificationMarker, groups, pendingGroups, serverUnreadCount) => {
-    const loadedUnreadCount =
+  (notificationMarker, groups, pendingGroups) => {
+    return (
       groups.filter(
         (group) =>
           group.type !== 'gap' &&
@@ -76,10 +75,8 @@ export const selectUnreadNotificationGroupsCount = createSelector(
           group.type !== 'gap' &&
           group.page_max_id &&
           compareId(group.page_max_id, notificationMarker) > 0,
-      ).length;
-
-    // Counting loaded groups saturates at the page size, so prefer the server count
-    return Math.max(loadedUnreadCount, serverUnreadCount);
+      ).length
+    );
   },
 );
 
