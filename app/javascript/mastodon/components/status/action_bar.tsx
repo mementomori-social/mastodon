@@ -141,7 +141,6 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
   statusId,
   contextType,
   withDismiss,
-  withCounters,
   scrollKey,
 }) => {
   const status = useStatus(statusId);
@@ -200,7 +199,7 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
         />
       </div>
       <div className='status__action-bar__button-wrapper'>
-        <BoostButton statusId={statusId} counters={withCounters} />
+        <BoostButton statusId={statusId} counters />
       </div>
       <div className='status__action-bar__button-wrapper'>
         <IconButton
@@ -211,7 +210,7 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
           icon='star'
           iconComponent={status.favourited ? StarIcon : StarBorderIcon}
           onClick={handleFavouriteClick}
-          counter={withCounters ? status.favourites_count : undefined}
+          counter={status.favourites_count}
         />
       </div>
       <div className='status__action-bar__button-wrapper'>

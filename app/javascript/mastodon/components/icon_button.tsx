@@ -96,6 +96,8 @@ export const IconButton = forwardRef<HTMLButtonElement, Props>(
     const previousActive = usePrevious(active) ?? active;
     const shouldAnimate = animate && active !== previousActive;
 
+    const showCounter = typeof counter !== 'undefined' && counter > 0;
+
     const classes = classNames(className, 'icon-button', {
       active,
       disabled,
@@ -103,13 +105,13 @@ export const IconButton = forwardRef<HTMLButtonElement, Props>(
       activate: shouldAnimate && active,
       deactivate: shouldAnimate && !active,
       overlayed: overlay,
-      'icon-button--with-counter': typeof counter !== 'undefined',
+      'icon-button--with-counter': showCounter,
     });
 
     let contents = (
       <>
         <Icon id={icon} icon={iconComponent} aria-hidden='true' />{' '}
-        {typeof counter !== 'undefined' && (
+        {showCounter && (
           <span className='icon-button__counter'>
             <AnimatedNumber value={counter} />
           </span>
