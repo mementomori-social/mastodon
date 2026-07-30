@@ -1,8 +1,6 @@
 import type { IconProp } from './icon';
 import { Icon } from './icon';
 
-const formatNumber = (num: number): number | string => (num > 40 ? num : num);
-
 interface Props {
   id: string;
   icon: IconProp;
@@ -19,9 +17,7 @@ export const IconWithBadge: React.FC<Props> = ({
 }) => (
   <i className='icon-with-badge'>
     <Icon id={id} icon={icon} className={className} />
-    {count > 0 && (
-      <i className='icon-with-badge__badge'>{formatNumber(count)}</i>
-    )}
+    {count > 0 && <i className='icon-with-badge__badge'>{count}</i>}
     {issueBadge && <i className='icon-with-badge__issue-badge' />}
   </i>
 );
