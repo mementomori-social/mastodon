@@ -251,7 +251,7 @@ class StatusActionBar extends ImmutablePureComponent {
   };
 
   render () {
-    const { status, relationship, statusQuoteState, quotedAccountId, contextType, intl, withDismiss, withCounters, scrollKey } = this.props;
+    const { status, relationship, statusQuoteState, quotedAccountId, contextType, intl, withDismiss, scrollKey } = this.props;
     const { signedIn, permissions } = this.props.identity;
 
     const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
@@ -394,10 +394,10 @@ class StatusActionBar extends ImmutablePureComponent {
           <IconButton className='status__action-bar__button' title={replyTitle} icon={isReply ? 'reply' : replyIcon} iconComponent={isReply ? ReplyIcon : replyIconComponent} onClick={this.handleReplyClick} counter={status.get('replies_count')} />
         </div>
         <div className='status__action-bar__button-wrapper'>
-          <BoostButton statusId={status.get('id')} counters={withCounters} />
+          <BoostButton statusId={status.get('id')} counters />
         </div>
         <div className='status__action-bar__button-wrapper'>
-          <IconButton className={`status__action-bar__button star-icon${useStars ? '' : ' favourite-heart'}`} animate active={status.get('favourited')} title={favouriteTitle} icon='star' iconComponent={useStars ? FavouriteStar : FavouriteHeart} onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
+          <IconButton className={`status__action-bar__button star-icon${useStars ? '' : ' favourite-heart'}`} animate active={status.get('favourited')} title={favouriteTitle} icon='star' iconComponent={useStars ? FavouriteStar : FavouriteHeart} onClick={this.handleFavouriteClick} counter={status.get('favourites_count')} />
         </div>
         <div className='status__action-bar__button-wrapper'>
           <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={bookmarkTitle} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} />
