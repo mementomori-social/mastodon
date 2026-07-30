@@ -13,7 +13,7 @@ import { debounce } from 'lodash';
 import { scrollRight } from '../../scroll';
 import { focusApp, unfocusApp, changeLayout } from 'mastodon/actions/app';
 import { synchronouslySubmitMarkers, submitMarkers, fetchMarkers } from 'mastodon/actions/markers';
-import { fetchNotifications } from 'mastodon/actions/notification_groups';
+import { fetchNotifications, fetchNotificationsUnreadCount } from 'mastodon/actions/notification_groups';
 import { INTRODUCTION_VERSION } from 'mastodon/actions/onboarding';
 import { AlertsController } from 'mastodon/components/alerts_controller';
 import { injectIntl } from '@/mastodon/components/intl';
@@ -440,6 +440,7 @@ class UI extends PureComponent {
       this.props.dispatch(fetchMarkers());
       this.props.dispatch(expandHomeTimeline());
       this.props.dispatch(fetchNotifications());
+      this.props.dispatch(fetchNotificationsUnreadCount());
       this.props.dispatch(fetchServerTranslationLanguages());
       this.props.dispatch(checkAnnualReport());
 
