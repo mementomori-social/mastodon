@@ -108,7 +108,7 @@ class RankedHomeFeed < HomeFeed
   MAX_LANGUAGES = ENV.fetch('RANKED_MAX_LANGUAGES', '20').to_i
 
   def initialize(account, discover: false, languages: nil)
-    @discover  = discover
+    @discover  = discover ? true : false
     @languages = normalize_languages(languages)
 
     super(account)
