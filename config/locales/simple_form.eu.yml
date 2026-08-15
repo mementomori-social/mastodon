@@ -61,6 +61,10 @@ eu:
         setting_default_quote_policy_unlisted: Jendeak aipatzen zaituenean, bere bidalketa ere joeren denbora-lerro publikoetatik ezkutatuko da.
         setting_default_sensitive: Multimedia hunkigarria lehenetsita ezkutatzen da, eta sakatuz ikusi daiteke
         setting_emoji_style: Nola bistaratu emojiak. "Automatikoki" aukeran emoji natiboak erabiltzen saiatuko dira, baina Twemojira itzuliko dira arakatzaile zaharretarako.
+        setting_system_scrollbars_ui: Safari eta Chrome-n oinarritutako mahaigaineko nabigatzaileei bakarrik aplikatzen zaie
+        setting_use_stars: Aldatu bihotz-ikono gogokoena Twitter estiloko izar horia batekin, distira eta eraztun animazioekin.
+        setting_hide_finnish_translate_links: Finlandieraz idatzitako egoera-mezuetan behean dagoen 'Itzuli' botoia ezkutatzen du.
+        setting_hide_all_translate_links: Hizkuntza-marka duen egoera-mezu bakoitzaren azpian dagoen 'Itzuli' botoia ezkutatzen du.
         setting_use_blurhash: Gradienteak ezkutatutakoaren koloreetan oinarritzen dira, baina xehetasunak ezkutatzen dituzte
         setting_use_pending_items: Ezkutatu denbora-lerroko eguneraketak klik baten atzean jarioa automatikoki korritu ordez
         username: Hizkiak, zenbakiak eta azpimarrak erabil ditzakezu
@@ -244,6 +248,9 @@ eu:
         setting_reduce_motion: Murriztu animazioen mugimenduak
         setting_system_font_ui: Erabili sistemako tipografia lehenetsia
         setting_system_scrollbars_ui: Erabili sistemako desplazamendu-barra lehenetsia
+        setting_use_stars: Gordetako gustukoenetarako erabili izarrak bihotzen ordez.
+        setting_hide_finnish_translate_links: Finlandierazko postetan itzulpen-estekak ezkutatu
+        setting_hide_all_translate_links: Ezkutatu itzulpen-esteka guztiak
         setting_theme: Gunearen azala
         setting_trends: Erakutsi gaurko joerak
         setting_unfollow_modal: Erakutsi baieztapen elkarrizketa-koadroa inor jarraitzeari utzi aurretik

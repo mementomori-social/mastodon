@@ -185,4 +185,42 @@ describe('search', () => {
       expect.objectContaining({ shortcode: 'sob_other' }),
     ]);
   });
+
+  test('name matches rank above tag-only matches', async () => {
+    await putEmojiData(
+      [
+        // "sweat" is a whole word in the label.
+        rawEmojiFactory({
+          label: 'grinning face with sweat',
+          hexcode: '1F605',
+          shortcodes: ['grinning_face_with_sweat'],
+          tags: [],
+          unicode: '😅',
+        }),
+        // "sweat" only appears as a tag, not in the name.
+        rawEmojiFactory({
+          label: 'sad but relieved face',
+          hexcode: '1F625',
+          shortcodes: ['sad_but_relieved_face'],
+          tags: ['sweat'],
+          unicode: '😥',
+        }),
+      ],
+      'en',
+    );
+    await putCustomEmojiData({
+      emojis: [customEmojiFactory({ shortcode: 'blob_sweat' })],
+    });
+
+    const results = await search({ query: 'sweat', locale: 'en' });
+
+    // Both emojis with the word in their name outrank the tag-only match,
+    // which would otherwise score an exact hit and crowd them out.
+    expect(results).toHaveLength(3);
+    expect(results).toEqual([
+      expect.objectContaining({ hexcode: '1F605' }),
+      expect.objectContaining({ shortcode: 'blob_sweat' }),
+      expect.objectContaining({ hexcode: '1F625' }),
+    ]);
+  });
 });

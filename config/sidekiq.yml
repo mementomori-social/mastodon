@@ -20,6 +20,10 @@
       every: ['5m', first_in: '4m']
       class: Scheduler::Trends::RefreshScheduler
       queue: scheduler
+    ranked_common_terms_scheduler:
+      cron: '<%= Random.rand(0..59) %> 4 * * *'
+      class: Scheduler::RankedCommonTermsScheduler
+      queue: scheduler
     trends_review_notifications_scheduler:
       every: '6h'
       class: Scheduler::Trends::ReviewNotificationsScheduler

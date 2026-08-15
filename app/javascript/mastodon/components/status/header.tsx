@@ -10,6 +10,7 @@ import { selectAccountStatus } from '@/mastodon/selectors/statuses';
 import { useAppSelector } from '@/mastodon/store';
 
 import { Avatar } from '../avatar';
+import { AvatarFollowBadge } from '../avatar_follow_badge';
 import { AvatarOverlay } from '../avatar_overlay';
 import type { DisplayNameProps } from '../display_name';
 import { LinkedDisplayName } from '../display_name';
@@ -27,6 +28,7 @@ export interface StatusHeaderProps {
   onHeaderClick?: MouseEventHandler<HTMLDivElement>;
   className?: string;
   featured?: boolean;
+  showFollowBadge?: boolean;
 }
 
 export type StatusHeaderRenderFn = (args: StatusHeaderProps) => ReactNode;
@@ -40,6 +42,7 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
   contentBeforeDate,
   contentAfterDate,
   onHeaderClick,
+  showFollowBadge,
 }) => {
   const status = useAppSelector((state) =>
     selectAccountStatus(state, statusId),
@@ -63,6 +66,7 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
         statusAccount={statusAccount}
         friendAccount={account}
         avatarSize={avatarSize}
+        showFollowBadge={showFollowBadge}
       />
 
       {contentBeforeDate}
@@ -112,7 +116,8 @@ const StatusDisplayName: FC<{
   statusAccount?: AccountShapeFull;
   friendAccount?: Account | AccountShapeFull;
   avatarSize: number;
-}> = ({ statusAccount, friendAccount, avatarSize }) => {
+  showFollowBadge?: boolean;
+}> = ({ statusAccount, friendAccount, avatarSize, showFollowBadge }) => {
   const AccountComponent = friendAccount ? AvatarOverlay : Avatar;
   return (
     <LinkedDisplayName
@@ -125,6 +130,7 @@ const StatusDisplayName: FC<{
           friend={friendAccount}
           size={avatarSize}
         />
+        {showFollowBadge && <AvatarFollowBadge accountId={statusAccount?.id} />}
       </div>
     </LinkedDisplayName>
   );

@@ -6,8 +6,8 @@ class FeedManager
   include Singleton
   include Redisable
 
-  # Maximum number of items stored in a single feed
-  MAX_ITEMS = 800
+  # Maximum number of items stored in a single feed (same env name as glitch-soc)
+  MAX_ITEMS = ENV.fetch('MAX_FEED_SIZE', '800').to_i
 
   # Number of items in the feed since last reblog of status
   # before the new reblog will be inserted. Must be <= MAX_ITEMS

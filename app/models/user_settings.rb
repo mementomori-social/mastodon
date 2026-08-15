@@ -27,6 +27,9 @@ class UserSettings
     setting :use_pending_items, default: false
     setting :use_system_font, default: false
     setting :use_system_scrollbars, default: false
+    setting :use_stars, default: false
+    setting :hide_finnish_translate_links, default: false
+    setting :hide_all_translate_links, default: false
     setting :disable_swiping, default: false
     setting :disable_hover_cards, default: false
     setting :delete_modal, default: true
@@ -36,7 +39,8 @@ class UserSettings
     setting :reduce_motion, default: false
     setting :expand_content_warnings, default: false
     setting :display_media, default: 'default', in: %w(hide_all default show_all)
-    setting :auto_play, default: false
+    setting :auto_play, default: true
+    setting :auto_play_video, default: true
     setting :emoji_style, default: 'auto', in: %w(auto native twemoji)
     setting :color_scheme, default: 'auto', in: %w(auto light dark)
     setting :contrast, default: 'auto', in: %w(auto high)

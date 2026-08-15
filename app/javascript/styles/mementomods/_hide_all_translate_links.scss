@@ -1,0 +1,9 @@
+// Activated by the `web.hide_all_translate_links` user preference, which adds
+// a `hide-all-translate-links` class to the html element via
+// app/helpers/application_helper.rb#html_classes. Hides the Translate button
+// below every status that has a language tag.
+.hide-all-translate-links
+  .status__content__text[lang]
+  ~ .status__content__translate-button {
+  display: none;
+}

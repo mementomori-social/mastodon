@@ -61,9 +61,17 @@ export const selectUnreadNotificationGroupsCount = createSelector(
     (s: RootState) => s.notificationGroups.lastReadId,
     selectNotificationGroups,
     selectPendingNotificationGroups,
+    (s: RootState) => s.notificationGroups.serverUnreadCount,
+    (s: RootState) => s.notificationGroups.serverUnreadCountReadId,
   ],
-  (notificationMarker, groups, pendingGroups) => {
-    return (
+  (
+    notificationMarker,
+    groups,
+    pendingGroups,
+    serverUnreadCount,
+    serverUnreadCountReadId,
+  ) => {
+    const loadedUnreadCount =
       groups.filter(
         (group) =>
           group.type !== 'gap' &&
@@ -75,8 +83,14 @@ export const selectUnreadNotificationGroupsCount = createSelector(
           group.type !== 'gap' &&
           group.page_max_id &&
           compareId(group.page_max_id, notificationMarker) > 0,
-      ).length
-    );
+      ).length;
+
+    // Counting loaded groups saturates at one page, so the server count fills in
+    // the rest. It only holds until something is read, which moves the marker.
+    if (serverUnreadCountReadId !== notificationMarker)
+      return loadedUnreadCount;
+
+    return Math.max(loadedUnreadCount, serverUnreadCount);
   },
 );
 
