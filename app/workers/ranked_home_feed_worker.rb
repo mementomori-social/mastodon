@@ -21,7 +21,9 @@ class RankedHomeFeedWorker
     end
 
     with_read_replica do
-      RankedHomeFeed.new(@account, discover: discover, languages: languages).recompute!
+      feed = RankedHomeFeed.new(@account, discover: discover, languages: languages)
+      feed.recompute!
+      feed.finish_regeneration!
     end
   rescue ActiveRecord::RecordNotFound
     true

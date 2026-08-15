@@ -7,7 +7,7 @@ RSpec.describe RankedHomeFeedWorker do
 
   describe '#perform' do
     it 'recomputes the ranking for the account' do
-      feed = instance_double(RankedHomeFeed, recompute!: [])
+      feed = instance_double(RankedHomeFeed, recompute!: [], finish_regeneration!: nil)
       allow(RankedHomeFeed).to receive(:new).and_return(feed)
 
       subject.perform(account.id, false)
@@ -17,7 +17,7 @@ RSpec.describe RankedHomeFeedWorker do
     end
 
     it 'passes the discovery flag through' do
-      feed = instance_double(RankedHomeFeed, recompute!: [])
+      feed = instance_double(RankedHomeFeed, recompute!: [], finish_regeneration!: nil)
       allow(RankedHomeFeed).to receive(:new).and_return(feed)
 
       subject.perform(account.id, true)
