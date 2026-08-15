@@ -464,15 +464,36 @@ RSpec.describe RankedHomeFeed do
         push(plain)   # newer, pushed last, so reverse chronological would lead with it
       end
 
-      it 'computes inline and returns ranked order, never chronological' do
-        # Reverse chronological would be [plain, popular]; ranked is [popular, plain].
-        expect(subject.get(20)).to eq [popular, plain]
+      it 'returns nothing and reports regeneration instead of blocking the request' do
+        expect(subject.get(20)).to eq []
+        expect(subject.regenerating?).to be true
       end
 
-      it 'computes inline rather than enqueuing a worker on a cold load' do
+      it 'enqueues the worker that computes the ranking' do
         subject.get(20)
 
-        expect(RankedHomeFeedWorker).to_not have_enqueued_sidekiq_job(viewer.id, false, [])
+        expect(RankedHomeFeedWorker).to have_enqueued_sidekiq_job(viewer.id, false, [])
+      end
+
+      it 'serves the ranking once the worker has finished' do
+        subject.get(20)
+        RankedHomeFeedWorker.drain
+
+        feed = described_class.new(viewer)
+        expect(feed.get(20)).to eq [popular, plain]
+        expect(feed.regenerating?).to be false
+      end
+
+      context 'with discovery enabled' do
+        subject { described_class.new(viewer, discover: true) }
+
+        let(:trending) { Fabricate(:status, account: ana) }
+
+        it 'does not fill the page from trends while regenerating' do
+          Fabricate(:status_trend, status: trending, account: ana, allowed: true, rank: 1, score: 10.0)
+
+          expect(subject.get(20)).to eq []
+        end
       end
     end
 
@@ -532,6 +553,7 @@ RSpec.describe RankedHomeFeed do
       end
 
       it 'enqueues a reply backfill for the remote status only on a refresh' do
+        subject.recompute!
         subject.get(20)
 
         expect(ActivityPub::FetchAllRepliesWorker).to have_enqueued_sidekiq_job(remote_status.id)

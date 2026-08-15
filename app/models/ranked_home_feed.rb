@@ -57,10 +57,10 @@ class RankedHomeFeed < HomeFeed
   INTEREST_PROFILE_TERMS = ENV.fetch('RANKED_INTEREST_PROFILE_TERMS', '100').to_i
 
   # The ranking is computed off the request path by RankedHomeFeedWorker and
-  # cached; serving only reads this. Retention is generous because active users
-  # get refreshed far more often than this (see RECOMPUTE_THROTTLE); the TTL
-  # only bounds memory for accounts that stop opening the feed.
-  RANKING_CACHE_TTL = ENV.fetch('RANKED_CACHE_TTL_SECONDS', '600').to_i.seconds
+  # cached; serving only reads this. Retention is long on purpose: a stale
+  # ranking is still ranked and serves instantly while the throttled background
+  # refresh replaces it, so only a first-ever load sees the regeneration state.
+  RANKING_CACHE_TTL = ENV.fetch('RANKED_CACHE_TTL_SECONDS', '172800').to_i.seconds
 
   # Smallest gap between async recomputes for one account, so a burst of
   # refreshes or client polling cannot stampede the worker; also the effective
@@ -138,7 +138,7 @@ class RankedHomeFeed < HomeFeed
         ranked_ids.reject { |id| seen.include?(id) }.take(limit)
       end
 
-    page_ids += discovery_tail_ids(limit - page_ids.size, ranked_ids) if @discover && page_ids.size < limit
+    page_ids += discovery_tail_ids(limit - page_ids.size, ranked_ids) if @discover && page_ids.size < limit && !@regenerating
 
     statuses = Status.where(id: page_ids).index_by(&:id)
 
@@ -147,29 +147,61 @@ class RankedHomeFeed < HomeFeed
     page_ids.filter_map { |id| statuses[id] }
   end
 
-  # Recomputes the ranking and caches it. Called by RankedHomeFeedWorker to keep
-  # the cache warm off the request path, and inline by the feed itself when the
-  # cache is cold, so a load is always ranked and never falls back to chronological.
+  # Recomputes the ranking and caches it. Only RankedHomeFeedWorker calls this,
+  # so the cost never lands on a web request.
   def recompute!
     ids = compute_ranked_ids
     Rails.cache.write(ranking_cache_key, ids, expires_in: RANKING_CACHE_TTL)
     ids
   end
 
+  def finish_regeneration!
+    async_refresh.finish! if AsyncRefresh.exists?(ranked_regeneration_key)
+  end
+
+  # The chronological rebuild uses account:<id>:regeneration; the ranked state
+  # needs its own key so one banner never leaks into the other mode
+  def async_refresh
+    @async_refresh ||= AsyncRefresh.new(ranked_regeneration_key)
+  end
+
+  def regenerating?
+    @regenerating || async_refresh.running?
+  end
+
+  def regeneration_in_progress!
+    @async_refresh = AsyncRefresh.create(ranked_regeneration_key)
+  end
+
   private
 
-  # Serving reads the cached ranking. When the cache is warm, a refresh also
-  # triggers a throttled async recompute so the next load stays off the request
-  # path. When it is cold (a first ever load, a long idle, or the async recompute
-  # has not landed yet) we compute inline instead, so the feed is ALWAYS ranked
-  # and never falls back to chronological. Cold is rare because the async
-  # recompute keeps active accounts warm, so inline is the exception, not the rule.
+  # Serving reads the cached ranking; a warm refresh also triggers a throttled
+  # async recompute so the next load stays off the request path. A cold cache
+  # (first ever load, or idle past the long retention) never computes inline:
+  # the request returns the regenerating state immediately, the worker computes,
+  # and the column polls until the ranking lands. Never chronological either way.
   def ranked_ids_for(offset)
     cached = Rails.cache.read(ranking_cache_key)
 
-    enqueue_recompute if cached && offset.zero?
+    if cached
+      enqueue_recompute if offset.zero?
+      cached
+    else
+      start_regeneration!
+      []
+    end
+  end
 
-    cached || recompute!
+  # Guaranteed enqueue plus the visible regeneration state the home column
+  # already knows how to poll for (the same banner as a chronological rebuild)
+  def start_regeneration!
+    @regenerating = true
+
+    return if async_refresh.running?
+
+    regeneration_in_progress!
+    redis.set(recompute_throttle_key, 1, ex: RECOMPUTE_THROTTLE.to_i)
+    RankedHomeFeedWorker.perform_async(@account.id, @discover, @languages)
   end
 
   # Kicks off a background recompute at most once per RECOMPUTE_THROTTLE per
@@ -206,6 +238,10 @@ class RankedHomeFeed < HomeFeed
   # cached ranking
   def language_key_suffix
     @languages.empty? ? '' : ":#{@languages.join(',')}"
+  end
+
+  def ranked_regeneration_key
+    "ranked_home_feed:regeneration:#{@account.id}"
   end
 
   def recompute_throttle_key
