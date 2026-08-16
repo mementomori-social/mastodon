@@ -180,7 +180,6 @@ class HomeTimeline extends PureComponent {
             scrollKey={`home_timeline-${columnId}`}
             onLoadMore={this.handleLoadMore}
             timelineId='home'
-            showFollowBadge={ranked}
             append={ranked ? <RankedFeedEnd /> : undefined}
             emptyMessage={<FormattedMessage id='empty_column.home' defaultMessage='Your home timeline is empty! Follow more people to fill it up.' />}
             bindToDocument={!multiColumn}

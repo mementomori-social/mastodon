@@ -6,7 +6,7 @@ import { useIdentity } from '@/mastodon/identity_context';
 import AddIcon from '@/material-icons/400-24px/add.svg?react';
 import { openModal } from 'mastodon/actions/modal';
 import { Icon } from 'mastodon/components/icon';
-import { me } from 'mastodon/initial_state';
+import { me, showFollowBadges } from 'mastodon/initial_state';
 import { useAppDispatch, useAppSelector } from 'mastodon/store';
 
 const messages = defineMessages({
@@ -41,6 +41,7 @@ export const AvatarFollowBadge: React.FC<{ accountId?: string }> = ({
   );
 
   if (
+    !showFollowBadges ||
     !signedIn ||
     !accountId ||
     accountId === me ||

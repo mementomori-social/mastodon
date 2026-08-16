@@ -125,7 +125,6 @@ class Status extends ImmutablePureComponent {
     scrollKey: PropTypes.string,
     skipPrepend: PropTypes.bool,
     avatarSize: PropTypes.number,
-    showFollowBadge: PropTypes.bool,
     deployPictureInPicture: PropTypes.func,
     unfocusable: PropTypes.bool,
     headerRenderFn: PropTypes.func,
@@ -587,7 +586,6 @@ class Status extends ImmutablePureComponent {
           account={account}
           avatarSize={avatarSize}
           onHeaderClick={this.handleHeaderClick}
-          showFollowBadge={this.props.showFollowBadge}
         />
       );
 

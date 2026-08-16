@@ -28,7 +28,6 @@ export interface StatusHeaderProps {
   onHeaderClick?: MouseEventHandler<HTMLDivElement>;
   className?: string;
   featured?: boolean;
-  showFollowBadge?: boolean;
 }
 
 export type StatusHeaderRenderFn = (args: StatusHeaderProps) => ReactNode;
@@ -42,7 +41,6 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
   contentBeforeDate,
   contentAfterDate,
   onHeaderClick,
-  showFollowBadge,
 }) => {
   const status = useAppSelector((state) =>
     selectAccountStatus(state, statusId),
@@ -66,7 +64,6 @@ export const StatusHeader: FC<StatusHeaderProps> = ({
         statusAccount={statusAccount}
         friendAccount={account}
         avatarSize={avatarSize}
-        showFollowBadge={showFollowBadge}
       />
 
       {contentBeforeDate}
@@ -116,8 +113,7 @@ const StatusDisplayName: FC<{
   statusAccount?: AccountShapeFull;
   friendAccount?: Account | AccountShapeFull;
   avatarSize: number;
-  showFollowBadge?: boolean;
-}> = ({ statusAccount, friendAccount, avatarSize, showFollowBadge }) => {
+}> = ({ statusAccount, friendAccount, avatarSize }) => {
   const AccountComponent = friendAccount ? AvatarOverlay : Avatar;
   return (
     <LinkedDisplayName
@@ -125,12 +121,15 @@ const StatusDisplayName: FC<{
       className='status__display-name'
     >
       <div className='status__avatar'>
-        <AccountComponent
-          account={statusAccount}
-          friend={friendAccount}
-          size={avatarSize}
-        />
-        {showFollowBadge && <AvatarFollowBadge accountId={statusAccount?.id} />}
+        <span className='status__avatar__badge-anchor'>
+          <AccountComponent
+            account={statusAccount}
+            friend={friendAccount}
+            size={avatarSize}
+          />
+          {/* Boosts already show two avatars, so no badge there */}
+          {!friendAccount && <AvatarFollowBadge accountId={statusAccount?.id} />}
+        </span>
       </div>
     </LinkedDisplayName>
   );

@@ -4,7 +4,6 @@ import api, { getLinks } from 'mastodon/api';
 import { compareId } from 'mastodon/compare_id';
 import { me, usePendingItems as preferPendingItems } from 'mastodon/initial_state';
 
-import { fetchRelationships } from './accounts';
 import { importFetchedStatus, importFetchedStatuses } from './importer';
 import { submitMarkers } from './markers';
 import { timelineDelete } from './timelines_typed';
@@ -219,25 +218,6 @@ export const expandHomeTimeline            = ({ maxId, forceRefresh = false } = 
 
   const promise = dispatch(expandTimeline('home', '/api/v1/timelines/home', params));
 
-  if (ranked) {
-    // The follow badge needs relationships for every author on the page
-    void promise.then(() => {
-      const state = getState();
-      const accountIds = state
-        .getIn(['timelines', 'home', 'items'], ImmutableList())
-        .filter(id => id !== null && /^\d+$/.test(id))
-        .map(id => state.getIn(['statuses', id, 'account']))
-        .filter(accountId => accountId && state.getIn(['relationships', accountId], null) === null)
-        .toSet()
-        .toArray();
-
-      if (accountIds.length > 0) {
-        dispatch(fetchRelationships(accountIds));
-      }
-
-      return undefined;
-    });
-  }
 
   return promise;
 };
