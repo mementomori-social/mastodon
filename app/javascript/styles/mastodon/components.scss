@@ -1464,6 +1464,12 @@ body > [data-popover-placement] {
   position: relative;
 }
 
+// Anchors the follow badge to the avatar rather than the fixed-size container
+.status__avatar__badge-anchor {
+  position: relative;
+  display: inline-flex;
+}
+
 .avatar-follow-badge {
   position: absolute;
   bottom: -2px;

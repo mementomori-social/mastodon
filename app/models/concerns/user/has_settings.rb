@@ -71,6 +71,10 @@ module User::HasSettings
     settings['web.hide_all_translate_links']
   end
 
+  def setting_show_follow_badges
+    settings['web.show_follow_badges']
+  end
+
   def setting_noindex
     settings['noindex']
   end

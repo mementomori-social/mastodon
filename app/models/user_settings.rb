@@ -30,6 +30,7 @@ class UserSettings
     setting :use_stars, default: false
     setting :hide_finnish_translate_links, default: false
     setting :hide_all_translate_links, default: false
+    setting :show_follow_badges, default: false
     setting :disable_swiping, default: false
     setting :disable_hover_cards, default: false
     setting :delete_modal, default: true
