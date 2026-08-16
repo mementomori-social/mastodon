@@ -281,4 +281,81 @@ namespace :demo_feed do
       should remain.
     INSTRUCTIONS
   end
+
+  desc 'Post from accounts the viewer does not follow so the avatar follow badge is testable (refuses to run in production)'
+  task strangers: :environment do
+    abort 'demo_feed:strangers refuses to run in production' if Rails.env.production?
+
+    username = ENV.fetch('VIEWER', nil).presence
+    viewer =
+      if username
+        Account.find_by(username: username.delete_prefix('@'), domain: nil) || abort("No local account @#{username}")
+      else
+        User.find_by(email: 'demo_viewer@localhost')&.account ||
+          abort('No demo viewer found. Pass VIEWER=<username> or run demo_feed:seed first.')
+      end
+
+    tag = ENV.fetch('TAG', 'badgetest')
+
+    strangers = (1..5).map do |i|
+      Account.find_by(username: "stranger_#{i}", domain: nil) || Account.create!(username: "stranger_#{i}")
+    end
+
+    # A follow would hide the badge, which is exactly what we are testing
+    strangers.each { |s| viewer.unfollow!(s) if viewer.following?(s) }
+
+    posts = strangers.flat_map do |stranger|
+      [
+        PostStatusService.new.call(stranger, text: "Public post from #{stranger.username}"),
+        PostStatusService.new.call(stranger, text: "Tagged post from #{stranger.username} ##{tag}"),
+      ]
+    end
+
+    # Home only carries people you follow, so a followed account boosts one in
+    booster = viewer.following.local.first
+    ReblogService.new.call(booster, posts.first) if booster
+
+    FavouriteService.new.call(viewer, posts.second)
+    Bookmark.find_or_create_by!(account: viewer, status: posts.third)
+
+    posts.each { |status| status.status_stat.update(favourites_count: rand(2..20)) }
+
+    # Notifications, threads and conversations each render the avatar too
+    own = viewer.statuses.where(reblog_of_id: nil, visibility: %i(public unlisted)).first ||
+          PostStatusService.new.call(viewer, text: 'Post for badge testing')
+
+    FavouriteService.new.call(strangers.first, own)
+    ReblogService.new.call(strangers.second, own)
+    PostStatusService.new.call(strangers.third, text: "@#{viewer.username} mention for badge testing")
+    FollowService.new.call(strangers.fourth, viewer)
+    PostStatusService.new.call(strangers.fifth, text: "@#{viewer.username} reply in thread", thread: own)
+    PostStatusService.new.call(strangers.first, text: "@#{viewer.username} direct message", visibility: 'direct')
+
+    # Boosting puts a stranger's post, and avatar, on the viewer's own profile
+    posts.last(3).each { |status| ReblogService.new.call(viewer, status) unless viewer.reblogged?(status) }
+
+    # Explore only lists posts marked as trending
+    posts.each do |status|
+      StatusTrend.find_or_initialize_by(status: status).update!(
+        account: status.account, allowed: true, rank: rand(1..10), score: rand(5.0..20.0)
+      )
+    end
+
+    puts <<~INSTRUCTIONS
+      Created #{posts.size} posts from #{strangers.size} accounts @#{viewer.username} does not follow.
+
+      Local and federated timelines: posts from stranger_1..5
+      Hashtag timeline:              ##{tag}
+      Home:                          #{booster ? "boost by @#{booster.username}" : 'no followed account available to boost'}
+      Favourites and bookmarks:      one stranger post each
+      Other profiles:                /@stranger_1
+      Explore, posts:                all #{posts.size} stranger posts marked trending
+      Your own profile:              #{[3, posts.size].min} stranger posts you boosted
+      Notifications:                 favourite, boost, mention, follow
+      Thread on your own post:       a stranger reply
+      Conversations:                 a direct message
+
+      Your own posts carry no badge, only the stranger posts you boosted.
+    INSTRUCTIONS
+  end
 end
