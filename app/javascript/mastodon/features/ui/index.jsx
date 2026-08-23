@@ -13,7 +13,7 @@ import { debounce } from 'lodash';
 import { scrollRight } from '../../scroll';
 import { focusApp, unfocusApp, changeLayout } from 'mastodon/actions/app';
 import { synchronouslySubmitMarkers, submitMarkers, fetchMarkers } from 'mastodon/actions/markers';
-import { fetchNotifications } from 'mastodon/actions/notification_groups';
+import { fetchNotifications, fetchNotificationsUnreadCount } from 'mastodon/actions/notification_groups';
 import { INTRODUCTION_VERSION } from 'mastodon/actions/onboarding';
 import { AlertsController } from 'mastodon/components/alerts_controller';
 import { injectIntl } from '@/mastodon/components/intl';
@@ -44,6 +44,7 @@ import {
   Status,
   GettingStarted,
   KeyboardShortcuts,
+  SearchReference,
   Firehose,
   AccountTimeline,
   AccountGallery,
@@ -199,6 +200,7 @@ class SwitchingColumnsArea extends PureComponent {
 
             <WrappedRoute path='/getting-started' component={GettingStarted} content={children} />
             <WrappedRoute path='/keyboard-shortcuts' component={KeyboardShortcuts} content={children} />
+            <WrappedRoute path='/search-reference' component={SearchReference} content={children} />
             <WrappedRoute path='/about' component={About} content={children} />
             <WrappedRoute path='/privacy-policy' component={PrivacyPolicy} content={children} />
             <WrappedRoute path='/terms-of-service/:date?' component={TermsOfService} content={children} />
@@ -441,7 +443,10 @@ class UI extends PureComponent {
     }
 
     if (signedIn) {
-      this.props.dispatch(fetchMarkers());
+      // After the marker, so the count is taken against a settled read position
+      void this.props.dispatch(fetchMarkers()).then(() =>
+        this.props.dispatch(fetchNotificationsUnreadCount()),
+      );
       this.props.dispatch(expandHomeTimeline());
       this.props.dispatch(fetchNotifications());
       this.props.dispatch(fetchServerTranslationLanguages());
@@ -540,7 +545,7 @@ class UI extends PureComponent {
   };
 
   handleHotkeyToggleHelp = () => {
-    if (this.props.location.pathname === '/keyboard-shortcuts') {
+    if (this.props.location.pathname === '/keyboard-shortcuts' || this.props.location.pathname === '/search-reference') {
       this.props.history.goBack();
     } else {
       this.props.history.push('/keyboard-shortcuts');
