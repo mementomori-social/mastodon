@@ -2,12 +2,12 @@
 .layout-single-column,
 .layout-multiple-columns {
   // Hide search (can be found under Explore in the mobile
-  .ui__header__links .button.button-secondary[href="/search"] {
+  .ui__header__links .button.button-secondary[href='/search'] {
     display: none;
   }
 
   // More compact compose button on mobile
-  .ui__header__links .button.button-secondary[href="/publish"] {
+  .ui__header__links .button.button-secondary[href='/publish'] {
     background-color: var(--color-accent-dark);
     background-image: var(--icon-compose);
     background-position: center;
@@ -21,12 +21,12 @@
   }
 
   .ui__header__links
-    .button.button-secondary[href="/publish"]:is(:hover, :focus, :active) {
+    .button.button-secondary[href='/publish']:is(:hover, :focus, :active) {
     background-color: var(--color-accent-dark-50);
     color: var(--color-light-purple);
   }
 
-  .ui__header__links .button.button-secondary[href="/publish"] span {
+  .ui__header__links .button.button-secondary[href='/publish'] span {
     color: transparent;
   }
 
@@ -37,6 +37,16 @@
     padding: 5px 9px 50px 36px;
     position: absolute;
     top: 100%;
+  }
+
+  // Lists render over the trends section on short viewports, so they carry the
+  // panel background themselves and drop the trailing gap under each link (#193)
+  .navigation-panel__list-panel__items {
+    background-color: var(--color-bg);
+  }
+
+  .navigation-panel__list-panel__items .column-link:not(:last-child) {
+    padding-bottom: 0;
   }
 
   .lists__item__title span {
