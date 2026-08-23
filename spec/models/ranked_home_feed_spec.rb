@@ -118,6 +118,38 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with posts the viewer already interacted with' do
+      let(:favourited) { Fabricate(:status, account: bob) }
+      let(:boosted)    { Fabricate(:status, account: bob) }
+      let(:untouched)  { Fabricate(:status, account: ana) }
+
+      before do
+        Fabricate(:status_stat, status: favourited, favourites_count: 20)
+        Fabricate(:status_stat, status: boosted, favourites_count: 20)
+        Fabricate(:status_stat, status: untouched, favourites_count: 1)
+
+        push(favourited)
+        push(boosted)
+        push(untouched)
+
+        Fabricate(:favourite, account: viewer, status: favourited)
+        Fabricate(:status, account: viewer, reblog: boosted)
+      end
+
+      it 'drops posts the viewer favourited or boosted even when they rank highest' do
+        subject.recompute!
+        expect(subject.get(20)).to eq [untouched]
+      end
+
+      it 'keeps posts another account favourited or boosted' do
+        Fabricate(:favourite, account: ana, status: untouched)
+        Fabricate(:status, account: ana, reblog: untouched)
+
+        subject.recompute!
+        expect(subject.get(20)).to include(untouched)
+      end
+    end
+
     context 'with a remote status whose engagement is only known to its origin instance' do
       let(:remote_account) { Fabricate(:account, domain: 'example.com') }
       let(:remote_status)  { Fabricate(:status, account: remote_account, uri: 'https://example.com/statuses/1') }
@@ -401,6 +433,14 @@ RSpec.describe RankedHomeFeed do
         subject.recompute!
         expect(subject.get(2)).to eq [followed_status, trends[0]]
         expect(subject.get(2, 2)).to eq [trends[1], trends[2]]
+      end
+
+      it 'skips trending posts the viewer already favourited or boosted' do
+        Fabricate(:favourite, account: viewer, status: trends[0])
+        Fabricate(:status, account: viewer, reblog: trends[1])
+
+        subject.recompute!
+        expect(subject.get(4)).to eq [followed_status, trends[2]]
       end
     end
 
