@@ -37,10 +37,11 @@ export const ConfirmFollowModal: React.FC<
     }
   }, [dispatch, accountId, account]);
 
-  const handleSubmit = useCallback(
-    (event: React.FormEvent) => {
+  const handleSubmit = useCallback<React.SubmitEventHandler<HTMLFormElement>>(
+    (event) => {
       event.preventDefault();
       onClose();
+      // @ts-expect-error this action is not typed yet
       dispatch(followAccount(accountId));
     },
     [dispatch, accountId, onClose],
@@ -79,11 +80,7 @@ export const ConfirmFollowModal: React.FC<
               />
             </div>
 
-            <Button
-              type='submit'
-              className='follow-confirmation-card__button'
-              onClick={handleSubmit}
-            >
+            <Button type='submit' className='follow-confirmation-card__button'>
               {intl.formatMessage(messages.follow)}
             </Button>
           </>

@@ -1,12 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call,
-                  @typescript-eslint/no-unsafe-return,
-                  @typescript-eslint/no-unsafe-assignment,
-                  @typescript-eslint/no-unsafe-member-access
-                  -- the settings store is not yet typed */
 import { useCallback, useMemo } from 'react';
 
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
+import type { List as ImmutableList, Map as ImmutableMap } from 'immutable';
 import type { CSSObjectWithLabel } from 'react-select';
 import { NonceProvider } from 'react-select';
 import AsyncSelect from 'react-select/async';
@@ -35,7 +31,9 @@ interface LanguageOption {
 }
 
 export const ColumnSettings: React.FC = () => {
-  const settings = useAppSelector((state) => state.settings.get('home'));
+  const settings = useAppSelector(
+    (state) => state.settings.get('home') as ImmutableMap<string, unknown>,
+  );
   const intl = useIntl();
 
   const dispatch = useAppDispatch();
@@ -70,10 +68,13 @@ export const ColumnSettings: React.FC = () => {
   );
 
   const selectedLanguages = useMemo<LanguageOption[]>(() => {
-    const stored = settings.get('rankedLanguages');
     // The setting is a plain array right after a change, and an Immutable List
     // once it has been rehydrated from the saved web settings
-    const codes = (stored?.toJS ? stored.toJS() : (stored ?? [])) as string[];
+    const stored = settings.get('rankedLanguages') as
+      | ImmutableList<string>
+      | string[]
+      | undefined;
+    const codes = Array.isArray(stored) ? stored : (stored?.toJS() ?? []);
 
     return codes.map(
       (code) =>
