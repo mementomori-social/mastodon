@@ -60,7 +60,7 @@ function excludeAllTypesExcept(filter: string) {
   );
 }
 
-function getExcludedTypes(state: RootState) {
+export function getExcludedTypes(state: RootState) {
   const activeFilter = selectSettingsNotificationsQuickFilterActive(state);
 
   return activeFilter === 'all'
@@ -191,6 +191,9 @@ export const fetchNotificationsUnreadCount = createDataLoadingThunk(
     const readId = getState().notificationGroups.lastReadId;
     const count = await apiFetchNotificationsUnreadCount({
       grouped_types: selectNotificationGroupedTypes(getState()),
+      // Same exclusions the list itself is fetched with, so the badge only ever
+      // counts notifications that are actually shown
+      exclude_types: getExcludedTypes(getState()),
     });
 
     return { count, readId };
