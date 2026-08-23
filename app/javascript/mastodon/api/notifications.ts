@@ -54,6 +54,7 @@ export const apiFetchNotificationGroups = async (params?: {
 
 export const apiFetchNotificationsUnreadCount = async (params?: {
   grouped_types?: string[];
+  exclude_types?: string[];
 }) => {
   const response = await api().request<{ count: number }>({
     method: 'GET',
