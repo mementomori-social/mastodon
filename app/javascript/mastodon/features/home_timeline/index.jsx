@@ -85,7 +85,10 @@ class HomeTimeline extends PureComponent {
   };
 
   handleLoadMore = maxId => {
-    this.props.dispatch(expandHomeTimeline({ maxId }));
+    // A dropped connection puts a gap at the very top, so it has no status
+    // above it to page from. Without a max id the ranked branch would decide
+    // nothing needs loading and leave the gap sitting there for good.
+    this.props.dispatch(expandHomeTimeline({ maxId, forceRefresh: !maxId }));
   };
 
   componentDidMount () {
