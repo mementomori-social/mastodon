@@ -14,7 +14,7 @@
 
   // Replace the original icons (after 4.3.0)
   // Set size for the filter bar and profile icons
-  [class*="_comp_account_header__buttons"] .icon,
+  [class*='_comp_account_header__buttons'] .icon,
   .notification__filter-bar .icon {
     --size-icon: 20px;
   }
@@ -22,6 +22,7 @@
   // Set size for the column link icons
   .column-link .icon {
     --size-icon: 22px;
+
     height: 22px;
     width: 22px;
   }
@@ -36,7 +37,7 @@
   .notification-group--favourite .notification__message > .icon,
   .notification-favourite .notification__message > .icon,
   .notification-reblog .notification__message > .icon,
-  [class*="_comp_account_header__buttons"] .icon,
+  [class*='_comp_account_header__buttons'] .icon,
   .detailed-status__action-bar .icon,
   .status__action-bar .icon,
   .notification__filter-bar .icon,
@@ -58,7 +59,7 @@
     width: var(--size-icon);
   }
 
-  [class*="_comp_account_header__buttons"] .icon {
+  [class*='_comp_account_header__buttons'] .icon {
     background-position: center;
     background-size: var(--size-icon) var(--size-icon);
   }
@@ -71,9 +72,9 @@
   }
 
   // Hide the original icon from behind
-  .ui__navigation-bar__item[href="/home"] svg path,
-  .ui__navigation-bar__item[href="/notifications"] svg path,
-  .ui__navigation-bar__item[href="/explore"] svg path,
+  .ui__navigation-bar__item[href='/home'] svg path,
+  .ui__navigation-bar__item[href='/notifications'] svg path,
+  .ui__navigation-bar__item[href='/explore'] svg path,
   .list-adder__lists .icon-plus > path,
   .list-adder__lists .icon-times > path,
   .list-adder__lists .list__display-name svg > path,
@@ -83,7 +84,7 @@
   .notification-group--favourite > .notification-group__icon > .icon path,
   .notification-group--favourite .notification__message > .icon path,
   .notification-favourite .notification__message > .icon path,
-  [class*="_comp_account_header__buttons"] .icon path,
+  [class*='_comp_account_header__buttons'] .icon path,
   .detailed-status__action-bar .icon path,
   .notification__filter-bar .icon path,
   .status__action-bar path,
@@ -105,27 +106,27 @@
   .icon.icon-collections path,
   .icon.icon-undefined path,
   .icon.icon-users path,
-  [class*="_comp_account_header__buttons"] .optional path,
-  [class*="_comp_account_header__buttons"] .icon.icon-user-plus path,
+  [class*='_comp_account_header__buttons'] .optional path,
+  [class*='_comp_account_header__buttons'] .icon.icon-user-plus path,
   .notification__filter-bar .icon.icon-user-plus path,
-  [class*="_comp_account_header__buttons"] .icon.icon-tasks path,
+  [class*='_comp_account_header__buttons'] .icon.icon-tasks path,
   .notification__filter-bar .icon.icon-tasks path,
   .icon.icon-wrapstodon-planet path,
-  .navigation-panel__legal .column-link[href="/about"] path {
+  .navigation-panel__legal .column-link[href='/about'] path {
     display: block;
   }
 
-  .navigation-panel__legal .column-link[href="/about"] svg {
+  .navigation-panel__legal .column-link[href='/about'] svg {
     background-image: none;
   }
 
   // Home icon
-  .ui__navigation-bar__item[href="/home"] .icon,
+  .ui__navigation-bar__item[href='/home'] .icon,
   .column-link .icon-home {
     background-image: var(--icon-home);
   }
 
-  .ui__navigation-bar__item[href="/home"].active .icon,
+  .ui__navigation-bar__item[href='/home'].active .icon,
   .column-link.active .icon-home {
     background-image: var(--icon-home-column-link-active);
   }
@@ -140,11 +141,13 @@
 
   .list-adder__lists .icon-plus {
     --size-icon: 20px;
+
     background-image: var(--icon-plus);
   }
 
   .list-adder__lists .icon-times {
     --size-icon: 20px;
+
     background-image: var(--icon-checked-green);
   }
 
@@ -157,25 +160,25 @@
   }
 
   // Notifications icon
-  .ui__navigation-bar__item[href="/notifications"] .icon,
+  .ui__navigation-bar__item[href='/notifications'] .icon,
   .icon.icon-bell-o,
   .column-link .icon-bell {
     background-image: var(--icon-bell);
   }
 
-  .ui__navigation-bar__item[href="/notifications"].active .icon,
+  .ui__navigation-bar__item[href='/notifications'].active .icon,
   .column-link.active .icon-bell {
     background-image: var(--icon-bell-active);
   }
 
   // Explore icon
-  .ui__navigation-bar__item[href="/explore"] .icon,
+  .ui__navigation-bar__item[href='/explore'] .icon,
   .column-link .icon-explore,
   .column-link .icon-hashtag {
     background-image: var(--icon-hashtag);
   }
 
-  .ui__navigation-bar__item[href="/explore"].active .icon,
+  .ui__navigation-bar__item[href='/explore'].active .icon,
   .column-link.active .icon-explore,
   .column-link.active .icon-hashtag {
     background-image: var(--icon-hashtag-active);
@@ -212,12 +215,14 @@
   // Preferences icon
   .column-link .icon-cog {
     --size-icon: 22px;
+
     background-image: var(--icon-sliders-contrast);
   }
 
   // Settings icon
   .column-header__button .icon-sliders {
     --size-icon: 20px;
+
     background-image: var(--icon-sliders);
   }
 
@@ -232,12 +237,14 @@
   // Administration icon
   .column-link .icon-tachometer {
     --size-icon: 22px;
+
     background-image: var(--icon-administration);
   }
 
   // Moderation icon
   .column-link .icon-flag {
     --size-icon: 22px;
+
     background-image: var(--icon-moderation);
   }
 
@@ -271,6 +278,7 @@
 
   button.icon-button .icon-retweet {
     --size-icon: 20px;
+
     background-image: var(--icon-boost);
     background-position: center;
     background-repeat: no-repeat;
@@ -320,6 +328,7 @@
   .notification__filter-bar .icon-reply,
   .notification__filter-bar .icon-reply-all {
     --size-icon: 19px;
+
     position: relative;
     top: 1px;
   }
@@ -384,7 +393,7 @@
     background-repeat: no-repeat;
   }
 
-  .column-link .icon.icon-.column-link__icon,
+  button.column-link .column-link__icon,
   .icon-ellipsis-v {
     background-image: var(--icon-more);
     background-position: center;
