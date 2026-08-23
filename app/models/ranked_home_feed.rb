@@ -258,6 +258,9 @@ class RankedHomeFeed < HomeFeed
     timings[:scoring]   = Benchmark.realtime { result = scored_status_ids }
     timings[:discover] = Benchmark.realtime { result = interleave_discovered(result) } if @discover
 
+    # Last, so it also covers ids the discovery pass injects into the result
+    timings[:interacted] = Benchmark.realtime { result = reject_interacted(result) }
+
     Rails.logger.info do
       phases = timings.map { |phase, seconds| "#{phase}=#{(seconds * 1000).round}ms" }.join(' ')
       "RankedHomeFeed compute account=#{@account.id} #{phases}"
@@ -355,6 +358,27 @@ class RankedHomeFeed < HomeFeed
     # Already served posts go behind everything new, so the feed reads fresh
     # on every recompute and repeats only once new content runs out
     (rank(unseen) + rank(already_seen)).uniq
+  end
+
+  # A post the viewer already favourited or boosted is not a recommendation any
+  # more, and it can be interacted with anywhere, not only here
+  def reject_interacted(ids)
+    interacted = interacted_status_ids(ids)
+
+    return ids if interacted.empty?
+
+    ids.reject { |id| interacted.include?(id) }
+  end
+
+  # Both queries are covered by (account_id, status_id) on favourites and
+  # (reblog_of_id, account_id) on statuses, so this stays two index lookups
+  def interacted_status_ids(status_ids)
+    return Set.new if status_ids.empty?
+
+    favourited = Favourite.where(account_id: @account.id, status_id: status_ids).pluck(:status_id)
+    boosted    = Status.where(account_id: @account.id, reblog_of_id: status_ids).pluck(:reblog_of_id)
+
+    favourited.concat(boosted).to_set
   end
 
   def rank(scored)
@@ -540,11 +564,16 @@ class RankedHomeFeed < HomeFeed
     seen    = seen_ids
     exclude = ranked_ids.to_set
 
-    Trends.statuses.query.allowed.filtered_for(@account)
+    candidates = Trends.statuses.query.allowed.filtered_for(@account)
       .limit(DISCOVERY_TAIL_FETCH)
       .filter_map { |status| status.id if status.account_id != @account.id && language_allowed?(status.language) }
       .reject { |id| exclude.include?(id) || seen.include?(id) }
-      .take(needed)
+
+    # Trending posts are exactly the ones a viewer is likely to have already
+    # favourited or boosted elsewhere, and this tail bypasses the ranking
+    interacted = interacted_status_ids(candidates)
+
+    candidates.reject { |id| interacted.include?(id) }.take(needed)
   end
 
   # Maps interest keys to how often the viewer favourited, boosted or
