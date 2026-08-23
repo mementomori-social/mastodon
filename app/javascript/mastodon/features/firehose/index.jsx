@@ -214,6 +214,7 @@ const Firehose = ({ feedType, multiColumn }) => {
         scrollKey='firehose'
         emptyMessage={canViewSelectedFeed ? emptyMessage : disabledTimelineMessage}
         bindToDocument={!multiColumn}
+        withCounters
       />
 
       <Helmet>

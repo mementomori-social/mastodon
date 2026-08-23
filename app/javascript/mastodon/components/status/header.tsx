@@ -10,6 +10,7 @@ import { selectAccountStatus } from '@/mastodon/selectors/statuses';
 import { useAppSelector } from '@/mastodon/store';
 
 import { Avatar } from '../avatar';
+import { AvatarFollowBadge } from '../avatar_follow_badge';
 import { AvatarOverlay } from '../avatar_overlay';
 import type { DisplayNameProps } from '../display_name';
 import { LinkedDisplayName } from '../display_name';
@@ -120,11 +121,15 @@ const StatusDisplayName: FC<{
       className='status__display-name'
     >
       <div className='status__avatar'>
-        <AccountComponent
-          account={statusAccount}
-          friend={friendAccount}
-          size={avatarSize}
-        />
+        <span className='status__avatar__badge-anchor'>
+          <AccountComponent
+            account={statusAccount}
+            friend={friendAccount}
+            size={avatarSize}
+          />
+          {/* Boosts already show two avatars, so no badge there */}
+          {!friendAccount && <AvatarFollowBadge accountId={statusAccount?.id} />}
+        </span>
       </div>
     </LinkedDisplayName>
   );

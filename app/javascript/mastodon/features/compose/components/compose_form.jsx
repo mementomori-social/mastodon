@@ -31,6 +31,7 @@ import { ReplyIndicator } from './reply_indicator';
 import { UploadForm } from './upload_form';
 import { Warning } from './warning';
 import { ComposeQuotedStatus } from './quoted_post';
+import { QuotePolicyButton } from './quote_policy_button';
 import { VisibilityButton } from './visibility_button';
 import { isRedesignEnabled } from '@/mastodon/utils/environment';
 
@@ -272,6 +273,7 @@ class ComposeForm extends ImmutablePureComponent {
 
           <div className='compose-form__dropdowns'>
             <VisibilityButton disabled={this.props.isEditing} />
+            <QuotePolicyButton disabled={this.props.isEditing} />
             <LanguageDropdown />
           </div>
 

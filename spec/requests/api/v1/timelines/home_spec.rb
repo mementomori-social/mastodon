@@ -65,6 +65,80 @@ RSpec.describe 'Home', :inline_jobs do
       end
     end
 
+    context 'when requesting the ranked timeline' do
+      let(:params) { { ranked: 'true', limit: 2 } }
+      let!(:bob)   { Fabricate(:account) }
+      let!(:ana)   { Fabricate(:account) }
+
+      # The popular status is posted first so that plain chronology would rank
+      # it last; the engagement score has to be what puts it on top
+      let!(:popular_status) { PostStatusService.new.call(bob, text: 'Popular toot from bob.') }
+      let!(:plain_status)   { PostStatusService.new.call(ana, text: 'Plain toot from ana.') }
+
+      before do
+        user.account.follow!(bob)
+        user.account.follow!(ana)
+        FeedManager.instance.push_to_home(user.account, plain_status, update: false)
+        FeedManager.instance.push_to_home(user.account, popular_status, update: false)
+        3.times { Fabricate(:favourite, status: popular_status) }
+        Fabricate(:favourite, status: plain_status)
+
+        # The ranking is computed off the request path; a cold cache serves the
+        # regenerating state instead, covered by its own example below
+        RankedHomeFeed.new(user.account).recompute!
+      end
+
+      it 'returns statuses ordered by score with offset-based pagination', :aggregate_failures do
+        subject
+
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body.pluck(:id)).to eq([popular_status.id.to_s, plain_status.id.to_s])
+        expect(response.headers['Link']).to include('rel="next"')
+        expect(response.headers['Link']).to include('offset=2')
+        expect(response.headers['Link']).to include('ranked=true')
+        expect(response.headers['Link']).to_not include('rel="prev"')
+      end
+
+      context 'when the ranked feed is exhausted' do
+        let(:params) { { ranked: 'true', limit: 20 } }
+
+        it 'omits the next page link', :aggregate_failures do
+          subject
+
+          expect(response).to have_http_status(200)
+          expect(response.headers['Link'].to_s).to_not include('rel="next"')
+        end
+      end
+
+      context 'when the ranking has not been computed yet' do
+        before { Rails.cache.delete("ranked_home_feed:ids:#{user.account_id}:0") }
+
+        # Jobs run inline in this file, so the worker computes during the first
+        # request and the second one serves the ranking it produced
+        it 'serves the regenerating state, then the ranking', :aggregate_failures do
+          subject
+
+          expect(response).to have_http_status(206)
+          expect(response.parsed_body).to eq []
+
+          get '/api/v1/timelines/home', headers: headers, params: params
+
+          expect(response).to have_http_status(200)
+          expect(response.parsed_body.pluck(:id)).to eq([popular_status.id.to_s, plain_status.id.to_s])
+        end
+      end
+
+      context 'with a negative offset' do
+        let(:params) { { ranked: 'true', offset: -1 } }
+
+        it 'returns http bad request' do
+          subject
+
+          expect(response).to have_http_status(400)
+        end
+      end
+    end
+
     context 'when the timeline is regenerating' do
       let(:async_refresh) { AsyncRefresh.create("account:#{user.account_id}:regeneration") }
       let(:timeline) { instance_double(HomeFeed, regenerating?: true, get: [], async_refresh:) }
