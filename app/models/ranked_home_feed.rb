@@ -140,7 +140,12 @@ class RankedHomeFeed < HomeFeed
 
     page_ids += discovery_tail_ids(limit - page_ids.size, ranked_ids) if @discover && page_ids.size < limit && !@regenerating
 
-    statuses = Status.where(id: page_ids).index_by(&:id)
+    # Filtered here as well as when candidates are gathered, so a ranking
+    # cached before a mute or block can never serve the hidden account
+    statuses = Status.where(id: page_ids)
+      .not_excluded_by_account(@account)
+      .not_domain_blocked_by_account(@account)
+      .index_by(&:id)
 
     mark_seen!(page_ids)
 
@@ -478,8 +483,12 @@ class RankedHomeFeed < HomeFeed
 
     since_id = Mastodon::Snowflake.id_at(NETWORK_WINDOW_HOURS.hours.ago, with_random: false)
 
+    # Following someone and muting them is a normal combination, so this pass
+    # has to honour mutes and blocks even though every author is followed
     Status.where(account_id: followed, reblog_of_id: nil, visibility: %i(public unlisted))
       .where(id: since_id..)
+      .not_excluded_by_account(@account)
+      .not_domain_blocked_by_account(@account)
       .joins(:status_stat)
       .where("#{NETWORK_ENGAGEMENT_SUM} >= ?", NETWORK_MIN_ENGAGEMENT)
       .reorder(Arel.sql("#{NETWORK_ENGAGEMENT_SUM} DESC"))

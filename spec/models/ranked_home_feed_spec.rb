@@ -150,6 +150,48 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with authors the viewer muted, blocked or domain blocked' do
+      let(:muted)   { Fabricate(:account) }
+      let(:blocked) { Fabricate(:account) }
+      let(:blocker) { Fabricate(:account) }
+      let(:hostile) { Fabricate(:account, domain: 'spam.example', uri: 'https://spam.example/users/hostile') }
+      let(:allowed) { Fabricate(:status, account: bob) }
+
+      before do
+        hidden = [muted, blocked, blocker, hostile].map do |account|
+          viewer.follow!(account)
+          Fabricate(:status, account: account)
+        end
+
+        (hidden + [allowed]).each do |status|
+          Fabricate(:status_stat, status: status, favourites_count: 30)
+          push(status)
+        end
+
+        viewer.mute!(muted)
+        viewer.block!(blocked)
+        blocker.block!(viewer)
+        viewer.block_domain!('spam.example')
+      end
+
+      # The feed entries are deliberately left in place: muting clears them
+      # through MuteWorker in production, so this covers the window between the
+      # mute and that cleanup, and any ranking cached before it
+      it 'never surfaces them even while their feed entries remain' do
+        subject.recompute!
+        expect(subject.get(20)).to eq [allowed]
+      end
+
+      it 'keeps them out of a ranking that was computed before the mute' do
+        viewer.unmute!(muted)
+        subject.recompute!
+        expect(subject.get(20).map(&:account)).to include(muted)
+
+        viewer.mute!(muted)
+        expect(subject.get(20).map(&:account)).to_not include(muted)
+      end
+    end
+
     context 'with a remote status whose engagement is only known to its origin instance' do
       let(:remote_account) { Fabricate(:account, domain: 'example.com') }
       let(:remote_status)  { Fabricate(:status, account: remote_account, uri: 'https://example.com/statuses/1') }
