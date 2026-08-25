@@ -192,6 +192,61 @@ RSpec.describe RankedHomeFeed do
       end
     end
 
+    context 'with a followed author mentioning a muted account' do
+      let(:muted)   { Fabricate(:account) }
+      let(:allowed) { Fabricate(:status, account: ana) }
+      let(:mentions_muted) { Fabricate(:status, account: bob) }
+
+      before do
+        viewer.follow!(bob)
+        Fabricate(:mention, status: mentions_muted, account: muted, silent: false)
+
+        [mentions_muted, allowed].each do |status|
+          Fabricate(:status_stat, status: status, favourites_count: 30)
+          push(status)
+        end
+
+        viewer.mute!(muted)
+      end
+
+      it 'hides the whole post so the muted handle stays out of the feed' do
+        subject.recompute!
+        expect(subject.get(20)).to eq [allowed]
+      end
+
+      it 'keeps the post when the mention is silent' do
+        Mention.where(account: muted).update_all(silent: true)
+
+        subject.recompute!
+        expect(subject.get(20)).to include(mentions_muted)
+      end
+    end
+
+    context 'with a suspended author' do
+      let(:gone)    { Fabricate(:account) }
+      let(:leaving) { Fabricate(:account) }
+      let(:allowed) { Fabricate(:status, account: bob) }
+
+      before do
+        [gone, leaving].each { |account| viewer.follow!(account) }
+
+        statuses = [Fabricate(:status, account: gone), Fabricate(:status, account: leaving), allowed]
+
+        statuses.each do |status|
+          Fabricate(:status_stat, status: status, favourites_count: 30)
+          push(status)
+        end
+
+        gone.update!(suspended_at: Time.now.utc)
+        leaving.update!(requested_deletion_at: Time.now.utc)
+      end
+
+      it 'never surfaces posts from suspended or self deleting accounts' do
+        subject.recompute!
+        expect(subject.get(20)).to eq [allowed]
+      end
+    end
+
     context 'with a remote status whose engagement is only known to its origin instance' do
       let(:remote_account) { Fabricate(:account, domain: 'example.com') }
       let(:remote_status)  { Fabricate(:status, account: remote_account, uri: 'https://example.com/statuses/1') }
