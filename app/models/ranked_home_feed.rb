@@ -140,12 +140,7 @@ class RankedHomeFeed < HomeFeed
 
     page_ids += discovery_tail_ids(limit - page_ids.size, ranked_ids) if @discover && page_ids.size < limit && !@regenerating
 
-    # Filtered here as well as when candidates are gathered, so a ranking
-    # cached before a mute or block can never serve the hidden account
-    statuses = Status.where(id: page_ids)
-      .not_excluded_by_account(@account)
-      .not_domain_blocked_by_account(@account)
-      .index_by(&:id)
+    statuses = visible_statuses(page_ids).index_by(&:id)
 
     mark_seen!(page_ids)
 
@@ -367,6 +362,31 @@ class RankedHomeFeed < HomeFeed
 
   # A post the viewer already favourited or boosted is not a recommendation any
   # more, and it can be interacted with anywhere, not only here
+  # The single choke point every candidate source passes through, so the
+  # guarantees live here rather than in each pass: nothing the viewer muted,
+  # blocked or domain blocked, nothing merely mentioning such an account, and
+  # nothing authored by a suspended or self-deleting account. Applied on the way
+  # out as well as when candidates are gathered, so a ranking cached before a
+  # mute cannot serve it either.
+  def visible_statuses(page_ids)
+    scope = Status.where(id: page_ids)
+      .not_excluded_by_account(@account)
+      .not_domain_blocked_by_account(@account)
+      .merge(Account.without_suspended)
+
+    excluded = @account.excluded_from_timeline_account_ids
+    return scope if excluded.empty?
+
+    # A followed author mentioning a muted account puts that account's handle
+    # back in front of the viewer, so the whole post goes
+    scope.where.not(
+      Mention.active
+             .where(account_id: excluded)
+             .where(Mention.arel_table[:status_id].eq(Status.arel_table[:id]))
+             .arel.exists
+    )
+  end
+
   def reject_interacted(ids)
     interacted = interacted_status_ids(ids)
 
