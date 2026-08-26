@@ -10,13 +10,10 @@ import type { Map as ImmutableMap } from 'immutable';
 import { animated, useSpring } from '@react-spring/web';
 import { useDrag } from '@use-gesture/react';
 
-import { useAccount } from '@/mastodon/hooks/useAccount';
 import AddIcon from '@/material-icons/400-24px/add.svg?react';
 import AlternateEmailIcon from '@/material-icons/400-24px/alternate_email.svg?react';
 import BookmarksActiveIcon from '@/material-icons/400-24px/bookmarks-fill.svg?react';
 import BookmarksIcon from '@/material-icons/400-24px/bookmarks.svg?react';
-import CollectionsActiveIcon from '@/material-icons/400-24px/category-fill.svg?react';
-import CollectionsIcon from '@/material-icons/400-24px/category.svg?react';
 import HomeActiveIcon from '@/material-icons/400-24px/home-fill.svg?react';
 import HomeIcon from '@/material-icons/400-24px/home.svg?react';
 import InfoIcon from '@/material-icons/400-24px/info.svg?react';
@@ -53,7 +50,6 @@ import { useAppSelector, useAppDispatch } from 'mastodon/store';
 import { AnnualReportNavItem } from '../annual_report/nav_item';
 
 import { DisabledAccountBanner } from './components/disabled_account_banner';
-import { FollowedTagsPanel } from './components/followed_tags_panel';
 import { ListPanel } from './components/list_panel';
 import { MoreLink } from './components/more_link';
 import { SignInBanner } from './components/sign_in_banner';
@@ -80,10 +76,6 @@ const messages = defineMessages({
   direct: { id: 'navigation_bar.direct', defaultMessage: 'Private mentions' },
   favourites: { id: 'navigation_bar.favourites', defaultMessage: 'Favorites' },
   bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
-  collections: {
-    id: 'navigation_bar.collections',
-    defaultMessage: 'Collections',
-  },
   preferences: {
     id: 'navigation_bar.preferences',
     defaultMessage: 'Preferences',
@@ -218,7 +210,6 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
   const { signedIn, permissions, disabledAccountId } = useIdentity();
   const location = useLocation();
   const showSearch = useBreakpoint('full') && !multiColumn;
-  const account = useAccount(me);
 
   let banner: React.ReactNode;
 
@@ -338,8 +329,6 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
 
             <ListPanel />
 
-            <FollowedTagsPanel />
-
             <li>
               <ColumnLink
                 transparent
@@ -358,16 +347,6 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
                 iconComponent={BookmarksIcon}
                 activeIconComponent={BookmarksActiveIcon}
                 text={intl.formatMessage(messages.bookmarks)}
-              />
-            </li>
-            <li>
-              <ColumnLink
-                transparent
-                to={`/@${account?.acct}/collections`}
-                icon='collections'
-                iconComponent={CollectionsIcon}
-                activeIconComponent={CollectionsActiveIcon}
-                text={intl.formatMessage(messages.collections)}
               />
             </li>
             <li>
