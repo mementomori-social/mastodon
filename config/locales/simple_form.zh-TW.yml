@@ -66,6 +66,10 @@ zh-TW:
         setting_display_media_show_all: 不警告並顯示所有多媒體內容，包括標記為敏感內容者
         setting_emoji_style: 如何顯示 emoji 表情符號。「自動」將嘗試使用原生 emoji ，但於老式瀏覽器使用 Twemoji。
         setting_quick_boosting_html: 當啟用時，點擊 %{boost_icon} 轉嘟圖示將立即轉嘟而非開啟轉嘟/引用之下拉選單。將引用嘟文操作移至 %{options_icon} （選項）選單中。
+        setting_system_scrollbars_ui: 僅套用至基於 Safari 或 Chrome 之桌面瀏覽器
+        setting_use_stars: 以 Twitter 風格的黃色星星取代喜愛的心形圖示，並搭配閃爍和環狀動態效果
+        setting_hide_finnish_translate_links: 隱藏以芬蘭語撰寫的狀態文章下方的「翻譯」按鈕
+        setting_hide_all_translate_links: 隱藏每個有語言標籤的狀態文章下方的「翻譯」按鈕
         setting_use_blurhash: 彩色漸層圖樣是基於隱藏媒體內容顏色產生，所有細節將變得模糊
         setting_use_pending_items: 關閉自動捲動更新，時間軸僅於點擊後更新
         username: 您可以使用字幕、數字與底線
@@ -264,6 +268,9 @@ zh-TW:
         setting_reduce_motion: 減少過渡動畫效果
         setting_system_font_ui: 使用系統預設字型
         setting_system_scrollbars_ui: 使用系統預設捲動軸
+        setting_use_stars: 使用星星代替心形作為最愛
+        setting_hide_finnish_translate_links: 隱藏芬蘭語文章的翻譯連結
+        setting_hide_all_translate_links: 隱藏所有翻譯連結
         setting_theme: 佈景主題
         setting_trends: 顯示本日熱門趨勢
         setting_unfollow_modal: 取消跟隨某人前先詢問我

@@ -185,11 +185,11 @@ class PublicTimeline extends PureComponent {
           scrollKey={`public_timeline-${columnId}`}
           emptyMessage={emptyMessage}
           bindToDocument={!multiColumn}
+          withCounters
         />
 
         <Helmet>
           <title>{title}</title>
-          <meta name='robots' content='noindex' />
         </Helmet>
       </Column>
     );

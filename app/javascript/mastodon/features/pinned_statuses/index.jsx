@@ -51,6 +51,7 @@ class PinnedStatuses extends ImmutablePureComponent {
           scrollKey='pinned_statuses'
           hasMore={hasMore}
           bindToDocument={!multiColumn}
+          withCounters
         />
         <Helmet>
           <meta name='robots' content='noindex' />

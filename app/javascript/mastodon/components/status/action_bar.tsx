@@ -137,7 +137,6 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
   statusId,
   contextType,
   withDismiss,
-  withCounters,
   scrollKey,
 }) => {
   const status = useStatus(statusId);
@@ -210,7 +209,7 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
         leadingIcon={ChatCircleTextIcon}
         onClick={handleReplyClick}
       >
-        {withCounters && status.replies_count}
+        {status.replies_count > 0 && status.replies_count}
       </Button>
 
       <Button
@@ -219,7 +218,7 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
         leadingIcon={ArrowsClockwiseIcon}
         onClick={handleBoostClick}
       >
-        {withCounters && status.reblogs_count}
+        {status.reblogs_count > 0 && status.reblogs_count}
       </Button>
 
       <Button
@@ -230,7 +229,7 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
         onClick={handleFavouriteClick}
         className={classes.actionsButtonGap}
       >
-        {withCounters && status.favourites_count}
+        {status.favourites_count > 0 && status.favourites_count}
       </Button>
 
       {isPublic && (

@@ -13,7 +13,7 @@ import { debounce } from 'lodash';
 import { scrollRight } from '../../scroll';
 import { focusApp, unfocusApp, changeLayout } from 'mastodon/actions/app';
 import { synchronouslySubmitMarkers, submitMarkers, fetchMarkers } from 'mastodon/actions/markers';
-import { fetchNotifications } from 'mastodon/actions/notification_groups';
+import { fetchNotifications, fetchNotificationsUnreadCount, getExcludedTypes } from 'mastodon/actions/notification_groups';
 import { INTRODUCTION_VERSION } from 'mastodon/actions/onboarding';
 import { AlertsController } from 'mastodon/components/alerts_controller';
 import { injectIntl } from '@/mastodon/components/intl';
@@ -44,6 +44,7 @@ import {
   Status,
   GettingStarted,
   KeyboardShortcuts,
+  SearchReference,
   Firehose,
   AccountTimeline,
   AccountGallery,
@@ -112,6 +113,7 @@ const mapStateToProps = state => ({
   firstLaunch: state.getIn(['settings', 'introductionVersion'], 0) < INTRODUCTION_VERSION,
   newAccount: !state.getIn(['accounts', me, 'note']) && !state.getIn(['accounts', me, 'bot']) && state.getIn(['accounts', me, 'following_count'], 0) === 0 && state.getIn(['accounts', me, 'statuses_count'], 0) === 0,
   username: state.getIn(['accounts', me, 'username']),
+  notificationExcludedTypes: getExcludedTypes(state),
 });
 
 class SwitchingColumnsArea extends PureComponent {
@@ -199,6 +201,7 @@ class SwitchingColumnsArea extends PureComponent {
 
             <WrappedRoute path='/getting-started' component={GettingStarted} content={children} />
             <WrappedRoute path='/keyboard-shortcuts' component={KeyboardShortcuts} content={children} />
+            <WrappedRoute path='/search-reference' component={SearchReference} content={children} />
             <WrappedRoute path='/about' component={About} content={children} />
             <WrappedRoute path='/privacy-policy' component={PrivacyPolicy} content={children} />
             <WrappedRoute path='/terms-of-service/:date?' component={TermsOfService} content={children} />
@@ -285,6 +288,7 @@ class UI extends PureComponent {
     firstLaunch: PropTypes.bool,
     newAccount: PropTypes.bool,
     username: PropTypes.string,
+    notificationExcludedTypes: PropTypes.arrayOf(PropTypes.string),
     ...WithRouterPropTypes,
   };
 
@@ -436,13 +440,25 @@ class UI extends PureComponent {
     }
 
     if (signedIn) {
-      this.props.dispatch(fetchMarkers());
+      // After the marker, so the count is taken against a settled read position
+      void this.props.dispatch(fetchMarkers()).then(() =>
+        this.props.dispatch(fetchNotificationsUnreadCount()),
+      );
       this.props.dispatch(expandHomeTimeline());
       this.props.dispatch(fetchNotifications());
       this.props.dispatch(fetchServerTranslationLanguages());
       this.props.dispatch(checkAnnualReport());
 
       setTimeout(() => this.props.dispatch(fetchServer()), 3000);
+    }
+  }
+
+  componentDidUpdate (prevProps) {
+    // The count comes from the server, so hiding a notification type has to ask
+    // for it again or the hidden type keeps the badge lit. Compared by value, so
+    // a selector handing back a fresh array cannot turn this into a refetch loop
+    if (this.props.identity.signedIn && (prevProps.notificationExcludedTypes ?? []).join() !== (this.props.notificationExcludedTypes ?? []).join()) {
+      void this.props.dispatch(fetchNotificationsUnreadCount());
     }
   }
 
@@ -535,7 +551,7 @@ class UI extends PureComponent {
   };
 
   handleHotkeyToggleHelp = () => {
-    if (this.props.location.pathname === '/keyboard-shortcuts') {
+    if (this.props.location.pathname === '/keyboard-shortcuts' || this.props.location.pathname === '/search-reference') {
       this.props.history.goBack();
     } else {
       this.props.history.push('/keyboard-shortcuts');

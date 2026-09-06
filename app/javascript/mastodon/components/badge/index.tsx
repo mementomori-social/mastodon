@@ -26,6 +26,7 @@ interface BadgeProps extends React.ComponentPropsWithoutRef<'div'> {
   icon?: ReactNode;
   domain?: ReactNode;
   roleId?: string;
+  roleColor?: string;
   variant?:
     | 'default'
     | 'subtle'
@@ -48,6 +49,7 @@ export const Badge: FC<BadgeProps> = ({
   className,
   domain,
   roleId,
+  roleColor,
   ...otherProps
 }) => (
   <div
@@ -57,9 +59,11 @@ export const Badge: FC<BadgeProps> = ({
       isRedesignEnabled() && redesignClasses.badge,
       !icon && [classes.badgeWithoutIcon, redesignClasses.badgeWithoutIcon],
       classes[variant],
+      roleColor && classes.roleColored,
       className,
     )}
     data-account-role-id={roleId}
+    style={roleColor ? { color: roleColor } : undefined}
   >
     {icon}
     <span className={classes.content}>
