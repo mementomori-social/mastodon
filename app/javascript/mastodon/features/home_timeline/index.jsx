@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 
 import CampaignIcon from '@/material-icons/400-24px/campaign.svg?react';
 import HomeIcon from '@/material-icons/400-24px/home-fill.svg?react';
+import WandStarsIcon from '@/material-icons/400-24px/wand_stars-fill.svg?react';
 import { Column } from '@/mastodon/components/column';
 import { ColumnHeader as LegacyColumnHeader } from '@/mastodon/components/column/header';
 import { injectIntl } from '@/mastodon/components/intl';
@@ -25,6 +26,7 @@ import { expandHomeTimeline } from '../../actions/timelines';
 import StatusListContainer from '../ui/containers/status_list_container';
 
 import { ColumnSettings } from './components/column_settings';
+import { RankedFeedEnd } from './components/ranked_feed_end';
 import { CriticalUpdateBanner } from './components/critical_update_banner';
 import { Announcements } from './components/announcements';
 import { AnnualReportTimeline } from '../annual_report/timeline';
@@ -36,12 +38,14 @@ import { MultiColumnMenuItems } from '@/mastodon/components/column_header/multic
 const messages = defineMessages({
   title: { id: 'column.home', defaultMessage: 'Home' },
   following: { id: 'column.following', defaultMessage: 'Following' },
+  forYouTitle: { id: 'column.for_you', defaultMessage: 'For you' },
   show_announcements: { id: 'home.show_announcements', defaultMessage: 'Show announcements' },
   hide_announcements: { id: 'home.hide_announcements', defaultMessage: 'Hide announcements' },
 });
 
 const mapStateToProps = state => ({
   hasUnread: state.getIn(['timelines', 'home', 'unread']) > 0,
+  ranked: state.getIn(['settings', 'home', 'ranked'], false),
   isPartial: state.getIn(['timelines', 'home', 'isPartial']),
   hasAnnouncements: !state.getIn(['announcements', 'items']).isEmpty(),
   unreadAnnouncements: state.getIn(['announcements', 'items']).count(item => !item.get('read')),
@@ -61,6 +65,7 @@ class HomeTimeline extends PureComponent {
     unreadAnnouncements: PropTypes.number,
     showAnnouncements: PropTypes.bool,
     matchesBreakpoint: PropTypes.bool,
+    ranked: PropTypes.bool,
   };
 
   handlePin = () => {
@@ -78,8 +83,17 @@ class HomeTimeline extends PureComponent {
     dispatch(moveColumn(columnId, dir));
   };
 
+  handleHeaderClick = () => {
+    if (this.props.ranked) {
+      this.props.dispatch(expandHomeTimeline({ forceRefresh: true }));
+    }
+  };
+
   handleLoadMore = maxId => {
-    this.props.dispatch(expandHomeTimeline({ maxId }));
+    // A dropped connection puts a gap at the very top, so it has no status
+    // above it to page from. Without a max id the ranked branch would decide
+    // nothing needs loading and leave the gap sitting there for good.
+    this.props.dispatch(expandHomeTimeline({ maxId, forceRefresh: !maxId }));
   };
 
   componentDidMount () {
@@ -122,8 +136,9 @@ class HomeTimeline extends PureComponent {
   };
 
   render () {
-    const { intl, hasUnread, columnId, multiColumn, hasAnnouncements, unreadAnnouncements, showAnnouncements, matchesBreakpoint } = this.props;
+    const { intl, hasUnread, columnId, multiColumn, hasAnnouncements, unreadAnnouncements, showAnnouncements, matchesBreakpoint, ranked } = this.props;
     const pinned = !!columnId;
+    const title = intl.formatMessage(ranked ? messages.forYouTitle : messages.title);
     const { signedIn } = this.props.identity;
     const banners = [
       <CriticalUpdateBanner key='critical-update-banner' />,
@@ -147,10 +162,10 @@ class HomeTimeline extends PureComponent {
     }
 
     return (
-      <Column bindToDocument={!multiColumn} label={intl.formatMessage(messages.title)}>
+      <Column bindToDocument={!multiColumn} label={title}>
         {isRedesignEnabled() ? (
           <ColumnHeader
-            title={intl.formatMessage(messages.following)}
+            title={ranked ? intl.formatMessage(messages.forYouTitle) : intl.formatMessage(messages.following)}
             withUnreadMarker={hasUnread}
             extraButtons={
               <HomeColumnSettings>
@@ -168,11 +183,12 @@ class HomeTimeline extends PureComponent {
         ) : (
           <LegacyColumnHeader
             icon='home'
-            iconComponent={matchesBreakpoint ? SymbolLogo : HomeIcon}
+            iconComponent={matchesBreakpoint ? SymbolLogo : (ranked ? WandStarsIcon : HomeIcon)}
             active={hasUnread}
-            title={intl.formatMessage(messages.title)}
+            title={title}
             onPin={this.handlePin}
             onMove={this.handleMove}
+            onClick={this.handleHeaderClick}
             pinned={pinned}
             multiColumn={multiColumn}
             extraButton={announcementsButton}
@@ -191,14 +207,15 @@ class HomeTimeline extends PureComponent {
             scrollKey={`home_timeline-${columnId}`}
             onLoadMore={this.handleLoadMore}
             timelineId='home'
+            append={ranked ? <RankedFeedEnd /> : undefined}
             emptyMessage={<FormattedMessage id='empty_column.home' defaultMessage='Your home timeline is empty! Follow more people to fill it up.' />}
             bindToDocument={!multiColumn}
+            withCounters
           />
         ) : <NotSignedInIndicator />}
 
         <Helmet>
-          <title>{intl.formatMessage(messages.title)}</title>
-          <meta name='robots' content='noindex' />
+          <title>{title}</title>
         </Helmet>
       </Column>
     );

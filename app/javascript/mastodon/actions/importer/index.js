@@ -1,6 +1,8 @@
+import { showFollowBadges } from 'mastodon/initial_state';
 import { createPollFromServerJSON } from 'mastodon/models/poll';
 
 import { importAccounts } from './accounts';
+import { fetchRelationships } from '../accounts';
 import { importCustomEmoji } from './emoji';
 import { normalizeStatus } from './normalizer';
 import { importPolls } from './polls';
@@ -50,6 +52,35 @@ export function importFetchedAccounts(accounts) {
   accounts.forEach(processAccount);
 
   return importAccounts({ accounts: normalAccounts });
+}
+
+// The avatar follow badge stays hidden until the relationship is known. Statuses
+// also arrive one at a time over streaming, so ids are batched into one request.
+let pendingRelationshipIds = new Set();
+let relationshipFetchTimer = null;
+
+function queueRelationshipFetch(accounts, dispatch, getState) {
+  if (!showFollowBadges) {
+    return;
+  }
+
+  accounts.forEach(account => {
+    if (account?.id && getState().getIn(['relationships', account.id], null) === null) {
+      pendingRelationshipIds.add(account.id);
+    }
+  });
+
+  if (pendingRelationshipIds.size === 0 || relationshipFetchTimer) {
+    return;
+  }
+
+  relationshipFetchTimer = setTimeout(() => {
+    const ids = [...pendingRelationshipIds];
+
+    pendingRelationshipIds = new Set();
+    relationshipFetchTimer = null;
+    dispatch(fetchRelationships(ids));
+  }, 250);
 }
 
 export function importFetchedStatus(status, options = {}) {
@@ -104,5 +135,7 @@ export function importFetchedStatuses(statuses, options = {}) {
     dispatch(importStatuses(normalStatuses));
     dispatch(importFilters(filters));
     fetchAccountsForCollectionPreview(collections, dispatch);
+
+    queueRelationshipFetch(accounts, dispatch, getState);
   };
 }

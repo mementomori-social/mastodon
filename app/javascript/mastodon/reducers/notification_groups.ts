@@ -13,6 +13,7 @@ import {
   clearNotifications,
   fetchNotifications,
   fetchNotificationsGap,
+  fetchNotificationsUnreadCount,
   processNewNotificationForGroups,
   loadPending,
   updateScrollPosition,
@@ -58,6 +59,8 @@ interface NotificationGroupsState {
   mounted: number;
   isTabVisible: boolean;
   mergedNotifications: 'ok' | 'pending' | 'needs-reload';
+  serverUnreadCount: number; // unread count from the server, not just loaded groups
+  serverUnreadCountReadId: string; // lastReadId when that count was taken
 }
 
 const initialState: NotificationGroupsState = {
@@ -72,6 +75,8 @@ const initialState: NotificationGroupsState = {
   readMarkerId: '0', // user-facing and updated when focus changes
   mounted: 0, // number of mounted notification list components, usually 0 or 1
   isTabVisible: true,
+  serverUnreadCount: 0,
+  serverUnreadCountReadId: '0',
 };
 
 function filterNotificationsForAccounts(
@@ -557,6 +562,10 @@ export const notificationGroupsReducer = createReducer<NotificationGroupsState>(
         state.scrolledToTop = action.payload.top;
         updateLastReadId(state);
         trimNotifications(state);
+      })
+      .addCase(fetchNotificationsUnreadCount.fulfilled, (state, action) => {
+        state.serverUnreadCount = action.payload.count;
+        state.serverUnreadCountReadId = action.payload.readId;
       })
       .addCase(markNotificationsAsRead, (state) => {
         const mostRecentGroup = state.groups.find(isNotificationGroup);
