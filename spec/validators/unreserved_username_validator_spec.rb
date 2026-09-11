@@ -21,6 +21,24 @@ RSpec.describe UnreservedUsernameValidator do
     it { is_expected.to allow_value(nil).for(:username) }
   end
 
+  context 'with blocked username patterns' do
+    before do
+      stub_const(
+        'UnreservedUsernameValidator::BLOCKED_PATTERNS',
+        [/\Abp[0-9a-f]{16}\z/i].freeze
+      )
+    end
+
+    it { is_expected.to_not allow_value('bp98c141f33e2ac5d5').for(:username) }
+    it { is_expected.to_not allow_value('BP98C141F33E2AC5D5').for(:username) }
+
+    it { is_expected.to allow_value('bpeter').for(:username) }
+    it { is_expected.to allow_value('subpar').for(:username) }
+    it { is_expected.to allow_value('clubpenguin').for(:username) }
+    it { is_expected.to allow_value('bp98c141f33e2ac5d').for(:username) }
+    it { is_expected.to allow_value('xbp98c141f33e2ac5d5').for(:username) }
+  end
+
   context 'when PAM is enabled' do
     before do
       allow(Devise).to receive(:pam_authentication).and_return(true)
