@@ -89,14 +89,14 @@ class Importer::StatusesIndexImporter < Importer::BaseImporter
   end
 
   def discoverable_scope
-    Status.with_public_visibility.where(account: Account.discoverable).select('"statuses"."id", "statuses"."id" AS status_id')
+    Status.public_visibility.where(account: Account.discoverable).select('"statuses"."id", "statuses"."id" AS status_id')
   end
 
   def public_scope
-    Status.with_public_visibility.select('"statuses"."id", "statuses"."id" AS status_id')
+    Status.public_visibility.select('"statuses"."id", "statuses"."id" AS status_id')
   end
 
   def public_or_unlisted_scope
-    Status.with_public_or_unlisted_visibility.select('"statuses"."id", "statuses"."id" AS status_id')
+    Status.distributable_visibility.select('"statuses"."id", "statuses"."id" AS status_id')
   end
 end
