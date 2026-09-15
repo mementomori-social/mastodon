@@ -196,6 +196,7 @@ class ListTimeline extends PureComponent {
             : <FormattedMessage id='empty_column.list' defaultMessage='There is nothing in this list yet. When members of this list post new statuses, they will appear here.' />
           }
           bindToDocument={!multiColumn}
+          withCounters
         />
 
         <Helmet>

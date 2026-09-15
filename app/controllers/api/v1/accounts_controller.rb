@@ -129,5 +129,13 @@ class Api::V1::AccountsController < Api::BaseController
 
   def check_enabled_registrations
     forbidden unless allowed_registration?(request.remote_ip, invite)
+
+    # The web form is behind a CAPTCHA, this path is not, so bots sign up here
+    # exclusively. Requiring an invite closes it without touching the web form.
+    forbidden if api_registrations_require_invite? && !invite&.valid_for_use?
+  end
+
+  def api_registrations_require_invite?
+    ENV['API_REGISTRATIONS_REQUIRE_INVITE'] == 'true'
   end
 end

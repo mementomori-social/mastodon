@@ -3,6 +3,7 @@
 class Auth::RegistrationsController < Devise::RegistrationsController
   include RegistrationHelper
   include Auth::RegistrationSpamConcern
+  include Auth::CaptchaConcern
 
   layout :determine_layout
 
@@ -15,6 +16,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   before_action :set_rules, only: :new
   before_action :require_rules_acceptance!, only: :new
   before_action :set_registration_form_time, only: :new
+  before_action :extend_csp_for_captcha!, only: [:new, :create]
 
   skip_before_action :check_self_destruct!, only: [:edit, :update]
   skip_before_action :require_functional!, only: [:edit, :update]
@@ -28,6 +30,15 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def create
+    check_captcha! do |message|
+      flash.now[:alert] = message
+      set_rules
+      self.resource = resource_class.new sign_up_params
+      resource.build_invite_request if resource.invite_request.nil?
+      render :new
+      return
+    end
+
     super
   end
 
