@@ -11,6 +11,7 @@ interface InitialStateMeta {
   access_token: string;
   advanced_layout?: boolean;
   auto_play_gif: boolean;
+  auto_play_video: boolean;
   activity_api_enabled: boolean;
   admin: string;
   boost_modal?: boolean;
@@ -48,6 +49,8 @@ interface InitialStateMeta {
   landing_page: 'about' | 'trends' | 'local_feed';
   use_blurhash: boolean;
   use_pending_items?: boolean;
+  use_stars?: boolean;
+  show_follow_badges?: boolean;
   version: string;
   sso_redirect: string;
   status_page_url: string;
@@ -112,6 +115,7 @@ function getMeta<K extends keyof InitialStateMeta>(
 
 export const activityApiEnabled = getMeta('activity_api_enabled');
 export const autoPlayGif = getMeta('auto_play_gif');
+export const autoPlayVideo = getMeta('auto_play_video');
 export const boostModal = getMeta('boost_modal');
 export const quickBoosting = getMeta('quick_boosting');
 export const deleteModal = getMeta('delete_modal');
@@ -147,6 +151,8 @@ export const customAppIcon = getMeta('custom_app_icon');
 export const landingPage = getMeta('landing_page');
 export const useBlurhash = getMeta('use_blurhash');
 export const usePendingItems = getMeta('use_pending_items');
+export const useStars = getMeta('use_stars');
+export const showFollowBadges = getMeta('show_follow_badges');
 export const version = getMeta('version');
 export const criticalUpdatesPending = initialState?.critical_updates_pending;
 export const statusPageUrl = getMeta('status_page_url');

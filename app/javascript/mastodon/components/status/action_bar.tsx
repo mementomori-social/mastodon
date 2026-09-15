@@ -221,7 +221,7 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
         leadingIcon={ChatCircleIcon}
         onClick={handleReplyClick}
       >
-        {withCounters && status.replies_count}
+        {status.replies_count > 0 && status.replies_count}
       </Button>
 
       <StatusReblogButton statusId={statusId}>

@@ -7,14 +7,15 @@ import { useHistory } from 'react-router-dom';
 import OpenInNewIcon from '@/material-icons/400-24px/open_in_new.svg?react';
 import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
 import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
-import StarIcon from '@/material-icons/400-24px/star-fill.svg?react';
-import StarBorderIcon from '@/material-icons/400-24px/star.svg?react';
 import { replyCompose } from 'mastodon/actions/compose';
 import { toggleFavourite } from 'mastodon/actions/interactions';
 import { openModal } from 'mastodon/actions/modal';
+import { FavouriteHeart } from 'mastodon/components/favourite_heart';
+import { FavouriteStar } from 'mastodon/components/favourite_star';
 import { IconButton } from 'mastodon/components/icon_button';
 import { BoostButton } from 'mastodon/components/status/boost_button';
 import { useIdentity } from 'mastodon/identity_context';
+import { useStars } from 'mastodon/initial_state';
 import type { Account } from 'mastodon/models/account';
 import type { Status } from 'mastodon/models/status';
 import { makeGetStatus } from 'mastodon/selectors';
@@ -173,12 +174,12 @@ export const Footer: React.FC<{
       <BoostButton counters statusId={statusId} />
 
       <IconButton
-        className='status__action-bar-button star-icon'
+        className={`status__action-bar-button star-icon${useStars ? '' : ' favourite-heart'}`}
         animate
         active={status.get('favourited') as boolean}
         title={favouriteTitle}
         icon='star'
-        iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon}
+        iconComponent={useStars ? FavouriteStar : FavouriteHeart}
         onClick={handleFavouriteClick}
         counter={status.get('favourites_count') as number}
       />
