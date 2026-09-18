@@ -259,6 +259,7 @@ en:
         setting_display_media_show_all: Show all
         setting_emoji_style: Emoji style
         setting_expand_spoilers: Always expand posts marked with content warnings
+        setting_favourite_with_heart: Use a heart instead of a star for favourites
         setting_hide_network: Hide your social graph
         setting_missing_alt_text_modal: Warn me before posting media without alt text
         setting_quick_boosting: Enable quick boosting
