@@ -64,6 +64,12 @@
   white-space: nowrap;
 }
 
+.sponsor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .sponsor a {
   color: var(--color-text-secondary);
 
