@@ -1,0 +1,45 @@
+# mementomori.test on any machine. Layered over upstream's dev stack:
+#   docker compose -f .devcontainer/compose.yaml -f dev/compose.yaml ...
+# bin/mementomori-dev wraps this. Relative paths resolve from .devcontainer/.
+name: mementomori-dev
+
+services:
+  app:
+    user: vscode
+    environment:
+      LOCAL_DOMAIN: mementomori.test${DEV_PORT_SUFFIX:-}
+      LOCAL_HTTPS: 'true'
+      STREAMING_API_BASE_URL: wss://mementomori.test${DEV_PORT_SUFFIX:-}
+      ES_ENABLED: ${ES_ENABLED:-false}
+      LIBRE_TRANSLATE_ENDPOINT: ${LIBRE_TRANSLATE_ENDPOINT:-}
+      EXPERIMENTAL_FEATURES: inbound_quotes,outgoing_quotes,modern_emojis,wrapstodon
+      REMOTE_DEV: 'true'
+      BUNDLE_PATH: vendor/bundle
+    command: bash -lc dev/start.sh
+    ports: !reset
+      - 127.0.0.1:3036:3036
+    healthcheck:
+      test: curl -fsS http://localhost:3000/health
+      interval: 10s
+      start_period: 15m
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:${HTTPS_PORT:-443}:443
+    volumes:
+      - ../dev/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../dev/certs:/certs:ro
+      - caddy-data:/data
+    networks:
+      - external_network
+
+  es:
+    profiles: [search]
+
+  libretranslate:
+    profiles: [translate]
+
+volumes:
+  caddy-data:
