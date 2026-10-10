@@ -1,0 +1,8 @@
+:443 {
+	tls /certs/mementomori.test.pem /certs/mementomori.test-key.pem
+	encode gzip
+
+	@streaming path /api/v1/streaming*
+	reverse_proxy @streaming app:4000
+	reverse_proxy app:3000
+}

@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+# mementomori.test in Docker. See dev/README.md.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+DOMAIN=mementomori.test
+CERT=dev/certs/$DOMAIN.pem
+KEY=dev/certs/$DOMAIN-key.pem
+HTTPS_PORT=${HTTPS_PORT:-443}
+READY_TIMEOUT=1200
+
+export HTTPS_PORT
+if [ "$HTTPS_PORT" = 443 ]; then
+  export DEV_PORT_SUFFIX=
+else
+  export DEV_PORT_SUFFIX=":$HTTPS_PORT"
+fi
+URL="https://$DOMAIN$DEV_PORT_SUFFIX"
+
+compose() {
+  docker compose -f .devcontainer/compose.yaml -f dev/compose.yaml "$@"
+}
+
+die() {
+  echo "$*" >&2
+  exit 1
+}
+
+check_host() {
+  command -v docker >/dev/null || die "Install Docker first (Docker Desktop, OrbStack or docker engine)."
+  command -v mkcert >/dev/null || die "Install mkcert first (brew install mkcert / pacman -S mkcert / apt install mkcert), then run: mkcert -install"
+
+  if ! grep -qE "^[^#]*[[:space:]]$DOMAIN([[:space:]]|$)" /etc/hosts; then
+    die "Add $DOMAIN to /etc/hosts first:
+  echo '127.0.0.1 $DOMAIN' | sudo tee -a /etc/hosts"
+  fi
+
+  if [ ! -f "$CERT" ]; then
+    mkdir -p dev/certs
+    mkcert -cert-file "$CERT" -key-file "$KEY" "$DOMAIN"
+  fi
+}
+
+wait_ready() {
+  echo "Waiting for $URL (first start installs gems and packages, takes a while)..."
+  local waited=0
+  until curl -fsS -o /dev/null --resolve "$DOMAIN:$HTTPS_PORT:127.0.0.1" "$URL/health" 2>/dev/null; do
+    sleep 5
+    waited=$((waited + 5))
+    [ "$waited" -lt "$READY_TIMEOUT" ] || die "Not up after ${READY_TIMEOUT}s. See: $0 logs"
+  done
+  echo "Up: $URL"
+}
+
+seed() {
+  compose exec app bash -lc "bin/rails mementomori:seed SCALE=${1:-default}"
+}
+
+case "${1:-}" in
+  up)
+    shift
+    profiles=
+    for profile in "$@"; do
+      case "$profile" in
+        search) export ES_ENABLED=true ;;
+        translate) export LIBRE_TRANSLATE_ENDPOINT=http://libretranslate:5000 ;;
+        *) die "Unknown option $profile, use: up [search] [translate]" ;;
+      esac
+      profiles="$profiles --profile $profile"
+    done
+    check_host
+    # shellcheck disable=SC2086
+    compose $profiles up -d --build
+    wait_ready
+    ;;
+  seed)
+    seed "${2:-default}"
+    ;;
+  reset)
+    if [ "${RESET_YES:-}" != 1 ]; then
+      read -r -p "Wipe this dev stack's database, uploads and Redis (not any other setup)? [y/N] " answer
+      [ "$answer" = y ] || exit 1
+    fi
+    compose exec -T app bash -lc 'DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:schema:load db:seed && rm -rf public/system/*'
+    compose exec -T redis redis-cli flushall
+    compose restart app
+    wait_ready
+    seed "${2:-default}"
+    ;;
+  shell)
+    compose exec app bash -l
+    ;;
+  logs)
+    compose logs -f --tail 100 "${@:2}"
+    ;;
+  down)
+    compose --profile search --profile translate down
+    ;;
+  compose)
+    compose "${@:2}"
+    ;;
+  *)
+    echo "Usage: $0 up [search] [translate] | seed [small|default|large] | reset [scale] | shell | logs [service] | down | compose <args>"
+    exit 1
+    ;;
+esac
