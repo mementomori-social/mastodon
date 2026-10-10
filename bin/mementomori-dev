@@ -60,19 +60,31 @@ seed() {
 case "${1:-}" in
   up)
     shift
+    profiles=
+    for profile in "$@"; do
+      case "$profile" in
+        search) export ES_ENABLED=true ;;
+        translate) export LIBRE_TRANSLATE_ENDPOINT=http://libretranslate:5000 ;;
+        *) die "Unknown option $profile, use: up [search] [translate]" ;;
+      esac
+      profiles="$profiles --profile $profile"
+    done
     check_host
-    compose up -d --build "$@"
+    # shellcheck disable=SC2086
+    compose $profiles up -d --build
     wait_ready
     ;;
   seed)
     seed "${2:-default}"
     ;;
   reset)
-    read -r -p "Delete this dev stack's database and volumes (not any other setup)? [y/N] " answer
-    [ "$answer" = y ] || exit 1
-    compose --profile search --profile translate down -v
-    check_host
-    compose up -d --build
+    if [ "${RESET_YES:-}" != 1 ]; then
+      read -r -p "Wipe this dev stack's database, uploads and Redis (not any other setup)? [y/N] " answer
+      [ "$answer" = y ] || exit 1
+    fi
+    compose exec -T app bash -lc 'DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:schema:load db:seed && rm -rf public/system/*'
+    compose exec -T redis redis-cli flushall
+    compose restart app
     wait_ready
     seed "${2:-default}"
     ;;
@@ -89,7 +101,7 @@ case "${1:-}" in
     compose "${@:2}"
     ;;
   *)
-    echo "Usage: $0 up [--profile search] | seed [small|default|large] | reset [scale] | shell | logs [service] | down | compose <args>"
+    echo "Usage: $0 up [search] [translate] | seed [small|default|large] | reset [scale] | shell | logs [service] | down | compose <args>"
     exit 1
     ;;
 esac
