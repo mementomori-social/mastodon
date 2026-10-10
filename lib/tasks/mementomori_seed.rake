@@ -8,7 +8,9 @@ namespace :mementomori do
     abort 'Development only.' unless Rails.env.development?
     abort 'Already seeded. Reset first: bin/mementomori-dev reset' if Account.exists?(username: 'demo', domain: nil)
 
-    MementomoriSeed.new(ENV.fetch('SCALE', 'default')).run
+    Rails.logger.level = :warn
+    ActiveRecord::Base.logger = nil
+    Chewy.strategy(:mastodon) { MementomoriSeed.new(ENV.fetch('SCALE', 'default')).run }
   end
 end
 
@@ -18,14 +20,21 @@ class MementomoriSeed
   YEARS = 3
   BATCH = 5_000
 
-
   SCALES = {
     'small' => { local: 30, remote: 10, statuses: 4_000, media: 60, follows: 25 },
     'default' => { local: 150, remote: 50, statuses: 40_000, media: 400, follows: 60 },
     'large' => { local: 400, remote: 150, statuses: 200_000, media: 1_000, follows: 120 },
   }.freeze
 
+  LOGINS = %w(admin moderator demo).freeze
+  TRENDING = %w(sauna caturday fediverse).freeze
+
   REMOTE_DOMAINS = %w(social.example kirahvi.example toot.example metalli.example retro.example).freeze
+
+  POST_HOURS = [7, 9, 12, 12, 13, 17, 19, 20, 21, 22, 23].freeze
+  SPOILERS = ['Spoilers', 'Food', 'Politics', 'Ruokaa', 'Pitkä teksti'].freeze
+  POLLS = [%w(Kahvi Tee Molemmat), ['Yes', 'No', 'Show results'], %w(Linux macOS Windows Other)].freeze
+  POLL_DAYS = [1, 3, 7].freeze
 
   TAGS = %w(
     mastodon fediverse caturday photography coffee running finland helsinki tampere
@@ -44,10 +53,10 @@ class MementomoriSeed
     ->(f) { "Reminder that #{f.advice}" },
     ->(f) { "Spent the whole evening debugging and the fix was one line. #{f.tech}" },
     ->(f) { "New blog post about #{f.topic}: #{f.link}" },
-    ->(f) { "#{f.quote}" },
-    ->(f) { "The cat has decided my keyboard is a bed. #caturday" },
+    ->(f) { f.quote.to_s },
+    ->(_f) { 'The cat has decided my keyboard is a bed. #caturday' },
     ->(f) { "Finally got my old #{f.retro} running again. #retrocomputing" },
-    ->(f) { "Please add alt text to your images, it takes ten seconds. #accessibility" },
+    ->(_f) { 'Please add alt text to your images, it takes ten seconds. #accessibility' },
     ->(f) { "Weekend plans: #{f.plan}." },
     ->(f) { "Is it just me or has #{f.topic} gotten way more complicated lately?" },
   ].freeze
@@ -56,15 +65,15 @@ class MementomoriSeed
     ->(f) { "Luin juuri loppuun kirjan #{f.book}. #{f.mielipide} #kirjat" },
     ->(f) { "Aamulenkki tehty, #{f.km} km. Sade ei haitannut. #juoksu" },
     ->(f) { "Kahvia jo #{f.small} kuppia ja kello on vasta kymmenen. #kahvi" },
-    ->(f) { "Saunan jälkeen järveen. Parempaa ei ole. #sauna" },
+    ->(_f) { 'Saunan jälkeen järveen. Parempaa ei ole. #sauna' },
     ->(f) { "Tänään #{f.city}ssa satoi taas koko päivän. #{f.mielipide}" },
     ->(f) { "Tein ruoaksi #{f.ruoka}. #{f.mielipide} #ruoka" },
-    ->(f) { "Koodasin koko illan ja korjaus oli lopulta yksi rivi. #koodaus" },
+    ->(_f) { 'Koodasin koko illan ja korjaus oli lopulta yksi rivi. #koodaus' },
     ->(f) { "Syksyn värit #{f.city}ssa on aivan uskomattomat. #syksy #valokuvaus" },
     ->(f) { "Ensimmäinen lumi! #{f.mielipide} #talvi" },
     ->(f) { "Kuuntelen nyt #{f.band}. #nowplaying" },
-    ->(f) { "Muistakaa kuvailla kuvanne, se vie kymmenen sekuntia. #accessibility" },
-    ->(f) { "Viikonlopun suunnitelma: mökki, sauna ja hyvä kirja." },
+    ->(_f) { 'Muistakaa kuvailla kuvanne, se vie kymmenen sekuntia. #accessibility' },
+    ->(_f) { 'Viikonlopun suunnitelma: mökki, sauna ja hyvä kirja.' },
     ->(f) { "Kirjoitin blogiin aiheesta #{f.topic}: #{f.link}" },
   ].freeze
 
@@ -118,9 +127,13 @@ class MementomoriSeed
     @rng = Random.new(SEED)
     Faker::Config.random = Random.new(SEED)
     @filler = Filler.new(@rng)
-    @now = Time.now.utc.beginning_of_hour
-    @start = @now - YEARS.years
+    # History ends at midnight UTC so every run, at any hour, makes the same rows.
+    @clock = Time.now.utc
+    @midnight = @clock.beginning_of_day
+    @start = @midnight - YEARS.years
     @seq = 0
+    @started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    $stdout.sync = true
   end
 
   def run
@@ -136,6 +149,7 @@ class MementomoriSeed
       recount
     end
     attach_media
+    seed_trends
     build_feeds
     log "Done. Log in at https://#{Rails.configuration.x.web_domain} as demo@#{email_domain} / #{PASSWORD}"
   end
@@ -143,7 +157,7 @@ class MementomoriSeed
   private
 
   def log(message)
-    puts "[mementomori:seed] #{message}"
+    puts "[mementomori:seed] #{(Process.clock_gettime(Process::CLOCK_MONOTONIC) - @started).round}s #{message}"
   end
 
   # Time-ordered, collision-free ids in Mastodon's snowflake format.
@@ -174,6 +188,8 @@ class MementomoriSeed
   end
 
   def insert(model, rows)
+    # Sequence ids follow insert order, and the API pages by id, so insert oldest first.
+    rows = rows.each_with_index.sort_by { |row, i| [row[:created_at], i] }.map(&:first) unless rows.first&.key?(:id)
     rows.each_slice(BATCH) { |slice| model.insert_all!(slice) }
     model.connection.reset_pk_sequence!(model.table_name) unless model.columns_hash['id']&.default_function&.start_with?('timestamp_id')
   end
@@ -200,7 +216,7 @@ class MementomoriSeed
       finnish = @rng.rand < 0.5
       name = Faker::Base.with_locale(finnish ? 'fi' : 'en') { Faker::Name.name }
       username = "#{name.parameterize(separator: '_')[0, 24]}_#{i}"
-      joined = @start + (@rng.rand**2 * YEARS * 0.8).years
+      joined = @start + ((@rng.rand**2) * 0.8 * (@midnight - @start))
       account = local_account(username, name, nil, joined, finnish:)
       @accounts << account
     end
@@ -219,20 +235,30 @@ class MementomoriSeed
   end
 
   def local_account(username, name, role, joined, finnish: false)
-    account = Account.new(
-      id: snowflake(joined), username:, display_name: name, created_at: joined,
+    # db/seeds already made admin; staff names are reserved, so skip validation like db/seeds does.
+    account = Account.find_or_initialize_by(username:, domain: nil)
+    account.id = snowflake(joined) if account.new_record?
+    account.assign_attributes(
+      display_name: name, created_at: joined,
       note: finnish ? "Suomesta. #{Faker::Hobby.activity}, kahvi ja kirjat." : "#{Faker::Hobby.activity}, #{Faker::Hobby.activity.downcase} and coffee.",
       fields: [{ name: 'Pronouns', value: %w(they/them she/her he/him).sample(random: @rng) }],
       locked: @rng.rand < 0.08, actor_type: @rng.rand < 0.03 ? 'Service' : 'Person',
       discoverable: true, indexable: true
     )
-    account.save!
-    User.create!(
-      account:, email: "#{username}@#{email_domain}", password: PASSWORD, agreement: true,
-      confirmed_at: joined, approved: true, role:, locale: finnish ? 'fi' : 'en',
-      current_sign_in_at: @now, created_at: joined
+    account.save!(validate: role.nil?)
+    user = User.find_or_initialize_by(email: "#{username}@#{email_domain}")
+    user.update!(
+      account:, password: PASSWORD, agreement: true, bypass_registration_checks: true,
+      confirmed_at: joined, role:, locale: finnish ? 'fi' : 'en',
+      current_sign_in_at: seen_at(username), last_sign_in_at: seen_at(username), created_at: joined
     )
+    # set_approved overrides the attribute on create; approve! would queue welcome mails and auto-follows.
+    user.update_columns(approved: true)
     account
+  end
+
+  def seen_at(username)
+    LOGINS.include?(username) ? @midnight : @midnight - 30.days
   end
 
   def remote_account(username, name, domain)
@@ -241,7 +267,7 @@ class MementomoriSeed
       uri: "https://#{domain}/users/#{username}", url: "https://#{domain}/@#{username}",
       inbox_url: "https://#{domain}/users/#{username}/inbox", shared_inbox_url: "https://#{domain}/inbox",
       followers_url: "https://#{domain}/users/#{username}/followers", protocol: :activitypub,
-      last_webfingered_at: @now, created_at: @start, discoverable: true, indexable: true
+      last_webfingered_at: @midnight, created_at: @start, discoverable: true, indexable: true
     )
   end
 
@@ -254,14 +280,14 @@ class MementomoriSeed
     id = next_id(Follow)
 
     @locals.each do |follower|
-      count = follower == @demo ? [120, @accounts.size - 1].min : [(@scale[:follows] * pareto(2)).to_i, @accounts.size - 1].min
+      count = follower == @demo ? [(@accounts.size * 0.6).to_i, 120].min : [(@scale[:follows] * pareto(2)).to_i, @accounts.size - 1].min
       candidates = @accounts - [follower]
       targets = Set.new
       targets << weighted_pick(candidates, candidates.map { |a| @weight[a.id] }) while targets.size < count
 
       targets.each do |target|
         at = [follower.created_at, target.created_at].max + @rng.rand(1..60).days
-        at = @now - 1.day if at > @now
+        at = @midnight - 1.day if at > @midnight
         if target.locked? && @rng.rand < 0.15
           request_rows << { account_id: follower.id, target_account_id: target.id, created_at: at, updated_at: at }
           next
@@ -284,11 +310,11 @@ class MementomoriSeed
 
   def status_times
     # Activity grows over the years and follows a daily rhythm.
-    Array.new(@scale[:statuses]) do
-      day = @start + (@rng.rand**0.6 * YEARS).years
-      hour = [7, 9, 12, 12, 13, 17, 19, 20, 21, 22, 23].sample(random: @rng)
-      day.beginning_of_day + hour.hours + @rng.rand(3600).seconds
-    end.select { |t| t < @now }.sort
+    times = Array.new(@scale[:statuses]) do
+      day = @start + ((@rng.rand**0.6) * (@midnight - @start))
+      day.beginning_of_day + POST_HOURS.sample(random: @rng).hours + @rng.rand(3600).seconds
+    end
+    times.grep(@start..@midnight).sort
   end
 
   def compose_text(account)
@@ -336,10 +362,8 @@ class MementomoriSeed
       conversation_id = reply_to ? reply_to[:conversation_id] : (@conversation_seq += 1)
       conversations << { id: conversation_id, created_at: at, updated_at: at } unless reply_to
 
-      status = add_status(
-        author, at, text:, visibility:, conversation_id:,
-        reply_to:, spoiler: @rng.rand < 0.07 ? ['Spoilers', 'Food', 'Politics', 'Ruokaa', 'Pitkä teksti'].sample(random: @rng) : ''
-      )
+      spoiler = @rng.rand < 0.07 ? SPOILERS.sample(random: @rng) : ''
+      status = add_status(author, at, text:, visibility:, conversation_id:, reply_to:, spoiler:)
 
       text.scan(/@(\w+)(?:@([\w.-]+))?/).uniq.each do |username, domain|
         target = @accounts.find { |a| a.username == username && a.domain == domain }
@@ -358,6 +382,17 @@ class MementomoriSeed
 
       recent << status
       recent.shift if recent.size > 300
+    end
+
+    # A burst earlier today, so trends have something to show (they count distinct accounts per UTC day).
+    TRENDING.each_with_index do |tag, i|
+      @locals.sample(8 + (3 * i), random: @rng).each do |author|
+        at = @midnight + (@rng.rand * (@clock - @midnight))
+        text = "#{compose_text(author)} ##{tag}"
+        status = add_status(author, at, text:, conversation_id: @conversation_seq += 1)
+        conversations << { id: status[:conversation_id], created_at: at, updated_at: at }
+        text.scan(/#(\w+)/).flatten.uniq.each { |name| @tag_links << [status[:id], name.downcase, at] }
+      end
     end
 
     insert(Conversation, conversations)
@@ -384,9 +419,8 @@ class MementomoriSeed
 
   def add_status(author, at, text: '', visibility: 0, conversation_id: nil, reply_to: nil, reblog_of: nil, spoiler: '')
     id = snowflake(at)
-    model = Status.new(id:, account: author, local: author.local?, reblog_of_id: reblog_of&.dig(:id))
-    uri = author.local? ? ActivityPub::TagManager.instance.uri_for(model) : "https://#{author.domain}/users/#{author.username}/statuses/#{id}"
-    url = author.local? ? ActivityPub::TagManager.instance.url_for(model) : "https://#{author.domain}/@#{author.username}/#{id}"
+    uri = author.local? ? local_status_uri(author, id, reblog: reblog_of) : "https://#{author.domain}/users/#{author.username}/statuses/#{id}"
+    url = author.local? ? ActivityPub::TagManager.instance.short_account_status_url(author, id) : "https://#{author.domain}/@#{author.username}/#{id}"
 
     row = {
       id:, account_id: author.id, text:, created_at: at, updated_at: at, local: author.local?,
@@ -397,6 +431,16 @@ class MementomoriSeed
     }
     @statuses << row
     row
+  end
+
+  # Same as TagManager#uri_for, without building a Status (has_many inversing would keep it on the account).
+  def local_status_uri(author, id, reblog:)
+    tm = ActivityPub::TagManager.instance
+    if author.numeric_ap_id?
+      reblog ? tm.activity_ap_account_status_url(author.id, id) : tm.ap_account_status_url(author.id, id)
+    else
+      reblog ? tm.activity_account_status_url(author, id) : tm.account_status_url(author, id)
+    end
   end
 
   def create_tags
@@ -426,7 +470,7 @@ class MementomoriSeed
         next if fan.id == status[:account_id]
 
         at = status[:created_at] + (pareto(1) * 600).seconds
-        at = @now if at > @now
+        at = @clock if at > @clock
         @favourites << { id: fav_id, account_id: fan.id, status_id: status[:id], created_at: at, updated_at: at }
         fav_id += 1
       end
@@ -448,9 +492,9 @@ class MementomoriSeed
     local_originals = @statuses.select { |s| s[:local] && s[:reblog_of_id].nil? && s[:visibility].zero? && !s[:reply] }
 
     local_originals.sample(@statuses.size / 80, random: @rng).each do |status|
-      options = [['Kahvi', 'Tee', 'Molemmat'], ['Yes', 'No', 'Show results'], ['Linux', 'macOS', 'Windows', 'Other']].sample(random: @rng)
+      options = POLLS.sample(random: @rng)
       tallies = options.map { @rng.rand(0..40) }
-      expires = status[:created_at] + [1, 3, 7].sample(random: @rng).days
+      expires = status[:created_at] + POLL_DAYS.sample(random: @rng).days
       polls << {
         id: poll_id, account_id: status[:account_id], status_id: status[:id], options:, cached_tallies: tallies,
         votes_count: tallies.sum, voters_count: tallies.sum, expires_at: expires, created_at: status[:created_at], updated_at: status[:created_at]
@@ -475,7 +519,7 @@ class MementomoriSeed
     end
 
     pins = @locals.flat_map do |account|
-      local_originals.select { |s| s[:account_id] == account.id }.last(2).map { |s| { account_id: account.id, status_id: s[:id], created_at: @now, updated_at: @now } }
+      local_originals.select { |s| s[:account_id] == account.id }.last(2).map { |s| { account_id: account.id, status_id: s[:id], created_at: @midnight, updated_at: @midnight } }
     end
     insert(StatusPin, pins)
     log "#{polls.size} polls, #{edits.size / 2} edited statuses, #{pins.size} pins"
@@ -492,8 +536,7 @@ class MementomoriSeed
 
   def create_notifications
     by_id = @statuses.index_by { |s| s[:id] }
-    rows = []
-    @favourites.each { |f| rows << notification('favourite', 'Favourite', f[:id], by_id[f[:status_id]][:account_id], f[:account_id], f[:created_at], status_id: f[:status_id]) }
+    rows = @favourites.map { |f| notification('favourite', 'Favourite', f[:id], by_id[f[:status_id]][:account_id], f[:account_id], f[:created_at], status_id: f[:status_id]) }
     @statuses.each { |s| rows << notification('reblog', 'Status', s[:id], by_id[s[:reblog_of_id]][:account_id], s[:account_id], s[:created_at], status_id: s[:reblog_of_id]) if s[:reblog_of_id] }
     @mentions.each { |m| rows << notification('mention', 'Mention', m[:id], m[:account_id], by_id[m[:status_id]][:account_id], m[:created_at]) }
     @follow_rows.each { |f| rows << notification('follow', 'Follow', f[:id], f[:target_account_id], f[:account_id], f[:created_at]) }
@@ -592,8 +635,18 @@ class MementomoriSeed
     FileUtils.rm_rf(dir)
   end
 
+  def seed_trends
+    log 'Recording trends'
+    Tag.where(name: TRENDING).update_all(trendable: true, reviewed_at: @midnight)
+    Status.joins(:tags).where(tags: { name: TRENDING }).where(created_at: @midnight..).distinct.includes(:tags, :account).find_each do |status|
+      Trends.tags.register(status, status.created_at)
+    end
+    Trends.tags.refresh
+  end
+
   def build_feeds
     log 'Building home feeds'
-    Account.local.joins(:user).find_each { |account| PrecomputeFeedService.new.call(account) }
+    # Others count as inactive, so Mastodon builds their feed when someone logs in as them.
+    Account.local.where(username: LOGINS).find_each { |account| PrecomputeFeedService.new.call(account) }
   end
 end
