@@ -65,3 +65,29 @@
 .version {
   white-space: nowrap;
 }
+
+.sponsor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sponsor a {
+  color: var(--color-text-secondary);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-text-primary);
+  }
+}
+
+.logo {
+  display: inline-block;
+  width: 87px;
+  height: 16px;
+  vertical-align: middle;
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  transition: color 0.2s;
+}

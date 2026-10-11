@@ -9,8 +9,11 @@ import { BoostButton } from '@/mastodon/components/status/legacy/boost_button';
 import OpenInNewIcon from '@/material-icons/400-24px/open_in_new.svg?react';
 import { replyCompose } from 'mastodon/actions/compose';
 import { openModal } from 'mastodon/actions/modal';
+import { FavouriteHeart } from 'mastodon/components/favourite_heart';
+import { FavouriteStar } from 'mastodon/components/favourite_star';
 import { IconButton } from 'mastodon/components/icon_button';
 import { useIdentity } from 'mastodon/identity_context';
+import { useStars } from 'mastodon/initial_state';
 import type { Account } from 'mastodon/models/account';
 import type { Status } from 'mastodon/models/status';
 import { makeGetStatus } from 'mastodon/selectors';
@@ -107,12 +110,12 @@ export const Footer: React.FC<{
       <BoostButton counters statusId={statusId} />
 
       <IconButton
-        className='status__action-bar-button star-icon'
+        className={`status__action-bar-button star-icon${useStars ? '' : ' favourite-heart'}`}
         animate
         active={like.active}
         title={like.title}
         icon='star'
-        iconComponent={like.icon}
+        iconComponent={useStars ? FavouriteStar : FavouriteHeart}
         onClick={like.action}
         counter={like.counter}
       />

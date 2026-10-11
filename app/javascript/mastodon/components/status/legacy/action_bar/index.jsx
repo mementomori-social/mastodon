@@ -14,8 +14,10 @@ import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/
 import { WithRouterPropTypes } from 'mastodon/utils/react_router';
 
 import { Dropdown } from '@/mastodon/components/dropdown_menu';
-import { me, quickBoosting } from '@/mastodon/initial_state';
+import { me, quickBoosting, useStars } from '@/mastodon/initial_state';
 
+import { FavouriteHeart } from '@/mastodon/components/favourite_heart';
+import { FavouriteStar } from '@/mastodon/components/favourite_star';
 import { IconButton } from '@/mastodon/components/icon_button';
 import { injectIntl } from '@/mastodon/components/intl';
 import { BoostButton } from '../boost_button';
@@ -23,7 +25,7 @@ import { RemoveQuoteHint } from './remove_quote_hint';
 import { quoteItemState } from '../../boost_button_utils';
 import { selectStatusConditions } from '@/mastodon/selectors/statuses';
 import { isRedesignEnabled } from '@/mastodon/utils/environment';
-import { StatusBookmarkActiveIcon, StatusBookmarkIcon, StatusLikeActiveIcon, StatusLikeIcon, StatusReplyAllIcon, StatusReplyIcon } from '../../icons';
+import { StatusBookmarkActiveIcon, StatusBookmarkIcon, StatusReplyAllIcon, StatusReplyIcon } from '../../icons';
 
 
 const baseMessages = defineMessages({
@@ -256,7 +258,7 @@ class StatusActionBar extends ImmutablePureComponent {
   };
 
   render () {
-    const { status, relationship, statusQuoteState, quotedAccountId, contextType, intl, withDismiss, withCounters, scrollKey } = this.props;
+    const { status, relationship, statusQuoteState, quotedAccountId, contextType, intl, withDismiss, scrollKey } = this.props;
     const { signedIn, permissions } = this.props.identity;
 
     const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
@@ -401,10 +403,10 @@ class StatusActionBar extends ImmutablePureComponent {
           <IconButton className='status__action-bar__button' title={replyTitle} icon={isReply ? 'reply' : replyIcon} iconComponent={isReply ? StatusReplyIcon : replyIconComponent} onClick={this.handleReplyClick} counter={status.get('replies_count')} />
         </div>
         <div className='status__action-bar__button-wrapper'>
-          <BoostButton statusId={status.get('id')} counters={withCounters} />
+          <BoostButton statusId={status.get('id')} counters />
         </div>
         <div className='status__action-bar__button-wrapper'>
-          <IconButton className='status__action-bar__button star-icon' animate active={status.get('favourited')} title={favouriteTitle} icon='star' iconComponent={status.get('favourited') ? StatusLikeActiveIcon : StatusLikeIcon} onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
+          <IconButton className={`status__action-bar__button star-icon${useStars ? '' : ' favourite-heart'}`} animate active={status.get('favourited')} title={favouriteTitle} icon='star' iconComponent={useStars ? FavouriteStar : FavouriteHeart} onClick={this.handleFavouriteClick} counter={status.get('favourites_count')} />
         </div>
         <div className='status__action-bar__button-wrapper'>
           <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={bookmarkTitle} icon='bookmark' iconComponent={status.get('bookmarked') ? StatusBookmarkActiveIcon : StatusBookmarkIcon} onClick={this.handleBookmarkClick} />

@@ -11,9 +11,11 @@ import { injectIntl } from '@/mastodon/components/intl';
 import { identityContextPropShape, withIdentity } from 'mastodon/identity_context';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
 
+import { FavouriteHeart } from '@/mastodon/components/favourite_heart';
+import { FavouriteStar } from '@/mastodon/components/favourite_star';
 import { IconButton } from '@/mastodon/components/icon_button';
 import { Dropdown } from 'mastodon/components/dropdown_menu';
-import { me, quickBoosting } from '@/mastodon/initial_state';
+import { me, quickBoosting, useStars } from '@/mastodon/initial_state';
 import { BoostButton } from '@/mastodon/components/status/legacy/boost_button';
 import { quoteItemState } from '@/mastodon/components/status/boost_button_utils';
 import { selectStatusConditions } from '@/mastodon/selectors/statuses';
@@ -21,8 +23,6 @@ import { isRedesignEnabled } from '@/mastodon/utils/environment';
 import {
   StatusBookmarkActiveIcon,
   StatusBookmarkIcon,
-  StatusLikeActiveIcon,
-  StatusLikeIcon,
   StatusReplyAllIcon,
   StatusReplyIcon,
 } from '@/mastodon/components/status/icons';
@@ -351,7 +351,7 @@ class ActionBar extends PureComponent {
           <BoostButton statusId={status.get('id')} />
         </div>
         <div className='detailed-status__button'>
-          <IconButton className='star-icon' animate active={status.get('favourited')} title={favouriteTitle} icon='star' iconComponent={status.get('favourited') ? StatusLikeActiveIcon : StatusLikeIcon} onClick={this.handleFavouriteClick} />
+          <IconButton className={`star-icon${useStars ? '' : ' favourite-heart'}`} animate active={status.get('favourited')} title={favouriteTitle} icon='star' iconComponent={useStars ? FavouriteStar : FavouriteHeart} onClick={this.handleFavouriteClick} />
         </div>
         <div className='detailed-status__button'>
           <IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={bookmarkTitle} icon='bookmark' iconComponent={status.get('bookmarked') ? StatusBookmarkActiveIcon : StatusBookmarkIcon} onClick={this.handleBookmarkClick} />
