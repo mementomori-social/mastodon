@@ -116,6 +116,16 @@ RSpec.describe '/api/v1/accounts' do
         expect(response).to have_http_status(403)
       end
 
+      context 'when the IP is also blocked' do
+        before { Fabricate(:ip_block, ip: '127.0.0.1', severity: :sign_up_block) }
+
+        it 'returns http forbidden once' do
+          subject
+
+          expect(response).to have_http_status(403)
+        end
+      end
+
       context 'with a valid invite code' do
         subject do
           post '/api/v1/accounts', headers: headers, params: { username: 'test', password: '12345678', email: 'hello@world.tld', agreement: 'true', date_of_birth: 20.years.ago.to_date.to_s, invite_code: invite.code }
