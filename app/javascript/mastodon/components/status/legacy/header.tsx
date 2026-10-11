@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 
 import { Avatar } from '@/mastodon/components/avatar';
+import { AvatarFollowBadge } from '@/mastodon/components/avatar_follow_badge';
 import { AvatarOverlay } from '@/mastodon/components/avatar_overlay';
 import type { DisplayNameProps } from '@/mastodon/components/display_name';
 import { LinkedDisplayName } from '@/mastodon/components/display_name';
@@ -120,11 +121,17 @@ const StatusDisplayName: FC<{
       reference='status'
     >
       <div className='status__avatar'>
-        <AccountComponent
-          account={statusAccount}
-          friend={friendAccount}
-          size={avatarSize}
-        />
+        <span className='status__avatar__badge-anchor'>
+          <AccountComponent
+            account={statusAccount}
+            friend={friendAccount}
+            size={avatarSize}
+          />
+          {/* Boosts already show two avatars, so no badge there */}
+          {!friendAccount && (
+            <AvatarFollowBadge accountId={statusAccount?.id} />
+          )}
+        </span>
       </div>
     </LinkedDisplayName>
   );

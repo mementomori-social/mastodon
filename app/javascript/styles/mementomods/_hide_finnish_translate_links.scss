@@ -1,0 +1,8 @@
+// Activated by the `web.hide_finnish_translate_links` user preference, which
+// adds a `hide-finnish-translate-links` class to the html element via
+// app/helpers/application_helper.rb#html_classes.
+.hide-finnish-translate-links
+  .status__content__text[lang='fi']
+  ~ .status__content__translate-button {
+  display: none;
+}

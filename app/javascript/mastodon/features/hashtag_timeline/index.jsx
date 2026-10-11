@@ -227,6 +227,7 @@ class HashtagTimeline extends PureComponent {
             )
           }
           bindToDocument={!multiColumn}
+          withCounters
         />
 
         <Helmet>

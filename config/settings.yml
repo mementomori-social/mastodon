@@ -37,6 +37,8 @@ defaults: &defaults
   opt_in_server_directory: false
   opt_in_server_recommendation: false
   wrapstodon: true
+  auto_play_gif: true
+  reduce_motion: false
 
 development:
   <<: *defaults
