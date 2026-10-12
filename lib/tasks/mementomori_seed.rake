@@ -111,6 +111,23 @@ class MementomoriSeed
     ->(f) { "Kirjoitin blogiin uuden jutun: #{f.link}" },
   ].freeze
 
+  LINK_CARDS = {
+    en: [
+      { host: 'news.example', title: 'Why small social networks feel friendlier', description: 'Smaller servers have their own culture and moderators who know their members. A look at what makes them work.', provider: 'Example News' },
+      { host: 'retro.example', title: 'A short history of the Amiga', description: 'From a games machine to a creative workstation: how the Amiga shaped a generation of artists and programmers.', provider: 'Retro Weekly' },
+      { host: 'news.example', title: 'How to write good alt text', description: 'Describe what matters in the image, keep it short and skip "image of". Practical examples for everyday posts.', provider: 'Example News' },
+    ],
+    fi: [
+      { host: 'lehti.example', title: 'Syksyn parhaat retkikohteet Suomessa', description: 'Ruska on parhaimmillaan Lapissa syyskuun puolivälissä. Kokosimme kohteet, joihin pääsee myös julkisilla.', provider: 'Esimerkkilehti' },
+      { host: 'lehti.example', title: 'Saunomisen lyhyt historia', description: 'Savusaunasta sähkökiukaaseen: miten suomalainen sauna on muuttunut sadassa vuodessa.', provider: 'Esimerkkilehti' },
+      { host: 'saavutettava.example', title: 'Näin kirjoitat kuvaukset kuville', description: 'Hyvä kuvaus kertoo kuvan olennaisen sisällön lyhyesti. Esimerkkejä arkisiin julkaisuihin.', provider: 'Saavutettava verkko' },
+    ],
+  }.freeze
+  SHARE_TEXTS = {
+    en: ['Good read.', 'Worth a read.', 'This is so true.', 'Bookmarking this one.'],
+    fi: ['Hyvä juttu.', 'Kannattaa lukea.', 'Tämä kiinnostaa varmasti monia.', 'Juuri tätä mietin eilen.'],
+  }.freeze
+
   FI_BIOS = [
     'Suomesta. Kahvia, kirjoja ja pitkiä kävelyjä.',
     'Suomesta. Valokuvaan, leivon ja käyn saunassa.',
@@ -186,6 +203,7 @@ class MementomoriSeed
     end
     attach_media
     seed_trends
+    seed_explore
     build_feeds
     log "Done. Log in at https://#{Rails.configuration.x.web_domain} as demo@#{email_domain} / #{PASSWORD}"
   end
@@ -294,7 +312,9 @@ class MementomoriSeed
   end
 
   def seen_at(username)
-    LOGINS.include?(username) ? @midnight : @midnight - 30.days
+    # Within 30 days, so their follows count for suggestions; over 7, so
+    # Mastodon treats them as inactive and builds their feed on first login.
+    LOGINS.include?(username) ? @midnight : @midnight - 20.days
   end
 
   def remote_account(username, name, domain)
@@ -696,6 +716,61 @@ class MementomoriSeed
       Trends.tags.register(status, status.created_at)
     end
     Trends.tags.refresh
+  end
+
+  # Explore: trending posts, news and who to follow
+  def seed_explore
+    log 'Recording trending posts, news and suggestions'
+    Account.local.without_instance_actor.update_all(trendable: true, reviewed_at: @midnight)
+    people = Account.local.without_instance_actor.where.not(username: LOGINS).to_a
+    trending_posts(people)
+    trending_links(people)
+    Trends.statuses.refresh
+    Trends.links.refresh
+    AccountSummary.refresh
+    FollowRecommendation.refresh
+  end
+
+  # A post's trend score halves every hour, so fresh posts with many likes and
+  # boosts keep the tab filled for about half a day after seeding.
+  def trending_posts(people)
+    people.sample(6, random: @rng).each do |author|
+      at = @clock - @rng.rand(10..50).minutes
+      status = Status.create!(id: snowflake(at), account: author, text: with_tag_line(compose_text(author)), language: language(author).to_s, visibility: :public, created_at: at, updated_at: at)
+      ProcessHashtagsService.new.call(status)
+      (people - [author]).sample(@rng.rand(20..28), random: @rng).each do |fan|
+        Favourite.create!(account: fan, status:, created_at: at + 5.minutes)
+        Status.create!(account: fan, reblog: status, visibility: :public, created_at: at + 6.minutes) if @rng.rand < 0.5
+      end
+      Trends.statuses.register(status, at)
+    end
+  end
+
+  def trending_links(people)
+    dir = Rails.root.join('tmp', 'mementomori-seed')
+    FileUtils.mkdir_p(dir)
+
+    LINK_CARDS.each do |lang, cards|
+      sharers = people.select { |a| language(a) == lang }
+      cards.each_with_index do |card, i|
+        url = "https://#{card[:host]}/#{card[:title].parameterize}"
+        path = dir.join("card-#{lang}-#{i}.png")
+        gradient(path.to_s, 1200, 630)
+        preview = PreviewCard.create!(
+          url:, title: card[:title], description: card[:description], type: :link, link_type: :article,
+          provider_name: card[:provider], provider_url: "https://#{card[:host]}", language: lang.to_s, trendable: true,
+          image: File.open(path), width: 1200, height: 630
+        )
+
+        sharers.sample(@rng.rand(6..9), random: @rng).each do |sharer|
+          at = @clock - @rng.rand(10..240).minutes
+          status = Status.create!(id: snowflake(at), account: sharer, text: "#{SHARE_TEXTS[lang].sample(random: @rng)}\n\n#{url}", language: lang.to_s, visibility: :public, created_at: at, updated_at: at)
+          PreviewCardsStatus.create!(preview_card: preview, status:, url:)
+          Trends.links.register(status.reload, at)
+        end
+      end
+    end
+    FileUtils.rm_rf(dir)
   end
 
   def build_feeds

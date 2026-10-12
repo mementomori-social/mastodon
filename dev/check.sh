@@ -62,6 +62,9 @@ else
   for tag in fediverse caturday sauna; do
     expect "demo: #$tag trends" /api/v1/trends/tags "\"name\":\"$tag\""
   done
+  expect 'demo: posts trend' /api/v1/trends/statuses '"uri":"https://'
+  expect 'demo: news trends' /api/v1/trends/links '"type":"link"'
+  expect 'demo: who to follow has people' /api/v2/suggestions '"account":'
 
   TOKEN=$moderator_token
   reports=$(get /api/v1/admin/reports 2>/dev/null | grep -o '"action_taken":false' | wc -l | tr -d ' ' || true)
