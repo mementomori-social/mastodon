@@ -117,6 +117,8 @@ By hand, you need Docker, mkcert and one line in `/etc/hosts`. Then clone the fo
 
 On Apple Silicon the app image builds natively for arm64.
 
+On Linux the app container runs as uid 1000 and writes into your checkout, so your own user should be uid 1000 too, which is the default for the first user on Arch, Debian, Ubuntu and Fedora.
+
 ### Arch Linux
 
 1. `sudo pacman -S docker docker-compose mkcert nss`, `sudo systemctl enable --now docker`, and add yourself to the `docker` group (`sudo usermod -aG docker $USER`, then log in again).
@@ -151,6 +153,7 @@ bin/mementomori-dev seed
 | `bin/mementomori-dev seed [small\|default\|large]` | Fill an empty database with demo data, `default` if no scale is given |
 | `bin/mementomori-dev reset [scale]` | Wipe this stack's database, uploads and Redis, then seed again. Asks first |
 | `bin/mementomori-dev shell` | Bash inside the app container |
+| `bin/mementomori-dev check` | Check the running, seeded stack over HTTPS: certificate, streaming, demo's home, notifications and trends, moderator's reports. CI runs it too |
 | `bin/mementomori-dev logs [service]` | Follow logs, for example `logs app` or `logs caddy` |
 | `bin/mementomori-dev down` | Stop everything. Data stays |
 | `bin/mementomori-dev compose <args>` | Any `docker compose` command for this stack, for example `compose ps` |
@@ -280,6 +283,8 @@ To keep the plain https://mementomori.test address, let the other web server for
 | `dev/certs/` | Your mkcert certificate, created by `up`, not committed |
 | `dev/https-port` | Optional HTTPS port when 443 is taken, not committed |
 | `dev/public-port` | Optional port in the site's address when another server forwards to this stack, not committed |
+| `dev/check.sh` | The checks behind `bin/mementomori-dev check` |
+| `.github/workflows/dev-stack.yml` | CI: builds the stack on a clean Ubuntu machine, seeds it and runs `check` |
 | `lib/tasks/mementomori_seed.rake` | The demo data generator |
 
 ## Troubleshooting
