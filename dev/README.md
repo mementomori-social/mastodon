@@ -245,7 +245,7 @@ HTTPS_PORT=8443 bin/mementomori-dev up
 HTTPS_PORT=8443 bin/mementomori-dev seed
 ```
 
-The site is then at https://mementomori.test:8443. The two setups share nothing: this one has its own containers, database and volumes, and stopping or resetting it leaves the other alone.
+The site is then at https://mementomori.test:8443. To skip `HTTPS_PORT` on every command, write the port to `dev/https-port` (`echo 8443 > dev/https-port`); `bin/mementomori-dev` reads it when `HTTPS_PORT` is not set, and the Ansible setup writes it for you. The two setups share nothing: this one has its own containers, database and volumes, and stopping or resetting it leaves the other alone.
 
 ## Differences from production
 
@@ -268,6 +268,7 @@ The site is then at https://mementomori.test:8443. The two setups share nothing:
 | `dev/start.sh` | Runs inside the app container: installs gems and packages, prepares the database, starts `bin/dev` |
 | `dev/Caddyfile` | TLS and routing |
 | `dev/certs/` | Your mkcert certificate, created by `up`, not committed |
+| `dev/https-port` | Optional HTTPS port when 443 is taken, not committed |
 | `lib/tasks/mementomori_seed.rake` | The demo data generator |
 
 ## Troubleshooting
