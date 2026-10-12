@@ -1,0 +1,55 @@
+name: Dev stack
+# Builds the mementomori.test Docker dev stack on a clean machine, seeds it and
+# runs bin/mementomori-dev check. See dev/README.md.
+on:
+  push:
+    branches:
+      - 'mementomods-*'
+    paths:
+      - 'dev/**'
+      - 'bin/mementomori-dev'
+      - 'lib/tasks/mementomori_seed.rake'
+      - '.devcontainer/**'
+      - '.github/workflows/dev-stack.yml'
+  pull_request:
+    paths:
+      - 'dev/**'
+      - 'bin/mementomori-dev'
+      - 'lib/tasks/mementomori_seed.rake'
+      - '.devcontainer/**'
+      - '.github/workflows/dev-stack.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dev-stack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Trust a local certificate and name the site
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mkcert libnss3-tools
+          mkcert -install
+          echo '127.0.0.1 mementomori.test' | sudo tee -a /etc/hosts
+
+      # The app container runs as uid 1000, the runner as 1001.
+      - name: Let the container write to the checkout
+        run: chmod -R a+rwX .
+
+      - name: Start the stack
+        run: bin/mementomori-dev up
+
+      - name: Seed demo data
+        run: bin/mementomori-dev seed small
+
+      - name: Check the stack
+        run: bin/mementomori-dev check
+
+      - name: Show logs
+        if: failure()
+        run: bin/mementomori-dev compose logs --tail 300

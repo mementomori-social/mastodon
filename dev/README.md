@@ -99,7 +99,15 @@ The first start downloads images, builds the app image and installs every gem an
 
 ## Setup
 
-You need Docker, mkcert and one line in `/etc/hosts`. Then clone the fork and switch to the branch you work on.
+The quickest way is one command, on macOS, Arch, Debian or Ubuntu:
+
+```sh
+git clone https://github.com/mementomori-social/ansibles.git && ansibles/dev.sh
+```
+
+It does everything below, clones this fork to `~/Projects/mastodon`, starts the stack and seeds it. It asks for your password once, and on macOS Docker Desktop's licence and the keychain need a click. See "Development environment" in the [ansibles README](https://github.com/mementomori-social/ansibles#development-environment).
+
+By hand, you need Docker, mkcert and one line in `/etc/hosts`. Then clone the fork and switch to the branch you work on.
 
 ### macOS
 
@@ -108,6 +116,8 @@ You need Docker, mkcert and one line in `/etc/hosts`. Then clone the fork and sw
 3. `echo '127.0.0.1 mementomori.test' | sudo tee -a /etc/hosts`
 
 On Apple Silicon the app image builds natively for arm64.
+
+On Linux the app container runs as uid 1000 and writes into your checkout, so your own user should be uid 1000 too, which is the default for the first user on Arch, Debian, Ubuntu and Fedora.
 
 ### Arch Linux
 
@@ -143,6 +153,7 @@ bin/mementomori-dev seed
 | `bin/mementomori-dev seed [small\|default\|large]` | Fill an empty database with demo data, `default` if no scale is given |
 | `bin/mementomori-dev reset [scale]` | Wipe this stack's database, uploads and Redis, then seed again. Asks first |
 | `bin/mementomori-dev shell` | Bash inside the app container |
+| `bin/mementomori-dev check` | Check the running, seeded stack over HTTPS: certificate, streaming, demo's home, notifications, trending tags, posts and news, who to follow, moderator's reports. CI runs it too |
 | `bin/mementomori-dev logs [service]` | Follow logs, for example `logs app` or `logs caddy` |
 | `bin/mementomori-dev down` | Stop everything. Data stays |
 | `bin/mementomori-dev compose <args>` | Any `docker compose` command for this stack, for example `compose ps` |
@@ -174,9 +185,10 @@ bin/mementomori-dev shell
 bin/rails console
 bin/tootctl accounts modify demo --role Moderator
 
-# Tests: the container defaults to development, so name the test environment
-RAILS_ENV=test bin/rails db:prepare     # once, creates the test database
-RAILS_ENV=test bin/rspec spec/models/tag_spec.rb
+# Tests: name the test environment (the container defaults to development) and
+# turn Elasticsearch off as upstream CI does, also after `up search`
+ES_ENABLED=false RAILS_ENV=test bin/rails db:prepare     # once, creates the test database
+ES_ENABLED=false RAILS_ENV=test bin/rspec spec/models/tag_spec.rb
 ```
 
 ### Search
@@ -232,7 +244,8 @@ Posts are written in bulk with ids in Mastodon's own time-ordered format, so tim
 
 - The home feed holds the newest 800 posts, the same cap as production. Older posts are on profiles, hashtags and the public timelines.
 - Trending hashtags count people per day (UTC), so they fade the next day. `reset` brings them back.
-- There are no link previews or trending links, since those need real web pages.
+- Link previews exist only for the trending news articles, on `*.example` addresses that don't resolve. Other links in posts have none.
+- Trending posts fade within about half a day and trending news within a day or two. `reset` brings them back.
 - Remote accounts can't be followed back or fetched: their servers don't exist.
 
 ## Running next to another local setup
@@ -244,7 +257,9 @@ HTTPS_PORT=8443 bin/mementomori-dev up
 HTTPS_PORT=8443 bin/mementomori-dev seed
 ```
 
-The site is then at https://mementomori.test:8443. The two setups share nothing: this one has its own containers, database and volumes, and stopping or resetting it leaves the other alone.
+The site is then at https://mementomori.test:8443. To skip `HTTPS_PORT` on every command, write the port to `dev/https-port` (`echo 8443 > dev/https-port`); `bin/mementomori-dev` reads it when `HTTPS_PORT` is not set, and the Ansible setup writes it for you.
+
+To keep the plain https://mementomori.test address, let the other web server forward that name to this stack and tell the stack its public port with `echo 443 > dev/public-port` (or `PUBLIC_PORT=443`). The Ansible setup does both when the server on 443 is nginx: it adds a `mementomori.test` site to nginx that forwards to 8443, and moves any older `mementomori.test` site aside. The two setups share nothing: this one has its own containers, database and volumes, and stopping or resetting it leaves the other alone.
 
 ## Differences from production
 
@@ -267,6 +282,10 @@ The site is then at https://mementomori.test:8443. The two setups share nothing:
 | `dev/start.sh` | Runs inside the app container: installs gems and packages, prepares the database, starts `bin/dev` |
 | `dev/Caddyfile` | TLS and routing |
 | `dev/certs/` | Your mkcert certificate, created by `up`, not committed |
+| `dev/https-port` | Optional HTTPS port when 443 is taken, not committed |
+| `dev/public-port` | Optional port in the site's address when another server forwards to this stack, not committed |
+| `dev/check.sh` | The checks behind `bin/mementomori-dev check` |
+| `.github/workflows/dev-stack.yml` | CI: builds the stack on a clean Ubuntu machine, seeds it and runs `check` |
 | `lib/tasks/mementomori_seed.rake` | The demo data generator |
 
 ## Troubleshooting
