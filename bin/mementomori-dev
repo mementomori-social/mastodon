@@ -7,7 +7,8 @@ cd "$(dirname "$0")/.."
 DOMAIN=mementomori.test
 CERT=dev/certs/$DOMAIN.pem
 KEY=dev/certs/$DOMAIN-key.pem
-HTTPS_PORT=${HTTPS_PORT:-443}
+PORT_FILE=dev/https-port
+HTTPS_PORT=${HTTPS_PORT:-$(cat "$PORT_FILE" 2>/dev/null || echo 443)}
 READY_TIMEOUT=1200
 
 export HTTPS_PORT
