@@ -153,7 +153,7 @@ bin/mementomori-dev seed
 | `bin/mementomori-dev seed [small\|default\|large]` | Fill an empty database with demo data, `default` if no scale is given |
 | `bin/mementomori-dev reset [scale]` | Wipe this stack's database, uploads and Redis, then seed again. Asks first |
 | `bin/mementomori-dev shell` | Bash inside the app container |
-| `bin/mementomori-dev check` | Check the running, seeded stack over HTTPS: certificate, streaming, demo's home, notifications and trends, moderator's reports. CI runs it too |
+| `bin/mementomori-dev check` | Check the running, seeded stack over HTTPS: certificate, streaming, demo's home, notifications, trending tags, posts and news, who to follow, moderator's reports. CI runs it too |
 | `bin/mementomori-dev logs [service]` | Follow logs, for example `logs app` or `logs caddy` |
 | `bin/mementomori-dev down` | Stop everything. Data stays |
 | `bin/mementomori-dev compose <args>` | Any `docker compose` command for this stack, for example `compose ps` |
@@ -244,7 +244,8 @@ Posts are written in bulk with ids in Mastodon's own time-ordered format, so tim
 
 - The home feed holds the newest 800 posts, the same cap as production. Older posts are on profiles, hashtags and the public timelines.
 - Trending hashtags count people per day (UTC), so they fade the next day. `reset` brings them back.
-- There are no link previews or trending links, since those need real web pages.
+- Link previews exist only for the trending news articles, on `*.example` addresses that don't resolve. Other links in posts have none.
+- Trending posts fade within about half a day and trending news within a day or two. `reset` brings them back.
 - Remote accounts can't be followed back or fetched: their servers don't exist.
 
 ## Running next to another local setup
