@@ -308,7 +308,7 @@ To keep the plain https://mementomori.test address, let the other web server for
 | `dev/https-port` | Optional HTTPS port when 443 is taken, not committed |
 | `dev/public-port` | Optional port in the site's address when another server forwards to this stack, not committed |
 | `dev/check.sh` | The checks behind `bin/mementomori-dev check` |
-| `.github/workflows/dev-stack.yml` | CI: builds the stack on a clean Ubuntu machine, seeds it and runs `check` |
+| `.github/workflows/dev-stack.yml` | CI: builds the stack on a clean Ubuntu machine, seeds it and runs `check` in both modes |
 | `dev/live.yaml` | Production mode services, layered last |
 | `dev/live.env` | Production mode secrets, created by `up live`, not committed |
 | `dev/mode` | `dev` or `live`, written by `up`, not committed |
