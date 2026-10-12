@@ -128,6 +128,9 @@ class MementomoriSeed
     fi: ['Hyvä juttu.', 'Kannattaa lukea.', 'Tämä kiinnostaa varmasti monia.', 'Juuri tätä mietin eilen.'],
   }.freeze
 
+  FI_FIRST_NAMES = %w(Aino Anna Eveliina Hanna Helmi Ilona Johanna Laura Maria Sanna Antti Eero Heikki Juha Jussi Lauri Matti Mikko Onni Ville).freeze
+  FI_LAST_NAMES = %w(Heikkinen Hämäläinen Järvinen Koskinen Korhonen Laine Lehtonen Mäkinen Nieminen Rantanen Salminen Virtanen).freeze
+
   FI_BIOS = [
     'Suomesta. Kahvia, kirjoja ja pitkiä kävelyjä.',
     'Suomesta. Valokuvaan, leivon ja käyn saunassa.',
@@ -268,7 +271,7 @@ class MementomoriSeed
 
     (@scale[:local] - fixed.size).times do |i|
       finnish = @rng.rand < 0.5
-      name = Faker::Base.with_locale(finnish ? 'fi-FI' : 'en') { Faker::Name.name }
+      name = finnish ? "#{FI_FIRST_NAMES.sample(random: @rng)} #{FI_LAST_NAMES.sample(random: @rng)}" : Faker::Name.name
       username = "#{name.parameterize(separator: '_')[0, 24]}_#{i}"
       joined = @start + ((@rng.rand**2) * 0.8 * (@midnight - @start))
       account = local_account(username, name, nil, joined, finnish:)
