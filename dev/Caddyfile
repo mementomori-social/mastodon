@@ -2,7 +2,10 @@
 	tls /certs/mementomori.test.pem /certs/mementomori.test-key.pem
 	encode gzip
 
+	# Production builds load analytics for mementomori.social; the browser must not run it here
+	header >Content-Security-Policy "\s*analytics\.dude\.fi" ""
+
 	@streaming path /api/v1/streaming*
-	reverse_proxy @streaming app:4000
-	reverse_proxy app:3000
+	reverse_proxy @streaming {$STREAMING_UPSTREAM}
+	reverse_proxy {$WEB_UPSTREAM}
 }
