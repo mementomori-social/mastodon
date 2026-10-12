@@ -32,49 +32,91 @@ class MementomoriSeed
   REMOTE_DOMAINS = %w(social.example kirahvi.example toot.example metalli.example retro.example).freeze
 
   POST_HOURS = [7, 9, 12, 12, 13, 17, 19, 20, 21, 22, 23].freeze
-  SPOILERS = ['Spoilers', 'Food', 'Politics', 'Ruokaa', 'Pitkä teksti'].freeze
-  POLLS = [%w(Kahvi Tee Molemmat), ['Yes', 'No', 'Show results'], %w(Linux macOS Windows Other)].freeze
+  SPOILERS = { fi: ['Juonipaljastuksia', 'Ruokaa', 'Politiikkaa', 'Pitkä teksti'], en: ['Spoilers', 'Food', 'Politics', 'Long post'] }.freeze
+  EDIT_NOTES = { fi: '(muokattu: kirjoitusvirhe)', en: '(edit: typo)' }.freeze
+  POLLS = {
+    fi: [
+      { text: 'Aamulla kahvi vai tee?', options: %w(Kahvi Tee Molemmat) },
+      { text: 'Milloin lämmität saunan?', options: ['Heti töiden jälkeen', 'Illalla', 'Vasta viikonloppuna'] },
+      { text: 'Kuvailetko kuvasi?', options: ['Aina', 'Joskus', 'En vielä'] },
+    ],
+    en: [
+      { text: 'Coffee or tea in the morning?', options: %w(Coffee Tea Both) },
+      { text: 'Which desktop do you use most?', options: %w(Linux macOS Windows Other) },
+      { text: 'Do you add alt text to every image?', options: ['Always', 'Sometimes', 'Not yet'] },
+    ],
+  }.freeze
   POLL_DAYS = [1, 3, 7].freeze
 
-  TAGS = %w(
-    mastodon fediverse caturday photography coffee running finland helsinki tampere
-    metal gaming linux webdev accessibility music nowplaying retrocomputing books
-    kahvi sauna kirjat koodaus valokuvaus luonto ruoka juoksu talvi syksy
-  ).freeze
+  TAGS = {
+    en: %w(mastodon fediverse caturday photography coffee running finland metal gaming linux WebDev accessibility music NowPlaying RetroComputing books),
+    fi: %w(mastodon fediverse kahvi sauna kirjat koodaus valokuvaus luonto ruoka juoksu talvi syksy),
+  }.freeze
+
+  # Posts written for each trending tag, so the tag fits what the post says
+  TRENDING_TEXTS = {
+    'sauna' => {
+      fi: ['Saunan jälkeen järveen. Parempaa ei ole.', 'Illan paras hetki: sauna ja kylmä juoma kuistilla.', 'Uusi kiuas asennettu. Löylyt ovat nyt aivan eri luokkaa.'],
+      en: ['First proper Finnish sauna today. I understand everything now.', 'Sauna, then a jump in the lake. Best evening in a long time.', 'Is a sauna every day too much? Asking for myself.'],
+    },
+    'caturday' => {
+      fi: ['Kissa on päättänyt, että näppäimistö on sänky.', 'Kissa nukkuu taas pyykkikorissa.', 'Lauantain tärkein tehtävä: olla liikkumatta, kun kissa nukkuu sylissä.'],
+      en: ['The cat has decided my keyboard is a bed.', 'Caturday report: the cat has been asleep for six hours and counting.', 'She knocked my coffee off the table and looked proud of it.'],
+    },
+    'fediverse' => {
+      fi: ['Pieni palvelin, mukava porukka. Hyvä paikka olla.', 'Tervetuloa kaikille uusille! Kertokaa vähän itsestänne.', 'Fediversumissa parasta on se, että aikajana on omissa käsissä.'],
+      en: ['Small server, friendly people. Good place to be.', 'Welcome to everyone who joined this week! Tell us a bit about yourself.', 'Best thing about the fediverse: my timeline is mine again.'],
+    },
+  }.freeze
 
   EN_TEMPLATES = [
     ->(f) { "Just finished #{f.book}. #{f.opinion}" },
-    ->(f) { "Today's soundtrack: #{f.band}. #{f.opinion} #nowplaying" },
+    ->(f) { "Today's soundtrack: #{f.band}. #{f.opinion} #NowPlaying" },
     ->(f) { "Made #{f.dish} for dinner. #{f.opinion}" },
-    ->(f) { "Hot take: #{f.hacker}" },
+    ->(_f) { 'Hot take: tabs are fine. Arguing about it is not.' },
     ->(f) { "Anyone else think #{f.movie} is underrated? #{f.opinion}" },
     ->(f) { "Morning run done, #{f.km} km in the rain. #running" },
     ->(f) { "Coffee number #{f.small} today and it's not even noon. #coffee" },
-    ->(f) { "Reminder that #{f.advice}" },
+    ->(_f) { 'Reminder to drink some water and look away from the screen for a minute.' },
     ->(f) { "Spent the whole evening debugging and the fix was one line. #{f.tech}" },
     ->(f) { "New blog post about #{f.topic}: #{f.link}" },
-    ->(f) { f.quote.to_s },
+    ->(_f) { 'Rainy Sunday, a pot of tea and nowhere to be. Perfect.' },
     ->(_f) { 'The cat has decided my keyboard is a bed. #caturday' },
-    ->(f) { "Finally got my old #{f.retro} running again. #retrocomputing" },
+    ->(f) { "Finally got my old #{f.retro} running again. #RetroComputing" },
     ->(_f) { 'Please add alt text to your images, it takes ten seconds. #accessibility' },
     ->(f) { "Weekend plans: #{f.plan}." },
     ->(f) { "Is it just me or has #{f.topic} gotten way more complicated lately?" },
   ].freeze
 
+  # Whole sentences only: Finnish inflects names, so nothing is filled into the
+  # middle of a sentence except numbers, partitive dishes and links.
   FI_TEMPLATES = [
-    ->(f) { "Luin juuri loppuun kirjan #{f.book}. #{f.mielipide} #kirjat" },
-    ->(f) { "Aamulenkki tehty, #{f.km} km. Sade ei haitannut. #juoksu" },
-    ->(f) { "Kahvia jo #{f.small} kuppia ja kello on vasta kymmenen. #kahvi" },
+    ->(f) { "Aamulenkki tehty, #{f.km} km. #juoksu" },
+    ->(_f) { 'Aamulenkki tehty. Satoi koko matkan, mutta ei haitannut. #juoksu' },
+    ->(_f) { 'Kolmas kuppi kahvia menossa, ja kello on vasta kymmenen. #kahvi' },
     ->(_f) { 'Saunan jälkeen järveen. Parempaa ei ole. #sauna' },
-    ->(f) { "Tänään #{f.city}ssa satoi taas koko päivän. #{f.mielipide}" },
-    ->(f) { "Tein ruoaksi #{f.ruoka}. #{f.mielipide} #ruoka" },
-    ->(_f) { 'Koodasin koko illan ja korjaus oli lopulta yksi rivi. #koodaus' },
-    ->(f) { "Syksyn värit #{f.city}ssa on aivan uskomattomat. #syksy #valokuvaus" },
-    ->(f) { "Ensimmäinen lumi! #{f.mielipide} #talvi" },
-    ->(f) { "Kuuntelen nyt #{f.band}. #nowplaying" },
-    ->(_f) { 'Muistakaa kuvailla kuvanne, se vie kymmenen sekuntia. #accessibility' },
+    ->(_f) { 'Lauantaisauna lämpiää. Löylyä ei voi olla liikaa. #sauna' },
+    ->(_f) { 'Sauna on paras paikka miettiä työasioita. Tai olla miettimättä niitä. #sauna' },
+    ->(_f) { 'Taas sataa. Sateenvarjo jäi tietysti kotiin.' },
+    ->(f) { "Tein ruoaksi #{f.ruoka}. #ruoka" },
+    ->(_f) { 'Koodasin koko illan, ja korjaus oli lopulta yksi rivi. #koodaus' },
+    ->(_f) { 'Syksyn värit ovat tänä vuonna aivan uskomattomat. #syksy #valokuvaus' },
+    ->(_f) { 'Ensimmäinen lumi tuli yöllä. Pihalla on jo pieni kinos. #talvi' },
+    ->(f) { "Nyt soi: #{f.band} #NowPlaying" },
+    ->(_f) { 'Muistakaa kuvailla kuvanne. Siihen menee kymmenen sekuntia. #saavutettavuus' },
     ->(_f) { 'Viikonlopun suunnitelma: mökki, sauna ja hyvä kirja.' },
-    ->(f) { "Kirjoitin blogiin aiheesta #{f.topic}: #{f.link}" },
+    ->(_f) { 'Mökillä ei ole nettiä, ja hyvä niin. Palaan maanantaina. #mökki' },
+    ->(_f) { 'Luin kirjan loppuun yhdeltä istumalta. Harmittaa, että se loppui. #kirjat' },
+    ->(_f) { 'Kävin kirjastossa ja lähdin kotiin kuuden kirjan kanssa. #kirjat' },
+    ->(f) { "Kirjoitin blogiin uuden jutun: #{f.link}" },
+  ].freeze
+
+  FI_BIOS = [
+    'Suomesta. Kahvia, kirjoja ja pitkiä kävelyjä.',
+    'Suomesta. Valokuvaan, leivon ja käyn saunassa.',
+    'Suomesta. Koodia päivisin, kitaraa iltaisin.',
+    'Suomesta. Retropelejä, mökkeilyä ja huonoja vitsejä.',
+    'Suomesta. Juoksen hitaasti mutta säännöllisesti.',
   ].freeze
 
   MEDIA_ALTS = [
@@ -91,9 +133,7 @@ class MementomoriSeed
   # Template variables, all drawn from the shared seeded Faker random.
   class Filler
     OPINIONS = ['Highly recommended.', 'Not sure how I feel about it.', 'Ten out of ten.', 'Could have been better.', 'Absolutely loved it.'].freeze
-    MIELIPITEET = ['Suosittelen!', 'Ei ollut ihan minun juttuni.', 'Aivan mahtava.', 'Ihan ok.', 'Tätä lisää!'].freeze
     RUOAT = %w(karjalanpiirakoita lohikeittoa makaroonilaatikkoa pannukakkua hernekeittoa kanttarellikastiketta).freeze
-    CITIES = %w(Helsinki Tampere Turku Oulu Jyväskylä Kuopio Lahti Rovaniemi).freeze
     RETRO = ['Amiga 500', 'Commodore 64', 'ZX Spectrum', 'Atari ST', 'MSX'].freeze
     TOPICS = %w(Rust accessibility CSS self-hosting PostgreSQL federation photography typography).freeze
     PLANS = ['hiking, sauna and a good book', 'nothing at all', 'finally fixing the bike', 'board games with friends'].freeze
@@ -105,15 +145,10 @@ class MementomoriSeed
     def book = Faker::Book.title
     def band = Faker::Music.band
     def dish = Faker::Food.dish
-    def hacker = Faker::Hacker.say_something_smart
     def movie = Faker::Movie.title
-    def quote = Faker::Quote.jack_handey
-    def advice = Faker::Quote.matz.downcase
-    def tech = '#webdev #linux'
+    def tech = '#WebDev #linux'
     def opinion = OPINIONS.sample(random: @rng)
-    def mielipide = MIELIPITEET.sample(random: @rng)
     def ruoka = RUOAT.sample(random: @rng)
-    def city = CITIES.sample(random: @rng)
     def retro = RETRO.sample(random: @rng)
     def topic = TOPICS.sample(random: @rng)
     def plan = PLANS.sample(random: @rng)
@@ -127,6 +162,7 @@ class MementomoriSeed
     @rng = Random.new(SEED)
     Faker::Config.random = Random.new(SEED)
     @filler = Filler.new(@rng)
+    @normalizer = HashtagNormalizer.new
     # History ends at midnight UTC so every run, at any hour, makes the same rows.
     @clock = Time.now.utc
     @midnight = @clock.beginning_of_day
@@ -214,7 +250,7 @@ class MementomoriSeed
 
     (@scale[:local] - fixed.size).times do |i|
       finnish = @rng.rand < 0.5
-      name = Faker::Base.with_locale(finnish ? 'fi' : 'en') { Faker::Name.name }
+      name = Faker::Base.with_locale(finnish ? 'fi-FI' : 'en') { Faker::Name.name }
       username = "#{name.parameterize(separator: '_')[0, 24]}_#{i}"
       joined = @start + ((@rng.rand**2) * 0.8 * (@midnight - @start))
       account = local_account(username, name, nil, joined, finnish:)
@@ -240,7 +276,7 @@ class MementomoriSeed
     account.id = snowflake(joined) if account.new_record?
     account.assign_attributes(
       display_name: name, created_at: joined,
-      note: finnish ? "Suomesta. #{Faker::Hobby.activity}, kahvi ja kirjat." : "#{Faker::Hobby.activity}, #{Faker::Hobby.activity.downcase} and coffee.",
+      note: finnish ? FI_BIOS.sample(random: @rng) : "#{Faker::Hobby.activity}, #{Faker::Hobby.activity.downcase} and coffee.",
       fields: [{ name: 'Pronouns', value: %w(they/them she/her he/him).sample(random: @rng) }],
       locked: @rng.rand < 0.08, actor_type: @rng.rand < 0.03 ? 'Service' : 'Person',
       discoverable: true, indexable: true
@@ -320,7 +356,7 @@ class MementomoriSeed
   def compose_text(account)
     templates = @finnish[account.id] ? FI_TEMPLATES : EN_TEMPLATES
     text = templates.sample(random: @rng).call(@filler)
-    text += " ##{TAGS.sample(random: @rng)}" if @rng.rand < 0.25
+    text += " ##{TAGS[language(account)].sample(random: @rng)}" if @rng.rand < 0.25
     text
   end
 
@@ -362,7 +398,7 @@ class MementomoriSeed
       conversation_id = reply_to ? reply_to[:conversation_id] : (@conversation_seq += 1)
       conversations << { id: conversation_id, created_at: at, updated_at: at } unless reply_to
 
-      spoiler = @rng.rand < 0.07 ? SPOILERS.sample(random: @rng) : ''
+      spoiler = @rng.rand < 0.07 ? SPOILERS[language(author)].sample(random: @rng) : ''
       status = add_status(author, at, text:, visibility:, conversation_id:, reply_to:, spoiler:)
 
       text.scan(/@(\w+)(?:@([\w.-]+))?/).uniq.each do |username, domain|
@@ -373,7 +409,7 @@ class MementomoriSeed
         mention_id += 1
       end
 
-      text.scan(/#(\w+)/).flatten.uniq.each { |name| @tag_links << [status[:id], name.downcase, at] }
+      text.scan(/#([[:word:]]+)/).flatten.uniq.each { |name| @tag_links << [status[:id], @normalizer.normalize(name), at] }
 
       if !reply_to && visibility.zero? && @rng.rand < 0.02 && recent.any?
         quoted = recent.find { |s| s[:visibility].zero? && s[:reblog_of_id].nil? && s[:account_id] != author.id }
@@ -388,10 +424,10 @@ class MementomoriSeed
     TRENDING.each_with_index do |tag, i|
       @locals.sample(8 + (3 * i), random: @rng).each do |author|
         at = @midnight + (@rng.rand * (@clock - @midnight))
-        text = "#{compose_text(author)} ##{tag}"
+        text = "#{TRENDING_TEXTS[tag][language(author)].sample(random: @rng)} ##{tag}"
         status = add_status(author, at, text:, conversation_id: @conversation_seq += 1)
         conversations << { id: status[:conversation_id], created_at: at, updated_at: at }
-        text.scan(/#(\w+)/).flatten.uniq.each { |name| @tag_links << [status[:id], name.downcase, at] }
+        text.scan(/#([[:word:]]+)/).flatten.uniq.each { |name| @tag_links << [status[:id], @normalizer.normalize(name), at] }
       end
     end
 
@@ -401,6 +437,19 @@ class MementomoriSeed
     insert(Quote, @quotes) if @quotes.any?
     create_tags
     log "#{@statuses.size} statuses, #{@mentions.size} mentions, #{@quotes.size} quotes"
+  end
+
+  # Hashtags on their own last line after a blank line, as people post them
+  def with_tag_line(text)
+    tags = text.scan(/(?<=\s|\A)#[[:word:]]*[[:alpha:]][[:word:]]*/).uniq
+    return text if tags.empty?
+
+    body = text.gsub(/(?<=\s|\A)#[[:word:]]*[[:alpha:]][[:word:]]*/, '').squeeze(' ').strip
+    body.empty? ? tags.join(' ') : "#{body}\n\n#{tags.join(' ')}"
+  end
+
+  def language(account)
+    @finnish[account.id] ? :fi : :en
   end
 
   def active_authors(at)
@@ -418,6 +467,7 @@ class MementomoriSeed
   end
 
   def add_status(author, at, text: '', visibility: 0, conversation_id: nil, reply_to: nil, reblog_of: nil, spoiler: '')
+    text = with_tag_line(text)
     id = snowflake(at)
     uri = author.local? ? local_status_uri(author, id, reblog: reblog_of) : "https://#{author.domain}/users/#{author.username}/statuses/#{id}"
     url = author.local? ? ActivityPub::TagManager.instance.short_account_status_url(author, id) : "https://#{author.domain}/@#{author.username}/#{id}"
@@ -490,9 +540,12 @@ class MementomoriSeed
     edits = []
     poll_id = next_id(Poll)
     local_originals = @statuses.select { |s| s[:local] && s[:reblog_of_id].nil? && s[:visibility].zero? && !s[:reply] }
+    # The poll's question replaces the text, so only posts without tags or mentions to lose
+    poll_posts = local_originals.reject { |s| s[:text].match?(/[#@]/) }
 
-    local_originals.sample(@statuses.size / 80, random: @rng).each do |status|
-      options = POLLS.sample(random: @rng)
+    poll_posts.sample(@statuses.size / 80, random: @rng).each do |status|
+      poll = POLLS[@finnish[status[:account_id]] ? :fi : :en].sample(random: @rng)
+      options = poll[:options]
       tallies = options.map { @rng.rand(0..40) }
       expires = status[:created_at] + POLL_DAYS.sample(random: @rng).days
       polls << {
@@ -500,14 +553,15 @@ class MementomoriSeed
         votes_count: tallies.sum, voters_count: tallies.sum, expires_at: expires, created_at: status[:created_at], updated_at: status[:created_at]
       }
       status[:poll_id] = poll_id
-      status[:text] = 'Which one?' if status[:text].length > 200
+      status[:text] = poll[:text]
       poll_id += 1
     end
 
     local_originals.sample(@statuses.size / 100, random: @rng).each do |status|
       edited_at = status[:created_at] + @rng.rand(60..3600).seconds
       edits << { status_id: status[:id], account_id: status[:account_id], text: status[:text], spoiler_text: '', created_at: status[:created_at], updated_at: status[:created_at] }
-      status[:text] = "#{status[:text]} (edit: typo)"
+      body, tags = status[:text].split("\n\n", 2)
+      status[:text] = ["#{body} #{EDIT_NOTES[@finnish[status[:account_id]] ? :fi : :en]}", tags].compact.join("\n\n")
       status[:edited_at] = edited_at
       edits << { status_id: status[:id], account_id: status[:account_id], text: status[:text], spoiler_text: '', created_at: edited_at, updated_at: edited_at }
     end
