@@ -1,5 +1,5 @@
 # mementomori.test on any machine. Layered over upstream's dev stack:
-#   docker compose -f .devcontainer/compose.yaml -f dev/compose.yaml ...
+#   podman compose (or docker compose) -f .devcontainer/compose.yaml -f dev/compose.yaml ...
 # bin/mementomori-dev wraps this. Relative paths resolve from .devcontainer/.
 name: mementomori-dev
 
