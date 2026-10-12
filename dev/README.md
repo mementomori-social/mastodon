@@ -99,7 +99,15 @@ The first start downloads images, builds the app image and installs every gem an
 
 ## Setup
 
-You need Docker, mkcert and one line in `/etc/hosts`. Then clone the fork and switch to the branch you work on.
+The quickest way is one command, on macOS, Arch, Debian or Ubuntu:
+
+```sh
+git clone https://github.com/mementomori-social/ansibles.git && ansibles/dev.sh
+```
+
+It does everything below, clones this fork to `~/Projects/mastodon`, starts the stack and seeds it. It asks for your password once, and on macOS Docker Desktop's licence and the keychain need a click. See "Development environment" in the [ansibles README](https://github.com/mementomori-social/ansibles#development-environment).
+
+By hand, you need Docker, mkcert and one line in `/etc/hosts`. Then clone the fork and switch to the branch you work on.
 
 ### macOS
 
