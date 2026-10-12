@@ -93,6 +93,9 @@ case "${1:-}" in
     wait_ready
     seed "${2:-default}"
     ;;
+  check)
+    dev/check.sh "$URL" dev
+    ;;
   shell)
     compose exec app bash -l
     ;;
@@ -106,7 +109,7 @@ case "${1:-}" in
     compose "${@:2}"
     ;;
   *)
-    echo "Usage: $0 up [search] [translate] | seed [small|default|large] | reset [scale] | shell | logs [service] | down | compose <args>"
+    echo "Usage: $0 up [search] [translate] | seed [small|default|large] | check | reset [scale] | shell | logs [service] | down | compose <args>"
     exit 1
     ;;
 esac
