@@ -253,7 +253,9 @@ HTTPS_PORT=8443 bin/mementomori-dev up
 HTTPS_PORT=8443 bin/mementomori-dev seed
 ```
 
-The site is then at https://mementomori.test:8443. To skip `HTTPS_PORT` on every command, write the port to `dev/https-port` (`echo 8443 > dev/https-port`); `bin/mementomori-dev` reads it when `HTTPS_PORT` is not set, and the Ansible setup writes it for you. The two setups share nothing: this one has its own containers, database and volumes, and stopping or resetting it leaves the other alone.
+The site is then at https://mementomori.test:8443. To skip `HTTPS_PORT` on every command, write the port to `dev/https-port` (`echo 8443 > dev/https-port`); `bin/mementomori-dev` reads it when `HTTPS_PORT` is not set, and the Ansible setup writes it for you.
+
+To keep the plain https://mementomori.test address, let the other web server forward that name to this stack and tell the stack its public port with `echo 443 > dev/public-port` (or `PUBLIC_PORT=443`). The Ansible setup does both when the server on 443 is nginx: it adds a `mementomori.test` site to nginx that forwards to 8443, and moves any older `mementomori.test` site aside. The two setups share nothing: this one has its own containers, database and volumes, and stopping or resetting it leaves the other alone.
 
 ## Differences from production
 
@@ -277,6 +279,7 @@ The site is then at https://mementomori.test:8443. To skip `HTTPS_PORT` on every
 | `dev/Caddyfile` | TLS and routing |
 | `dev/certs/` | Your mkcert certificate, created by `up`, not committed |
 | `dev/https-port` | Optional HTTPS port when 443 is taken, not committed |
+| `dev/public-port` | Optional port in the site's address when another server forwards to this stack, not committed |
 | `lib/tasks/mementomori_seed.rake` | The demo data generator |
 
 ## Troubleshooting

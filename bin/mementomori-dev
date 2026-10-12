@@ -8,14 +8,18 @@ DOMAIN=mementomori.test
 CERT=dev/certs/$DOMAIN.pem
 KEY=dev/certs/$DOMAIN-key.pem
 PORT_FILE=dev/https-port
+PUBLIC_PORT_FILE=dev/public-port
 HTTPS_PORT=${HTTPS_PORT:-$(cat "$PORT_FILE" 2>/dev/null || echo 443)}
+# Port in the site's address. Differs from HTTPS_PORT when a local web server
+# on 443 forwards mementomori.test to this stack.
+PUBLIC_PORT=${PUBLIC_PORT:-$(cat "$PUBLIC_PORT_FILE" 2>/dev/null || echo "$HTTPS_PORT")}
 READY_TIMEOUT=1200
 
 export HTTPS_PORT
-if [ "$HTTPS_PORT" = 443 ]; then
+if [ "$PUBLIC_PORT" = 443 ]; then
   export DEV_PORT_SUFFIX=
 else
-  export DEV_PORT_SUFFIX=":$HTTPS_PORT"
+  export DEV_PORT_SUFFIX=":$PUBLIC_PORT"
 fi
 URL="https://$DOMAIN$DEV_PORT_SUFFIX"
 
@@ -46,7 +50,7 @@ check_host() {
 wait_ready() {
   echo "Waiting for $URL (first start installs gems and packages, takes a while)..."
   local waited=0
-  until curl -fsS -o /dev/null --resolve "$DOMAIN:$HTTPS_PORT:127.0.0.1" "$URL/health" 2>/dev/null; do
+  until curl -fsS -o /dev/null --resolve "$DOMAIN:$PUBLIC_PORT:127.0.0.1" "$URL/health" 2>/dev/null; do
     sleep 5
     waited=$((waited + 5))
     [ "$waited" -lt "$READY_TIMEOUT" ] || die "Not up after ${READY_TIMEOUT}s. See: $0 logs"
