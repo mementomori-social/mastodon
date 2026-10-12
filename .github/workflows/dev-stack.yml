@@ -1,6 +1,7 @@
 name: Dev stack
 # Builds the mementomori.test Docker dev stack on a clean machine, seeds it and
-# runs bin/mementomori-dev check. See dev/README.md.
+# runs bin/mementomori-dev check, in dev mode and in production mode.
+# See dev/README.md.
 on:
   push:
     branches:
@@ -49,6 +50,15 @@ jobs:
 
       - name: Check the stack
         run: bin/mementomori-dev check
+
+      - name: Switch to production mode
+        run: bin/mementomori-dev up live
+
+      - name: Check production mode
+        run: bin/mementomori-dev check
+
+      - name: Switch back to dev mode
+        run: bin/mementomori-dev up
 
       - name: Show logs
         if: failure()
