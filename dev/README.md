@@ -6,6 +6,7 @@ This runs your checkout of the fork at https://mementomori.test on macOS or Linu
 - [How the stack fits together](#how-the-stack-fits-together)
 - [Setup](#setup)
 - [Daily use](#daily-use)
+- [Developing a feature](#developing-a-feature)
 - [Demo data](#demo-data)
 - [Production mode](#production-mode)
 - [Running next to another local setup](#running-next-to-another-local-setup)
@@ -25,7 +26,7 @@ flowchart LR
 ```
 
 - **mementomori-social/mastodon** is the only repository involved. The dev stack is three files and one rake task inside it, not a separate repo.
-- **Branches**: production runs the newest `mementomods-YYYY-MM-DD` branch. Work on a branch made from it.
+- **Branches**: production runs the newest `mementomods-YYYY-MM-DD` branch. Work on a branch made from it, see [Developing a feature](#developing-a-feature), which also covers pull requests to Mastodon itself.
 - **Container images**: CI publishes `latest` images for amd64 and arm64 on every push to a `mementomods-*` branch. They are production builds with compiled assets. This stack doesn't use them, because it runs your source code so edits show up immediately.
 
 ## How the stack fits together
@@ -201,6 +202,81 @@ bin/mementomori-dev compose exec app bin/tootctl search deploy
 ```
 
 Give Elasticsearch half a minute after `up` before `deploy`, which builds the indexes from what is in the database. Run it again after `reset`. Elasticsearch runs with its security turned off (`dev/compose.yaml`), because the 8.x image otherwise demands HTTPS and a password that Mastodon's dev config doesn't send.
+
+## Developing a feature
+
+There are two kinds of feature work, and each has its own folder. Keep them apart: a pull request to Mastodon has to start from upstream `main`, not from a `mementomods-*` branch that carries our own changes.
+
+| You want | Folder | Branch from | Runs at |
+| --- | --- | --- | --- |
+| A feature for mementomori.social | `~/Projects/mastodon` | the newest `mementomods-YYYY-MM-DD` | https://mementomori.test |
+| A pull request to Mastodon itself | `~/Projects/mastodon-upstream` | `upstream/main` | http://localhost:3000 |
+
+### A feature for mementomori.social
+
+Everything happens in `~/Projects/mastodon`, the checkout `ansibles/dev.sh` made: you edit the code there, run git there and run `bin/mementomori-dev` there. The stack runs that folder's code directly, so an edit shows up on the next page load (reload the page for frontend changes).
+
+1. Branch from the newest production branch:
+
+   ```sh
+   cd ~/Projects/mastodon
+   git fetch origin
+   git switch mementomods-2026-10-11   # the newest mementomods-* branch
+   git pull
+   git switch -c my-feature
+   ```
+
+2. Start the stack if it isn't running: `bin/mementomori-dev up`
+3. Edit the code in `~/Projects/mastodon` and check it at https://mementomori.test.
+4. Run the tests for what you changed:
+
+   ```sh
+   bin/mementomori-dev shell
+   ES_ENABLED=false RAILS_ENV=test bin/rspec spec/models/tag_spec.rb
+   ```
+
+5. Commit and push: `git push -u origin my-feature`
+6. When it's done, merge `my-feature` into the `mementomods-*` branch. Production picks it up on the next deploy from mementomori-social/ansibles.
+
+### A pull request to Mastodon
+
+Use a second clone of the fork, `~/Projects/mastodon-upstream`, with Mastodon itself added as the `upstream` remote. It runs Mastodon's own dev containers from `.devcontainer/`, not this stack, so there is no demo data and no mementomori.test.
+
+1. Once:
+
+   ```sh
+   git clone git@github.com:mementomori-social/mastodon.git ~/Projects/mastodon-upstream
+   cd ~/Projects/mastodon-upstream
+   git remote add upstream https://github.com/mastodon/mastodon.git
+   ```
+
+2. For each feature, branch from the latest upstream `main`:
+
+   ```sh
+   cd ~/Projects/mastodon-upstream
+   git fetch upstream
+   git switch -c my-core-feature upstream/main
+   ```
+
+3. Stop this stack first, both use port 3036: `cd ~/Projects/mastodon && bin/mementomori-dev down`
+4. Start Mastodon's dev containers, as Mastodon's `docs/DEVELOPMENT.md` describes:
+
+   ```sh
+   cd ~/Projects/mastodon-upstream
+   docker compose -f .devcontainer/compose.yaml up -d
+   docker compose -f .devcontainer/compose.yaml exec app bin/setup
+   docker compose -f .devcontainer/compose.yaml exec app bin/dev
+   ```
+
+5. Edit the code in `~/Projects/mastodon-upstream` and check it at http://localhost:3000.
+6. Push to the fork and open the pull request against Mastodon:
+
+   ```sh
+   git push -u origin my-core-feature
+   gh pr create --repo mastodon/mastodon --base main --head mementomori-social:my-core-feature
+   ```
+
+7. Once Mastodon merges it, mementomori.social gets it when upstream is next merged into a new `mementomods-*` branch.
 
 ## Demo data
 
