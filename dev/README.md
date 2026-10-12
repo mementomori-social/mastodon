@@ -174,9 +174,10 @@ bin/mementomori-dev shell
 bin/rails console
 bin/tootctl accounts modify demo --role Moderator
 
-# Tests: the container defaults to development, so name the test environment
-RAILS_ENV=test bin/rails db:prepare     # once, creates the test database
-RAILS_ENV=test bin/rspec spec/models/tag_spec.rb
+# Tests: name the test environment (the container defaults to development) and
+# turn Elasticsearch off as upstream CI does, also after `up search`
+ES_ENABLED=false RAILS_ENV=test bin/rails db:prepare     # once, creates the test database
+ES_ENABLED=false RAILS_ENV=test bin/rspec spec/models/tag_spec.rb
 ```
 
 ### Search
