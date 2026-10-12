@@ -42,7 +42,7 @@
 
     = yield :header_tags
 
-    - if Rails.env.production?
+    - if Rails.env.production? && Rails.configuration.x.local_domain == 'mementomori.social'
       %script{ defer: true, 'data-domain': 'mementomori.social', src:'https://analytics.dude.fi/js/script.js' }
 
   %body{ class: body_classes }
