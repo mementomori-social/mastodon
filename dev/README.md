@@ -7,6 +7,7 @@ This runs your checkout of the fork at https://mementomori.test on macOS or Linu
 - [Setup](#setup)
 - [Daily use](#daily-use)
 - [Demo data](#demo-data)
+- [Production mode](#production-mode)
 - [Running next to another local setup](#running-next-to-another-local-setup)
 - [Differences from production](#differences-from-production)
 - [Files](#files)
@@ -43,7 +44,7 @@ flowchart TB
       vite["vite :3036<br/>frontend dev server"]
     end
 
-    db[("db<br/>PostgreSQL 14")]
+    db[("db<br/>PostgreSQL 18")]
     redis[("redis 7")]
     es[("es<br/>Elasticsearch, optional")]
     lt["libretranslate<br/>optional"]
@@ -148,11 +149,12 @@ bin/mementomori-dev seed
 | Command | Does |
 | --- | --- |
 | `bin/mementomori-dev up` | Start everything and wait until the site answers |
+| `bin/mementomori-dev up live` | Run CI's production image of this branch instead of your checkout, see [Production mode](#production-mode). Plain `up` goes back |
 | `bin/mementomori-dev up search` | The same plus Elasticsearch, with search turned on in the app |
 | `bin/mementomori-dev up translate` | The same plus LibreTranslate for the Translate button. Combine both with `up search translate` |
 | `bin/mementomori-dev seed [small\|default\|large]` | Fill an empty database with demo data, `default` if no scale is given |
 | `bin/mementomori-dev reset [scale]` | Wipe this stack's database, uploads and Redis, then seed again. Asks first |
-| `bin/mementomori-dev shell` | Bash inside the app container |
+| `bin/mementomori-dev shell` | Bash inside the app container, or the web container in production mode |
 | `bin/mementomori-dev check` | Check the running, seeded stack over HTTPS: certificate, streaming, demo's home, notifications, trending tags, posts and news, who to follow, moderator's reports. CI runs it too |
 | `bin/mementomori-dev logs [service]` | Follow logs, for example `logs app` or `logs caddy` |
 | `bin/mementomori-dev down` | Stop everything. Data stays |
@@ -248,6 +250,25 @@ Posts are written in bulk with ids in Mastodon's own time-ordered format, so tim
 - Trending posts fade within about half a day and trending news within a day or two. `reset` brings them back.
 - Remote accounts can't be followed back or fetched: their servers don't exist.
 
+## Production mode
+
+`bin/mementomori-dev up live` swaps the app container for the production image CI builds on every push to a `mementomods-*` branch (`ghcr.io/mementomori-social/mastodon` and `mastodon-streaming`): `RAILS_ENV=production`, precompiled assets, separate web, streaming and Sidekiq containers, as on the server. Use it to check something as it behaves live, for example asset loading, caching or a production-only code path.
+
+It runs on the same database, Redis and media as dev mode, so seed in dev mode first:
+
+```sh
+bin/mementomori-dev up
+bin/mementomori-dev seed small
+bin/mementomori-dev up live
+```
+
+`bin/mementomori-dev up` goes back to dev mode. Both modes keep the same data.
+
+- The image is tagged with your branch name when you are on a `mementomods-*` branch, otherwise `latest`, the newest build. Set `LIVE_TAG` to pick another. It is not your checkout: local edits don't show until they are pushed and built.
+- Secrets that production mode needs (`SECRET_KEY_BASE`, VAPID keys) are generated on first use into `dev/live.env`, not committed. The Active Record encryption keys are the dev ones from `.env.development`, so both modes read the same data.
+- `seed`, `reset` and `/letter_opener` only work in dev mode. Production mode writes mail to `tmp/mails` inside the web container instead of sending it.
+- Production builds load the analytics script for mementomori.social. Caddy removes its host from the Content Security Policy, so the browser never runs it here, and the layout only loads it when `LOCAL_DOMAIN` is mementomori.social.
+
 ## Running next to another local setup
 
 If something on your machine already listens on 127.0.0.1:443, such as a hand-built mementomori.test behind nginx, give this stack another port and use it on every command:
@@ -263,29 +284,34 @@ To keep the plain https://mementomori.test address, let the other web server for
 
 ## Differences from production
 
-| | This stack | Production |
-| --- | --- | --- |
-| Rails environment | development | production |
-| PostgreSQL | 14, from upstream's dev compose | 18 |
-| Frontend | vite dev server, compiled on request | precompiled assets |
-| Media | `public/system` in your checkout | object storage |
-| Email | caught at `/letter_opener` | sent |
-| Federation | none, remote accounts are fake | live |
-| Analytics script | not loaded | loaded |
+| | Dev mode | Production mode (`up live`) | Production |
+| --- | --- | --- | --- |
+| Code | your checkout | CI's image of the branch | the branch, built on the server |
+| Rails environment | development | production | production |
+| PostgreSQL | 18 | 18 | 18 |
+| Frontend | vite dev server, compiled on request | precompiled assets | precompiled assets |
+| Processes | one container, `bin/dev` | web, streaming and Sidekiq containers | systemd services |
+| Media | `public/system` in your checkout | same | object storage |
+| Email | caught at `/letter_opener` | written to `tmp/mails` | sent |
+| Federation | none, remote accounts are fake | none | live |
+| Analytics script | not loaded | blocked | loaded |
 
 ## Files
 
 | File | What |
 | --- | --- |
 | `bin/mementomori-dev` | The command you run |
-| `dev/compose.yaml` | Layered over `.devcontainer/compose.yaml`: domain, HTTPS, start command, Caddy, Vite host check, optional services behind profiles |
+| `dev/compose.yaml` | Layered over `.devcontainer/compose.yaml`: domain, HTTPS, start command, PostgreSQL 18, Caddy, Vite host check, optional services behind profiles |
 | `dev/start.sh` | Runs inside the app container: installs gems and packages, prepares the database, starts `bin/dev` |
 | `dev/Caddyfile` | TLS and routing |
 | `dev/certs/` | Your mkcert certificate, created by `up`, not committed |
 | `dev/https-port` | Optional HTTPS port when 443 is taken, not committed |
 | `dev/public-port` | Optional port in the site's address when another server forwards to this stack, not committed |
 | `dev/check.sh` | The checks behind `bin/mementomori-dev check` |
-| `.github/workflows/dev-stack.yml` | CI: builds the stack on a clean Ubuntu machine, seeds it and runs `check` |
+| `.github/workflows/dev-stack.yml` | CI: builds the stack on a clean Ubuntu machine, seeds it and runs `check` in both modes |
+| `dev/live.yaml` | Production mode services, layered last |
+| `dev/live.env` | Production mode secrets, created by `up live`, not committed |
+| `dev/mode` | `dev` or `live`, written by `up`, not committed |
 | `lib/tasks/mementomori_seed.rake` | The demo data generator |
 
 ## Troubleshooting
@@ -297,6 +323,8 @@ To keep the plain https://mementomori.test address, let the other web server for
 | `mementomori.test` doesn't resolve | The `/etc/hosts` line is missing |
 | `up` waits a long time | The first start installs everything. Watch it with `bin/mementomori-dev logs app` |
 | `seed` says "Already seeded" | Use `reset`, which wipes and seeds in one go |
+| Demo data gone after updating this branch | The database moved from PostgreSQL 14 to 18 on a new volume. Run `seed` again. The old data stays in the `postgres-data` volume until you remove it with `docker volume rm mementomori-dev_postgres-data` |
+| `seed` or `reset` says "This needs dev mode" | You are in production mode. `bin/mementomori-dev up` first |
 | "Oh, no! The requested page could not be rendered" on a page's first visit | Vite was bundling new dependencies and couldn't tell the page to reload (see hot reload above). Reload once; it stays fixed until `node_modules` changes |
 | Page loads without styles or scripts | Check `logs app` for vite errors |
 | Search finds nothing | Start with `up search` and run `bin/tootctl search deploy` |
