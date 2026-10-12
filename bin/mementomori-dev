@@ -113,12 +113,14 @@ case "${1:-}" in
     check_host
     if [ "$mode" = live ]; then
       make_live_env
-      # The image runs as uid 991; on Linux your checkout's media is yours
-      mkdir -p public/system && chmod -R a+rwX public/system
       export WEB_UPSTREAM=web:3000 STREAMING_UPSTREAM=streaming:4000
       COMPOSE_PROFILES=dev compose rm -sf app
       # shellcheck disable=SC2086
       COMPOSE_PROFILES=live compose pull $LIVE_SERVICES
+      # The image runs as uid 991, dev mode wrote the media as uid 1000. Only
+      # root can open it up on Linux, so do it inside the container.
+      mkdir -p public/system
+      COMPOSE_PROFILES=live compose run --rm --no-deps -u root --entrypoint chmod web -R a+rwX /opt/mastodon/public/system
     else
       # shellcheck disable=SC2086
       COMPOSE_PROFILES=live compose rm -sf $LIVE_SERVICES
