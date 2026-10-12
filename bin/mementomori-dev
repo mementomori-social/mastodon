@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mementomori.test in Docker. See dev/README.md.
+# mementomori.test in Podman or Docker. See dev/README.md.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -17,6 +17,7 @@ READY_TIMEOUT=1200
 MODE_FILE=dev/mode
 LIVE_ENV=dev/live.env
 LIVE_SERVICES="web streaming sidekiq"
+ENGINE_FILE=dev/engine
 
 export HTTPS_PORT
 if [ "$PUBLIC_PORT" = 443 ]; then
@@ -35,8 +36,28 @@ case "$branch" in
   mementomods-*) export LIVE_TAG=${LIVE_TAG:-$branch} ;;
 esac
 
+# DEV_ENGINE, then dev/engine, then whichever of Podman and Docker is running
+pick_engine() {
+  local engine=${DEV_ENGINE:-$(cat "$ENGINE_FILE" 2>/dev/null || true)}
+  if [ -z "$engine" ]; then
+    for candidate in podman docker; do
+      if command -v "$candidate" >/dev/null && "$candidate" info >/dev/null 2>&1; then
+        engine=$candidate
+        break
+      fi
+    done
+  fi
+  echo "${engine:-podman}"
+}
+ENGINE=$(pick_engine)
+
+COMPOSE_FILES=(-f .devcontainer/compose.yaml -f dev/compose.yaml -f dev/live.yaml)
+if [ "$ENGINE" = podman ] && [ "$(podman info --format '{{.Host.Security.Rootless}}' 2>/dev/null)" = true ]; then
+  COMPOSE_FILES+=(-f dev/podman-rootless.yaml)
+fi
+
 compose() {
-  docker compose -f .devcontainer/compose.yaml -f dev/compose.yaml -f dev/live.yaml "$@"
+  "$ENGINE" compose "${COMPOSE_FILES[@]}" "$@"
 }
 
 b64url() {
@@ -67,7 +88,7 @@ die() {
 }
 
 check_host() {
-  command -v docker >/dev/null || die "Install Docker first (Docker Desktop, OrbStack or docker engine)."
+  command -v "$ENGINE" >/dev/null || die "Install Podman (or Docker) first, or run ansibles/dev.sh, see dev/README.md."
   command -v mkcert >/dev/null || die "Install mkcert first (brew install mkcert / pacman -S mkcert / apt install mkcert), then run: mkcert -install"
 
   if ! grep -qE "^[^#]*[[:space:]]$DOMAIN([[:space:]]|$)" /etc/hosts; then

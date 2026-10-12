@@ -1,4 +1,4 @@
-# mementomori.test in Docker
+# mementomori.test in containers
 
 This runs your checkout of the fork at https://mementomori.test on macOS or Linux, with three years of generated demo data. It builds on the dev containers upstream Mastodon already ships in `.devcontainer/`. Everything Mementomori adds lives in files upstream doesn't have, so merging a new Mastodon release never conflicts with it.
 
@@ -20,7 +20,7 @@ This runs your checkout of the fork at https://mementomori.test on macOS or Linu
 flowchart LR
   upstream["mastodon/mastodon<br/>(upstream)"] -- merged into --> fork["mementomori-social/mastodon<br/>branches mementomods-YYYY-MM-DD"]
   fork -- "git clone" --> checkout["your checkout"]
-  checkout -- "bin/mementomori-dev up" --> stack["this Docker stack<br/>https://mementomori.test"]
+  checkout -- "bin/mementomori-dev up" --> stack["this container stack<br/>https://mementomori.test"]
   fork -- "CI on every push to mementomods-*" --> images["ghcr.io/mementomori-social/mastodon<br/>ghcr.io/mementomori-social/mastodon-streaming"]
   fork -- "checkout on the server" --> prod["mementomori.social"]
 ```
@@ -35,7 +35,7 @@ flowchart LR
 flowchart TB
   browser["Browser"] -- "https://mementomori.test<br/>(127.0.0.1:443)" --> caddy
 
-  subgraph docker["docker compose project: mementomori-dev"]
+  subgraph docker["compose project: mementomori-dev"]
     caddy["caddy<br/>TLS with the mkcert certificate"]
 
     subgraph app["app container (Ruby 4.0, Node, ffmpeg, libvips)"]
@@ -69,7 +69,7 @@ flowchart TB
 
 Vite's hot-reload socket connects straight to `ws://mementomori.test:3036` (hard-coded in upstream's `vite.config.mts`), not through Caddy. Browsers refuse an unencrypted socket from an HTTPS page, so hot reload doesn't work here: after editing frontend code, reload the page yourself. Ruby changes need no restart; Rails reloads them on the next request.
 
-**What persists**: the database, Redis, installed gems (`vendor/bundle`) and Caddy's state live in named Docker volumes of the `mementomori-dev` project. Node packages (`node_modules`) and uploaded media (`public/system`) live in your checkout, because the checkout is mounted into the container. `down` keeps all of it.
+**What persists**: the database, Redis, installed gems (`vendor/bundle`) and Caddy's state live in named volumes of the `mementomori-dev` project. Node packages (`node_modules`) and uploaded media (`public/system`) live in your checkout, because the checkout is mounted into the container. `down` keeps all of it.
 
 ### What `up` does
 
@@ -77,7 +77,7 @@ Vite's hot-reload socket connects straight to `ws://mementomori.test:3036` (hard
 sequenceDiagram
   actor You
   participant Script as bin/mementomori-dev
-  participant Compose as docker compose
+  participant Compose as podman / docker compose
   participant App as app container
   participant Caddy as caddy
 
@@ -107,31 +107,37 @@ The quickest way is one command, on macOS, Arch, Debian or Ubuntu:
 git clone https://github.com/mementomori-social/ansibles.git && ansibles/dev.sh
 ```
 
-It does everything below, clones this fork to `~/Projects/mastodon`, starts the stack and seeds it. It asks for your password once, and on macOS Docker Desktop's licence and the keychain need a click. See "Development environment" in the [ansibles README](https://github.com/mementomori-social/ansibles#development-environment).
+It does everything below, clones this fork to `~/Projects/mastodon`, starts the stack and seeds it. It asks for your sudo password once, unless sudo needs none, and on macOS the keychain may ask you to confirm the certificate. See "Development environment" in the [ansibles README](https://github.com/mementomori-social/ansibles#development-environment).
 
-By hand, you need Docker, mkcert and one line in `/etc/hosts`. Then clone the fork and switch to the branch you work on.
+By hand, you need Podman (or Docker), Docker Compose 2.24 or newer, mkcert and one line in `/etc/hosts`. Then clone the fork and switch to the branch you work on. `podman compose` runs the `docker-compose` program to read the compose files, so it is needed with Podman too.
 
 ### macOS
 
-1. Install Docker Desktop or OrbStack and start it.
-2. `brew install mkcert` and `mkcert -install`. For Firefox also run `brew install nss` before `mkcert -install`.
+1. `brew install podman docker-compose`, then `podman machine init --rootful --cpus 4 --memory 8192` and `podman machine start`. Podman runs the containers in that Linux VM.
+2. `brew install mkcert nss` and `mkcert -install`.
 3. `echo '127.0.0.1 mementomori.test' | sudo tee -a /etc/hosts`
 
-On Apple Silicon the app image builds natively for arm64.
-
-On Linux the app container runs as uid 1000 and writes into your checkout, so your own user should be uid 1000 too, which is the default for the first user on Arch, Debian, Ubuntu and Fedora.
+On Apple Silicon the app image builds natively for arm64. Docker Desktop or OrbStack work instead of Podman.
 
 ### Arch Linux
 
-1. `sudo pacman -S docker docker-compose mkcert nss`, `sudo systemctl enable --now docker`, and add yourself to the `docker` group (`sudo usermod -aG docker $USER`, then log in again).
-2. `mkcert -install`
-3. `echo '127.0.0.1 mementomori.test' | sudo tee -a /etc/hosts`
+1. `sudo pacman -S podman docker-compose mkcert nss` and `systemctl --user enable --now podman.socket`
+2. Let rootless Podman use port 443: `echo net.ipv4.ip_unprivileged_port_start=80 | sudo tee /etc/sysctl.d/90-mementomori-dev.conf` and `sudo sysctl --system`
+3. `mkcert -install`
+4. `echo '127.0.0.1 mementomori.test' | sudo tee -a /etc/hosts`
 
 ### Debian and Ubuntu
 
-1. Install Docker Engine with the compose plugin from Docker's own apt repository (docs.docker.com/engine/install), and add yourself to the `docker` group.
-2. `sudo apt install mkcert libnss3-tools` and `mkcert -install`
-3. `echo '127.0.0.1 mementomori.test' | sudo tee -a /etc/hosts`
+1. `sudo apt install podman mkcert libnss3-tools` plus `docker-compose-v2` on Ubuntu or `docker-compose` on Debian, then `systemctl --user enable --now podman.socket`
+2. Let rootless Podman use port 443, as on Arch above.
+3. `mkcert -install`
+4. `echo '127.0.0.1 mementomori.test' | sudo tee -a /etc/hosts`
+
+Rootless Podman runs the app as your own user (`dev/podman-rootless.yaml`), so files it writes into your checkout stay yours whatever your uid. With Docker on Linux the app container runs as uid 1000, so your own user should be uid 1000 too, which is the default for the first user on Arch, Debian, Ubuntu and Fedora.
+
+### Podman or Docker
+
+`bin/mementomori-dev` uses whichever of Podman and Docker is running, Podman first. To choose, set `DEV_ENGINE=docker` (or `podman`) on a command, or write the engine to `dev/engine` (`echo docker > dev/engine`); the Ansible setup writes it for you. The two engines keep separate images and volumes, so switching starts from an empty database: run `seed` again.
 
 ### Every machine
 
@@ -143,7 +149,7 @@ bin/mementomori-dev up
 bin/mementomori-dev seed
 ```
 
-`up` stops with a message telling you what to fix if Docker, mkcert or the hosts entry is missing.
+`up` stops with a message telling you what to fix if Podman or Docker, mkcert or the hosts entry is missing.
 
 ## Daily use
 
@@ -159,7 +165,7 @@ bin/mementomori-dev seed
 | `bin/mementomori-dev check` | Check the running, seeded stack over HTTPS: certificate, streaming, demo's home, notifications, trending tags, posts and news, who to follow, moderator's reports. CI runs it too |
 | `bin/mementomori-dev logs [service]` | Follow logs, for example `logs app` or `logs caddy` |
 | `bin/mementomori-dev down` | Stop everything. Data stays |
-| `bin/mementomori-dev compose <args>` | Any `docker compose` command for this stack, for example `compose ps` |
+| `bin/mementomori-dev compose <args>` | Any `podman compose` or `docker compose` command for this stack, for example `compose ps` |
 
 ### Logins
 
@@ -259,7 +265,7 @@ Use a second clone of the fork, `~/Projects/mastodon-upstream`, with Mastodon it
    ```
 
 3. Stop this stack first, both use port 3036: `cd ~/Projects/mastodon && bin/mementomori-dev down`
-4. Start Mastodon's dev containers, as Mastodon's `docs/DEVELOPMENT.md` describes:
+4. Start Mastodon's dev containers, as Mastodon's `docs/DEVELOPMENT.md` describes (with Podman, write `podman compose` instead of `docker compose`):
 
    ```sh
    cd ~/Projects/mastodon-upstream
@@ -381,6 +387,8 @@ To keep the plain https://mementomori.test address, let the other web server for
 | `dev/start.sh` | Runs inside the app container: installs gems and packages, prepares the database, starts `bin/dev` |
 | `dev/Caddyfile` | TLS and routing |
 | `dev/certs/` | Your mkcert certificate, created by `up`, not committed |
+| `dev/podman-rootless.yaml` | Added for rootless Podman: runs the app as your own user |
+| `dev/engine` | Optional `podman` or `docker`, not committed |
 | `dev/https-port` | Optional HTTPS port when 443 is taken, not committed |
 | `dev/public-port` | Optional port in the site's address when another server forwards to this stack, not committed |
 | `dev/check.sh` | The checks behind `bin/mementomori-dev check` |

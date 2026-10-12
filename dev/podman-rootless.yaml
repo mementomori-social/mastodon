@@ -1,0 +1,6 @@
+# Rootless Podman (Linux): run the app as your own user, so what it writes
+# into the checkout stays yours whatever your uid. bin/mementomori-dev adds
+# this file when Podman runs rootless.
+services:
+  app:
+    userns_mode: keep-id:uid=1000,gid=1000
