@@ -5,6 +5,7 @@ name: mementomori-dev
 
 services:
   app:
+    profiles: [dev]
     user: vscode
     environment:
       LOCAL_DOMAIN: mementomori.test${DEV_PORT_SUFFIX:-}
@@ -18,6 +19,11 @@ services:
       __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: mementomori.test
       BUNDLE_PATH: vendor/bundle
     command: bash -lc dev/start.sh
+    # dev/start.sh prepares the database, so a new db container needs a new run
+    depends_on:
+      db:
+        condition: service_started
+        restart: true
     ports: !reset
       - 127.0.0.1:3036:3036
     healthcheck:
@@ -25,9 +31,19 @@ services:
       interval: 10s
       start_period: 15m
 
+  # Production runs 18. The 18 image keeps its data one level up, and the
+  # volume is new so an existing 14 database is left alone.
+  db:
+    image: postgres:18-alpine
+    volumes: !override
+      - postgres18-data:/var/lib/postgresql
+
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
+    environment:
+      WEB_UPSTREAM: ${WEB_UPSTREAM:-app:3000}
+      STREAMING_UPSTREAM: ${STREAMING_UPSTREAM:-app:4000}
     ports:
       - 127.0.0.1:${HTTPS_PORT:-443}:443
     volumes:
@@ -48,3 +64,4 @@ services:
 
 volumes:
   caddy-data:
+  postgres18-data:

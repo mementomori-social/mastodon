@@ -14,6 +14,9 @@ HTTPS_PORT=${HTTPS_PORT:-$(cat "$PORT_FILE" 2>/dev/null || echo 443)}
 # on 443 forwards mementomori.test to this stack.
 PUBLIC_PORT=${PUBLIC_PORT:-$(cat "$PUBLIC_PORT_FILE" 2>/dev/null || echo "$HTTPS_PORT")}
 READY_TIMEOUT=1200
+MODE_FILE=dev/mode
+LIVE_ENV=dev/live.env
+LIVE_SERVICES="web streaming sidekiq"
 
 export HTTPS_PORT
 if [ "$PUBLIC_PORT" = 443 ]; then
@@ -23,8 +26,39 @@ else
 fi
 URL="https://$DOMAIN$DEV_PORT_SUFFIX"
 
+# dev runs your checkout, live runs CI's production image. See dev/README.md.
+MODE=$(cat "$MODE_FILE" 2>/dev/null || echo dev)
+export COMPOSE_PROFILES=$MODE
+
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+case "$branch" in
+  mementomods-*) export LIVE_TAG=${LIVE_TAG:-$branch} ;;
+esac
+
 compose() {
-  docker compose -f .devcontainer/compose.yaml -f dev/compose.yaml "$@"
+  docker compose -f .devcontainer/compose.yaml -f dev/compose.yaml -f dev/live.yaml "$@"
+}
+
+b64url() {
+  base64 | tr '+/' '-_' | tr -d '=\n'
+}
+
+# Local secrets for production mode, made once and never committed.
+make_live_env() {
+  [ -f "$LIVE_ENV" ] && return
+  local key
+  key=$(mktemp)
+  openssl ecparam -name prime256v1 -genkey -noout -out "$key"
+  {
+    echo "SECRET_KEY_BASE=$(openssl rand -hex 64)"
+    echo "VAPID_PRIVATE_KEY=$(openssl ec -in "$key" -outform DER 2>/dev/null | tail -c +8 | head -c 32 | b64url)"
+    echo "VAPID_PUBLIC_KEY=$(openssl ec -in "$key" -pubout -outform DER 2>/dev/null | tail -c 65 | b64url)"
+  } > "$LIVE_ENV"
+  rm -f "$key"
+}
+
+need_dev() {
+  [ "$MODE" = dev ] || die "This needs dev mode: $0 up"
 }
 
 die() {
@@ -65,24 +99,41 @@ seed() {
 case "${1:-}" in
   up)
     shift
+    mode=dev
     profiles=
     for profile in "$@"; do
       case "$profile" in
+        live) mode=live; continue ;;
         search) export ES_ENABLED=true ;;
         translate) export LIBRE_TRANSLATE_ENDPOINT=http://libretranslate:5000 ;;
-        *) die "Unknown option $profile, use: up [search] [translate]" ;;
+        *) die "Unknown option $profile, use: up [live] [search] [translate]" ;;
       esac
-      profiles="$profiles --profile $profile"
+      profiles="$profiles,$profile"
     done
     check_host
-    # shellcheck disable=SC2086
-    compose $profiles up -d --build
+    if [ "$mode" = live ]; then
+      make_live_env
+      # The image runs as uid 991; on Linux your checkout's media is yours
+      mkdir -p public/system && chmod -R a+rwX public/system
+      export WEB_UPSTREAM=web:3000 STREAMING_UPSTREAM=streaming:4000
+      COMPOSE_PROFILES=dev compose rm -sf app
+      # shellcheck disable=SC2086
+      COMPOSE_PROFILES=live compose pull $LIVE_SERVICES
+    else
+      # shellcheck disable=SC2086
+      COMPOSE_PROFILES=live compose rm -sf $LIVE_SERVICES
+    fi
+    echo "$mode" > "$MODE_FILE"
+    export COMPOSE_PROFILES=$mode$profiles
+    compose up -d --build
     wait_ready
     ;;
   seed)
+    need_dev
     seed "${2:-default}"
     ;;
   reset)
+    need_dev
     if [ "${RESET_YES:-}" != 1 ]; then
       read -r -p "Wipe this dev stack's database, uploads and Redis (not any other setup)? [y/N] " answer
       [ "$answer" = y ] || exit 1
@@ -94,22 +145,26 @@ case "${1:-}" in
     seed "${2:-default}"
     ;;
   check)
-    dev/check.sh "$URL" dev
+    dev/check.sh "$URL" "$MODE"
     ;;
   shell)
-    compose exec app bash -l
+    if [ "$MODE" = live ]; then
+      compose exec web bash -l
+    else
+      compose exec app bash -l
+    fi
     ;;
   logs)
     compose logs -f --tail 100 "${@:2}"
     ;;
   down)
-    compose --profile search --profile translate down
+    COMPOSE_PROFILES=dev,live,search,translate compose down
     ;;
   compose)
     compose "${@:2}"
     ;;
   *)
-    echo "Usage: $0 up [search] [translate] | seed [small|default|large] | check | reset [scale] | shell | logs [service] | down | compose <args>"
+    echo "Usage: $0 up [live] [search] [translate] | seed [small|default|large] | check | reset [scale] | shell | logs [service] | down | compose <args>"
     exit 1
     ;;
 esac
