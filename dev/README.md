@@ -101,7 +101,7 @@ The first start downloads images, builds the app image and installs every gem an
 
 ## Setup
 
-The quickest way is one command, on macOS, Arch, Debian or Ubuntu:
+The quickest way is one command, on macOS, Arch, Debian, Ubuntu or Fedora:
 
 ```sh
 git clone https://github.com/mementomori-social/ansibles.git && ansibles/dev.sh
@@ -109,7 +109,7 @@ git clone https://github.com/mementomori-social/ansibles.git && ansibles/dev.sh
 
 It does everything below, clones this fork to `~/Projects/mastodon`, starts the stack and seeds it. It asks for your sudo password once, unless sudo needs none, and on macOS the keychain may ask you to confirm the certificate. See "Development environment" in the [ansibles README](https://github.com/mementomori-social/ansibles#development-environment).
 
-By hand, you need Podman (or Docker), Docker Compose 2.24 or newer, mkcert and one line in `/etc/hosts`. Then clone the fork and switch to the branch you work on. `podman compose` runs the `docker-compose` program to read the compose files, so it is needed with Podman too.
+By hand, you need Podman (or Docker), Docker Compose 2.24 or newer, mkcert and one line in `/etc/hosts`. Then clone the fork and switch to the branch you work on. `podman compose` runs the `docker-compose` program to read the compose files, so it is needed with Podman too. Without it Podman falls back to `podman-compose`, which can't run this stack, and `up` stops and says so.
 
 ### macOS
 
@@ -132,6 +132,15 @@ On Apple Silicon the app image builds natively for arm64. Docker Desktop or OrbS
 2. Let rootless Podman use port 443, as on Arch above.
 3. `mkcert -install`
 4. `echo '127.0.0.1 mementomori.test' | sudo tee -a /etc/hosts`
+
+### Fedora
+
+1. `sudo dnf install podman docker-compose mkcert nss-tools` and `systemctl --user enable --now podman.socket`. Having `podman-compose` installed as well is fine: Podman picks `docker-compose` first.
+2. Let rootless Podman use port 443, as on Arch above.
+3. `mkcert -install`
+4. `echo '127.0.0.1 mementomori.test' | sudo tee -a /etc/hosts`
+
+SELinux stays on: the compose files turn its labels off for the containers that read your checkout (`security_opt: [label=disable]`), so nothing is relabelled.
 
 Rootless Podman runs the app as your own user (`dev/podman-rootless.yaml`), so files it writes into your checkout stay yours whatever your uid. With Docker on Linux the app container runs as uid 1000, so your own user should be uid 1000 too, which is the default for the first user on Arch, Debian, Ubuntu and Fedora.
 

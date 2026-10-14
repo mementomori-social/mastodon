@@ -19,6 +19,8 @@ services:
       __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: mementomori.test
       BUNDLE_PATH: vendor/bundle
     command: bash -lc dev/start.sh
+    # SELinux (Fedora) otherwise keeps containers from reading the checkout
+    security_opt: [label=disable]
     # dev/start.sh prepares the database, so a new db container needs a new run
     depends_on:
       db:
@@ -44,6 +46,7 @@ services:
     environment:
       WEB_UPSTREAM: ${WEB_UPSTREAM:-app:3000}
       STREAMING_UPSTREAM: ${STREAMING_UPSTREAM:-app:4000}
+    security_opt: [label=disable]
     ports:
       - 127.0.0.1:${HTTPS_PORT:-443}:443
     volumes:

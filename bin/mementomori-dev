@@ -89,6 +89,11 @@ die() {
 
 check_host() {
   command -v "$ENGINE" >/dev/null || die "Install Podman (or Docker) first, or run ansibles/dev.sh, see dev/README.md."
+  # Without docker-compose, podman compose falls back to podman-compose,
+  # which lacks commands this script uses.
+  if [ "$ENGINE" = podman ] && ! podman compose version 2>/dev/null | grep -q "Docker Compose"; then
+    die "Install docker-compose first (dnf, apt, pacman or brew install docker-compose): podman compose needs it, see dev/README.md."
+  fi
   command -v mkcert >/dev/null || die "Install mkcert first (brew install mkcert / pacman -S mkcert / apt install mkcert), then run: mkcert -install"
 
   if ! grep -qE "^[^#]*[[:space:]]$DOMAIN([[:space:]]|$)" /etc/hosts; then
