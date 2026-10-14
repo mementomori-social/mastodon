@@ -31,6 +31,7 @@ x-live: &live
     MASTODON_VERSION_METADATA: live
     # No mail server: messages are written to tmp/mails in the container
     SMTP_DELIVERY_METHOD: file
+  security_opt: [label=disable]
   volumes:
     - ../public/system:/opt/mastodon/public/system
   networks:
