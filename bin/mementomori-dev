@@ -19,7 +19,7 @@ LIVE_ENV=dev/live.env
 LIVE_SERVICES="web streaming sidekiq"
 ENGINE_FILE=dev/engine
 
-export HTTPS_PORT
+export HTTPS_PORT PUBLIC_PORT
 if [ "$PUBLIC_PORT" = 443 ]; then
   export DEV_PORT_SUFFIX=
 else
