@@ -20,6 +20,7 @@ services:
       # dev/vite.config.mts: live reload through Caddy at the site's address
       DEV_DOMAIN: mementomori.test
       PUBLIC_PORT: ${PUBLIC_PORT:-443}
+      DEV_WATCH_POLLING: ${DEV_WATCH_POLLING:-}
       BUNDLE_PATH: vendor/bundle
     command: bash -lc dev/start.sh
     # SELinux (Fedora) otherwise keeps containers from reading the checkout
@@ -52,8 +53,10 @@ services:
     security_opt: [label=disable]
     ports:
       - 127.0.0.1:${HTTPS_PORT:-443}:443
+    # The folder, not the file: a mounted file goes stale when it is replaced
+    command: caddy run --config /srv/dev/Caddyfile --adapter caddyfile
     volumes:
-      - ../dev/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../dev:/srv/dev:ro
       - ../dev/certs:/certs:ro
       - caddy-data:/data
     networks:

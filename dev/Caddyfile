@@ -8,12 +8,7 @@
 	@streaming path /api/v1/streaming*
 	reverse_proxy @streaming {$STREAMING_UPSTREAM}
 
-	# Vite's live-reload socket, see dev/vite.config.mts
-	@vite_socket {
-		path /packs-dev/*
-		header Connection *Upgrade*
-		header Upgrade websocket
-	}
-	reverse_proxy @vite_socket app:3036
+	# Vite's files and live-reload socket, see dev/vite.config.mts
+	reverse_proxy /packs-dev/* app:3036
 	reverse_proxy {$WEB_UPSTREAM}
 }

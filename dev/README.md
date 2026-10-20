@@ -52,8 +52,8 @@ flowchart TB
   end
 
   caddy -- "/api/v1/streaming*" --> stream
+  caddy -- "/packs-dev/*" --> vite
   caddy -- "everything else" --> web
-  web -- "/packs-dev/*" --> vite
   web & sidekiq & stream --> db
   web & sidekiq & stream --> redis
   web & sidekiq -.-> es
@@ -64,10 +64,10 @@ flowchart TB
 | Path | Goes to | Notes |
 | --- | --- | --- |
 | `/api/v1/streaming*` | streaming, port 4000 | WebSocket timelines and notifications |
-| `/packs-dev/*` | puma, which hands it to vite | JavaScript and CSS, compiled on request |
+| `/packs-dev/*` | vite, port 3036 | JavaScript and CSS compiled on request, and the live-reload socket |
 | everything else | puma, port 3000 | Rails |
 
-Vite's hot-reload socket connects straight to `ws://mementomori.test:3036` (hard-coded in upstream's `vite.config.mts`), not through Caddy. Browsers refuse an unencrypted socket from an HTTPS page, so hot reload doesn't work here: after editing frontend code, reload the page yourself. Ruby changes need no restart; Rails reloads them on the next request.
+Vite's live-reload socket goes through Caddy as `wss://mementomori.test/packs-dev/` (`dev/vite.config.mts` wraps upstream's `vite.config.mts`), so frontend edits show up without reloading, and after Vite re-bundles new dependencies the page reloads itself. On Podman under macOS, where the VM passes no file change events, Vite polls for changes instead. Ruby changes need no restart; Rails reloads them on the next request.
 
 **What persists**: the database, Redis, installed gems (`vendor/bundle`) and Caddy's state live in named volumes of the `mementomori-dev` project. Node packages (`node_modules`) and uploaded media (`public/system`) live in your checkout, because the checkout is mounted into the container. `down` keeps all of it.
 
@@ -393,7 +393,8 @@ To keep the plain https://mementomori.test address, let the other web server for
 | --- | --- |
 | `bin/mementomori-dev` | The command you run |
 | `dev/compose.yaml` | Layered over `.devcontainer/compose.yaml`: domain, HTTPS, start command, PostgreSQL 18, Caddy, Vite host check, optional services behind profiles |
-| `dev/start.sh` | Runs inside the app container: installs gems and packages, prepares the database, starts `bin/dev` |
+| `dev/start.sh` | Runs inside the app container: installs gems and packages, prepares the database, starts upstream's processes with Vite on `dev/vite.config.mts` |
+| `dev/vite.config.mts` | Upstream's Vite config with live reload through Caddy |
 | `dev/Caddyfile` | TLS and routing |
 | `dev/certs/` | Your mkcert certificate, created by `up`, not committed |
 | `dev/podman-rootless.yaml` | Added for rootless Podman: runs the app as your own user |
@@ -418,7 +419,7 @@ To keep the plain https://mementomori.test address, let the other web server for
 | `seed` says "Already seeded" | Use `reset`, which wipes and seeds in one go |
 | Demo data gone after updating this branch | The database moved from PostgreSQL 14 to 18 on a new volume. Run `seed` again. The old data stays in the `postgres-data` volume until you remove it with `docker volume rm mementomori-dev_postgres-data` |
 | `seed` or `reset` says "This needs dev mode" | You are in production mode. `bin/mementomori-dev up` first |
-| "Oh, no! The requested page could not be rendered" on a page's first visit | Vite was bundling new dependencies and couldn't tell the page to reload (see hot reload above). Reload once; it stays fixed until `node_modules` changes |
+| "Oh, no! The requested page could not be rendered" or a blank page right after an update | Vite was bundling new dependencies. The page reloads itself when it is done; if it stays blank, check `logs app` for vite errors |
 | Page loads without styles or scripts | Check `logs app` for vite errors |
 | Search finds nothing | Start with `up search` and run `bin/tootctl search deploy` |
 | `search deploy` fails with `KeepAliveDisconnected` | Elasticsearch is still starting. Wait and run it again |

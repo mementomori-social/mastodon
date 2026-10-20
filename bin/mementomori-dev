@@ -56,6 +56,11 @@ if [ "$ENGINE" = podman ] && [ "$(podman info --format '{{.Host.Security.Rootles
   COMPOSE_FILES+=(-f dev/podman-rootless.yaml)
 fi
 
+# Podman's VM on macOS passes no file change events, so Vite polls
+if [ "$ENGINE" = podman ] && [ "$(uname -s)" = Darwin ]; then
+  export DEV_WATCH_POLLING=1
+fi
+
 compose() {
   "$ENGINE" compose "${COMPOSE_FILES[@]}" "$@"
 }
@@ -154,6 +159,8 @@ case "${1:-}" in
     echo "$mode" > "$MODE_FILE"
     export COMPOSE_PROFILES=$mode$profiles
     compose up -d --build
+    # A running Caddy keeps its old config otherwise
+    compose exec -T caddy caddy reload --config /srv/dev/Caddyfile --adapter caddyfile
     wait_ready
     ;;
   seed)
