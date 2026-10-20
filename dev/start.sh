@@ -4,8 +4,10 @@
 set -euo pipefail
 
 mkdir -p ~/.local/bin
-corepack enable --install-directory ~/.local/bin
 export PATH=~/.local/bin:$PATH
+# Node 25 and newer ship without corepack
+command -v corepack >/dev/null || npm install --global --prefix ~/.local corepack
+corepack enable --install-directory ~/.local/bin
 
 bundle check || bundle install
 bin/yarn install --immutable
