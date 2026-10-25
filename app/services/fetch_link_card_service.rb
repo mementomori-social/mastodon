@@ -185,7 +185,7 @@ class FetchLinkCardService < BaseService
   end
 
   def retry_missing_image(image_url)
-    return if image_url.blank? || !@card.persisted? || @card.image_file_name.present?
+    return if image_url.blank? || !@card.persisted? || @card.image_file_name.present? || !@card.image_download_retryable?
 
     PreviewCardImageRetryWorker.perform_in(PreviewCardImageRetryWorker::DELAY, @card.id, image_url)
   end

@@ -3,6 +3,8 @@
 module Remotable
   extend ActiveSupport::Concern
 
+  RETRYABLE_CODES = [408, 429, 500, 502, 503, 504].freeze
+
   class_methods do
     def remotable_attachment(attachment_name, limit, suppress_errors: true, download_on_assign: true, attribute_name: nil)
       attribute_name ||= :"#{attachment_name}_remote_url"
@@ -28,6 +30,7 @@ module Remotable
           end
         rescue Mastodon::UnexpectedResponseError, *Mastodon::HTTP_CONNECTION_ERRORS => e
           Rails.logger.debug { "Error fetching remote #{attachment_name}: #{e}" }
+          instance_variable_set(:"@#{attachment_name}_download_retryable", !e.is_a?(Mastodon::UnexpectedResponseError) || RETRYABLE_CODES.include?(e.response&.code))
           public_send(:"#{attachment_name}=", nil) if public_send(:"#{attachment_name}_file_name").present?
           raise e unless suppress_errors
         rescue Paperclip::Errors::NotIdentifiedByImageMagickError, Addressable::URI::InvalidURIError, Mastodon::HostValidationError, Mastodon::LengthValidationError, Paperclip::Error, Mastodon::DimensionsValidationError, Mastodon::StreamValidationError => e
@@ -36,6 +39,10 @@ module Remotable
         end
 
         nil
+      end
+
+      define_method(:"#{attachment_name}_download_retryable?") do
+        instance_variable_get(:"@#{attachment_name}_download_retryable") || false
       end
 
       define_method(:"#{attribute_name}=") do |url|
