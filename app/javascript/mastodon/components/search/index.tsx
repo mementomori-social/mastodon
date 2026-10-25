@@ -112,6 +112,10 @@ export const Search: React.FC<{
   const { signedIn } = useIdentity();
   const dispatch = useAppDispatch();
   const history = useHistory();
+  // Mouse down, as the popout closes on blur before a click lands
+  const handleSearchReferenceMouseDown = useCallback(() => {
+    history.push('/search-reference');
+  }, [history]);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(initialValue ?? '');
   const hasValue = value.length > 0;
@@ -734,6 +738,19 @@ export const Search: React.FC<{
             )}
           </div>
         )}
+
+        <div className='search__popout__menu'>
+          <button
+            type='button'
+            className='search__popout__menu__item'
+            onMouseDown={handleSearchReferenceMouseDown}
+          >
+            <FormattedMessage
+              id='search_reference.heading'
+              defaultMessage='Search Reference'
+            />
+          </button>
+        </div>
       </div>
     </form>
   );
