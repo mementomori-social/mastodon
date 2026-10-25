@@ -110,7 +110,7 @@ export const HomeColumnSettings: React.FC<{
       >
         <FormattedMessage
           id='home.column_settings.ranked'
-          defaultMessage='Ranked order (experimental)'
+          defaultMessage='For you feed (experimental)'
         />
       </MenuItemCheckbox>
       {ranked && (
