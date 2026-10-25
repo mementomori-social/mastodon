@@ -1,0 +1,18 @@
+// Mobile: the column header and bottom navigation slide away while scrolling
+// down and come back when scrolling up
+body.layout-single-column {
+  ._comp_column_header__root,
+  ._navigation_panel_redesign_mobile_nav__root {
+    transition: transform 500ms ease-in-out;
+  }
+
+  &.scroll-down {
+    ._comp_column_header__root {
+      transform: translateY(-100%);
+    }
+
+    ._navigation_panel_redesign_mobile_nav__root {
+      transform: translateY(100%);
+    }
+  }
+}
