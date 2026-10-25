@@ -2425,8 +2425,8 @@ fi:
     title: Palvelimen %{domain} käyttöehdot muuttuvat
   themes:
     default: Mastodon Bird UI
-    mastodon-bird-ui-accessible-plus: Mastodon Bird UI (saavutettavuus Plus, fontit vielä isommalla)
     mastodon-bird-ui-accessible: Mastodon Bird UI (saavutettavuus huomioitu)
+    mastodon-bird-ui-accessible-plus: Mastodon Bird UI (saavutettavuus Plus, fontit vielä isommalla)
     mastodon-dark: Mastodon
   time:
     formats:

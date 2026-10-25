@@ -2533,8 +2533,8 @@ en:
     title: The terms of service of %{domain} are changing
   themes:
     default: Mastodon Bird UI
-    mastodon-bird-ui-accessible-plus: Mastodon Bird UI (Ultra accessible Plus+)
     mastodon-bird-ui-accessible: Mastodon Bird UI (Ultra accessible)
+    mastodon-bird-ui-accessible-plus: Mastodon Bird UI (Ultra accessible Plus+)
     mastodon-dark: Mastodon
   time:
     formats:
