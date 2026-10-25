@@ -2,6 +2,7 @@ module.exports = {
   extends: ['stylelint-config-standard-scss'],
   ignoreFiles: [
     'app/javascript/styles/mastodon/reset.scss',
+    'app/javascript/styles/mastodon-bird-ui/**/*',
     'coverage/**/*',
     'node_modules/**/*',
     'public/assets/**/*',
