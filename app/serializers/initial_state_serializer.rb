@@ -32,6 +32,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:advanced_layout]   = object_account_user.setting_advanced_layout
       store[:use_blurhash]      = object_account_user.setting_use_blurhash
       store[:use_pending_items] = object_account_user.setting_use_pending_items
+      store[:show_follow_badges] = object_account_user.setting_show_follow_badges
       store[:show_trends]       = Setting.trends && object_account_user.setting_trends
       store[:emoji_style]       = object_account_user.settings['web.emoji_style']
       store[:display_own_boosts] = object_account_user.setting_display_own_boosts

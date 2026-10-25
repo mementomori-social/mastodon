@@ -67,6 +67,10 @@ module User::HasSettings
     settings['web.use_system_scrollbars']
   end
 
+  def setting_show_follow_badges
+    settings['web.show_follow_badges']
+  end
+
   def setting_noindex
     settings['noindex']
   end

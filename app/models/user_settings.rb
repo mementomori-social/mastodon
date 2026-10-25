@@ -30,6 +30,7 @@ class UserSettings
     setting :use_pending_items, default: false
     setting :use_system_font, default: false
     setting :use_system_scrollbars, default: false
+    setting :show_follow_badges, default: false
     setting :disable_swiping, default: false
     setting :disable_hover_cards, default: false
     setting :delete_modal, default: true

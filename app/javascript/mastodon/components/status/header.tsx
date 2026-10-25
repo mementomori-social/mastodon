@@ -12,6 +12,7 @@ import { useCurrentAccountId } from '@/mastodon/hooks/useAccountId';
 import type { AccountStatusShape } from '@/mastodon/models/status';
 
 import { Avatar } from '../avatar';
+import { AvatarFollowBadge } from '../avatar_follow_badge';
 import { Badge } from '../badge';
 import { DisplayName } from '../display_name';
 import { useAccountHandle } from '../display_name/default';
@@ -51,6 +52,7 @@ export const StatusHeader: React.FC<StatusHeaderProps> = ({
         className={classes.avatar}
       >
         <Avatar account={account} size={null} />
+        <AvatarFollowBadge accountId={account.id} />
       </Link>
 
       <div className={classes.accountWrapper}>

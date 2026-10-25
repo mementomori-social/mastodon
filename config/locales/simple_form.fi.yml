@@ -66,6 +66,7 @@ fi:
         setting_display_media_show_all: Näytä kaikki mediasisältö varoittamatta, mukaan lukien arkaluonteiseksi merkitty sisältö
         setting_emoji_style: Miten emojit näkyvät. ”Automaattinen” pyrkii käyttämään natiiveja emojeita, mutta Twemoji-emojeita käytetään varavaihtoehtoina vanhoissa selaimissa.
         setting_quick_boosting_html: Kun käytössä, %{boost_icon} Tehosta-kuvakkeen painaminen tehostaa välittömästi sen sijaan, että Tehosta/Lainaa-pudotusvalikko avautuisi. Siirtää lainaustoiminnon %{options_icon} (Valinnat) -⁠valikkoon.
+        setting_show_follow_badges: Lisää pienen seuraamispainikkeen niiden käyttäjien profiilikuvaan, joita et vielä seuraa
         setting_use_blurhash: Liukuvärit perustuvat piilotettujen kuvien väreihin mutta sumentavat yksityiskohdat
         setting_use_pending_items: Piilota aikajanan päivitykset napsautuksen taakse syötteen automaattisen vierityksen sijaan
         username: Voit käyttää kirjaimia, numeroita ja alaviivoja
@@ -267,6 +268,7 @@ fi:
         setting_missing_alt_text_modal: Varoita ennen kuin julkaisen mediaa ilman tekstivastinetta
         setting_quick_boosting: Ota nopea tehostus käyttöön
         setting_reduce_motion: Vähennä animaatioiden liikettä
+        setting_show_follow_badges: Näytä seuraamispainikkeet profiilikuvissa
         setting_split_default_privacy_discoverable: Muuta julkaisuni löydettäviksi julkisista syötteistä ja hakutuloksista
         setting_system_font_ui: Käytä järjestelmän oletusfonttia
         setting_system_scrollbars_ui: Käytä järjestelmän oletusarvoista vierityspalkkia
