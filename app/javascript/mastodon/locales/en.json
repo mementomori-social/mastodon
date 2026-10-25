@@ -1359,7 +1359,7 @@
   "status.boosts_title": "Post Boosts",
   "status.cancel_reblog_private": "Unboost",
   "status.cannot_edit": "You are not allowed to edit this post",
-  "status.cannot_quote": "You are not allowed to quote this post",
+  "status.cannot_quote": "Forbidden",
   "status.cannot_reblog": "This post cannot be boosted",
   "status.contains_quote": "Contains quote",
   "status.context.loading": "Loading more replies",
