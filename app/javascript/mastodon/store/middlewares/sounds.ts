@@ -47,7 +47,7 @@ const play = (audio: HTMLAudioElement) => {
     }
   }
 
-  void audio.play();
+  audio.play().catch(() => null);
 };
 
 export const soundsMiddleware = (): Middleware<
