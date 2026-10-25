@@ -4,7 +4,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import {
   ChecksIcon,
-  GearIcon,
+  SlidersHorizontalIcon,
   NewspaperIcon,
   TrashIcon,
 } from '@phosphor-icons/react';
@@ -319,7 +319,10 @@ export const Notifications: React.FC<{
         withBackButton={multiColumn && !pinned && 'auto'}
         extraButtons={
           <>
-            <ColumnHeaderButton icon={GearIcon} onClick={openSettingsModal}>
+            <ColumnHeaderButton
+              icon={SlidersHorizontalIcon}
+              onClick={openSettingsModal}
+            >
               <FormattedMessage
                 id='notifications.open_settings'
                 defaultMessage='Open notification settings'
