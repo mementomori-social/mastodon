@@ -7,6 +7,7 @@ import type { List as ImmutableList, Map as ImmutableMap } from 'immutable';
 import { ListSection } from '@/mastodon/features/navigation_panel/redesign/list_section';
 import { NavigationLink } from '@/mastodon/features/navigation_panel/redesign/navigation_link';
 import { fetchTrendingHashtags } from 'mastodon/actions/trends';
+import { ImmutableHashtag as Hashtag } from 'mastodon/components/hashtag';
 import { showTrends } from 'mastodon/initial_state';
 import { useAppDispatch, useAppSelector } from 'mastodon/store';
 
@@ -55,20 +56,18 @@ export const TrendingTags: React.FC = () => {
           />
         }
       >
-        {tags.take(VISIBLE_TAGS).map((tag) => {
-          const name = tag.get('name') as string;
-
-          return (
-            <NavigationLink key={name} to={`/tags/${name}`}>
-              #{name}
-            </NavigationLink>
-          );
-        })}
+        {tags.take(VISIBLE_TAGS).map((tag) => (
+          <li key={tag.get('name') as string} className={classes.tag}>
+            <Hashtag hashtag={tag} />
+          </li>
+        ))}
         <NavigationLink key='view-all' to='/explore/tags'>
-          <FormattedMessage
-            id='tabs_bar.followed_tags_view_all'
-            defaultMessage='View all'
-          />
+          <span className={classes.more}>
+            <FormattedMessage
+              id='tabs_bar.followed_tags_view_all'
+              defaultMessage='View all'
+            />
+          </span>
         </NavigationLink>
       </ListSection>
     </ul>

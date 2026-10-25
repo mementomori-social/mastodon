@@ -1,6 +1,25 @@
 .root {
   flex-shrink: 0;
-  margin-top: var(--space-2);
+
+  // The search form above already leaves a wide gap
+  &:first-of-type {
+    margin-top: calc(-1 * var(--space-6));
+  }
+}
+
+.tag {
+  padding-bottom: var(--space-1);
+
+  :global(.trends__item) {
+    padding: var(--space-2);
+    border-bottom: 0;
+    border-radius: var(--radius-3);
+    transition: background-color 200ms;
+
+    &:hover {
+      background-color: var(--color-bg-highlight);
+    }
+  }
 }
 
 .item {
@@ -19,4 +38,21 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+}
+
+// Doubled to stay ahead of themes that restyle all buttons
+.follow.follow {
+  --bg: transparent;
+  --bg-hover: var(--color-bg-highlight);
+  --fg: var(--color-text-primary);
+
+  min-height: 28px;
+  padding: 2px 12px;
+  box-shadow: inset 0 0 0 1px var(--color-border-primary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.more {
+  color: var(--color-text-brand);
 }

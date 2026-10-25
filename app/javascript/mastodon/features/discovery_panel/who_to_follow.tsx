@@ -37,6 +37,8 @@ const SuggestedAccount: React.FC<{ accountId: string }> = ({ accountId }) => {
             accountId={accountId}
             labelLength='short'
             reference={REFERENCE}
+            className={classes.follow}
+            size='sm'
           />
         }
       >
@@ -86,10 +88,12 @@ export const WhoToFollow: React.FC = () => {
           />
         ))}
         <NavigationLink key='view-all' to='/explore/suggestions'>
-          <FormattedMessage
-            id='follow_suggestions.view_all'
-            defaultMessage='View all'
-          />
+          <span className={classes.more}>
+            <FormattedMessage
+              id='follow_suggestions.view_all'
+              defaultMessage='View all'
+            />
+          </span>
         </NavigationLink>
       </ListSection>
     </ul>
