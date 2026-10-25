@@ -108,6 +108,7 @@ export const MODAL_COMPONENTS = {
   'COMPOSER_REARRANGE': () => import('@/mastodon/features/compose/modals/modal_rearrange'),
   'COMPOSER_SWITCH_TO_POST': () => import('@/mastodon/features/compose/modals/modal_switch'),
   'COMPOSER_ADD_QUOTE': () => import('@/mastodon/features/compose/modals/modal_quote'),
+  'RANKED_LANGUAGES': () => import('@/mastodon/features/home_timeline/components/ranked_languages_modal'),
   'NOTIFICATION_SETTINGS': () => import('@/mastodon/features/notifications_v2/components/notification_settings_modal'),
   'NOTIFICATION_REQUESTS_SETTINGS': () => import('@/mastodon/features/notifications/components/notification_requests_settings').then(module => ({default: module.NotificationRequestsSettingsModal})),
   'HASHTAG_SETTINGS': () => import('@/mastodon/features/hashtag_timeline/components/column_settings_modal'),
