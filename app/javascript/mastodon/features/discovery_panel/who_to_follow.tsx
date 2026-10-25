@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import { Link } from 'react-router-dom';
-
+import { ListSection } from '@/mastodon/features/navigation_panel/redesign/list_section';
+import { NavigationLink } from '@/mastodon/features/navigation_panel/redesign/navigation_link';
 import { fetchSuggestions } from 'mastodon/actions/suggestions';
 import { Avatar } from 'mastodon/components/avatar';
 import { useAccountHandle } from 'mastodon/components/display_name/default';
@@ -28,26 +28,31 @@ const SuggestedAccount: React.FC<{ accountId: string }> = ({ accountId }) => {
   }
 
   return (
-    <LockupWrapper
-      className={classes.item}
-      icon={<Avatar account={account} size={40} />}
-      sideContent={
-        <FollowButton
-          accountId={accountId}
-          labelLength='short'
-          reference={REFERENCE}
-        />
-      }
-    >
-      <LockupLink
-        to={{ pathname: `/@${account.acct}`, state: { reference: REFERENCE } }}
-        data-hover-card-account={accountId}
-        data-hover-card-reference={REFERENCE}
-        subtitle={handle}
+    <li>
+      <LockupWrapper
+        className={classes.item}
+        icon={<Avatar account={account} size={40} />}
+        sideContent={
+          <FollowButton
+            accountId={accountId}
+            labelLength='short'
+            reference={REFERENCE}
+          />
+        }
       >
-        <DisplayNameSimple account={account} />
-      </LockupLink>
-    </LockupWrapper>
+        <LockupLink
+          to={{
+            pathname: `/@${account.acct}`,
+            state: { reference: REFERENCE },
+          }}
+          data-hover-card-account={accountId}
+          data-hover-card-reference={REFERENCE}
+          subtitle={handle}
+        >
+          <DisplayNameSimple account={account} />
+        </LockupLink>
+      </LockupWrapper>
+    </li>
   );
 };
 
@@ -64,27 +69,29 @@ export const WhoToFollow: React.FC = () => {
   }
 
   return (
-    <section className={classes.root}>
-      <h2 className={classes.heading}>
-        <FormattedMessage
-          id='follow_suggestions.who_to_follow'
-          defaultMessage='Who to follow'
-        />
-      </h2>
-
-      {suggestions.slice(0, VISIBLE_SUGGESTIONS).map((suggestion) => (
-        <SuggestedAccount
-          key={suggestion.account_id}
-          accountId={suggestion.account_id}
-        />
-      ))}
-
-      <Link to='/explore/suggestions' className={classes.more}>
-        <FormattedMessage
-          id='follow_suggestions.view_all'
-          defaultMessage='View all'
-        />
-      </Link>
-    </section>
+    <ul className={classes.root}>
+      <ListSection
+        id='who-to-follow'
+        title={
+          <FormattedMessage
+            id='follow_suggestions.who_to_follow'
+            defaultMessage='Who to follow'
+          />
+        }
+      >
+        {suggestions.slice(0, VISIBLE_SUGGESTIONS).map((suggestion) => (
+          <SuggestedAccount
+            key={suggestion.account_id}
+            accountId={suggestion.account_id}
+          />
+        ))}
+        <NavigationLink key='view-all' to='/explore/suggestions'>
+          <FormattedMessage
+            id='follow_suggestions.view_all'
+            defaultMessage='View all'
+          />
+        </NavigationLink>
+      </ListSection>
+    </ul>
   );
 };
