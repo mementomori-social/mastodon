@@ -1,10 +1,10 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { List as ImmutableList } from 'immutable';
 
-import type { CSSObjectWithLabel } from 'react-select';
+import type { CSSObjectWithLabel, SelectInstance } from 'react-select';
 import { NonceProvider } from 'react-select';
 import AsyncSelect from 'react-select/async';
 
@@ -31,6 +31,9 @@ const messages = defineMessages({
   },
 });
 
+// Opening a modal moves focus to the page heading; take it back afterwards
+const FOCUS_DELAY_MS = 100;
+
 interface LanguageOption {
   value: string;
   label: string;
@@ -41,6 +44,7 @@ const RankedLanguagesModal: React.FC<{ onClose: () => void }> = ({
 }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
+  const selectRef = useRef<SelectInstance<LanguageOption, true>>(null);
   const stored = useAppSelector((state) =>
     state.settings.getIn(['home', 'rankedLanguages']),
   );
@@ -112,6 +116,16 @@ const RankedLanguagesModal: React.FC<{ onClose: () => void }> = ({
     [languageOptions],
   );
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      selectRef.current?.focus();
+    }, FOCUS_DELAY_MS);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
+
   const noOptionsMessage = useCallback(
     () => intl.formatMessage(messages.languageNoOptions),
     [intl],
@@ -119,7 +133,7 @@ const RankedLanguagesModal: React.FC<{ onClose: () => void }> = ({
 
   return (
     <ModalShell maxWidth={480}>
-      <ModalTitle onClose={onClose}>
+      <ModalTitle onClose={onClose} noFocus>
         <FormattedMessage
           id='home.column_settings.ranked_languages'
           defaultMessage='Filter languages'
@@ -135,8 +149,8 @@ const RankedLanguagesModal: React.FC<{ onClose: () => void }> = ({
           cacheKey='ranked-languages'
         >
           <AsyncSelect
+            ref={selectRef}
             isMulti
-            autoFocus
             value={selectedLanguages}
             onChange={handleChange}
             loadOptions={loadOptions}
