@@ -22,9 +22,14 @@
     height: 10px;
   }
 
+  // Opaque so the avatar never shows through the badge
   &:hover,
   &:focus-visible {
-    background: var(--color-bg-secondary);
+    background: color-mix(
+      in srgb,
+      var(--color-text-primary) 10%,
+      var(--color-bg-primary)
+    );
     transform: scale(1.2);
   }
 }
