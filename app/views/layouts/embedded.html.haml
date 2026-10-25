@@ -1,5 +1,5 @@
 !!! 5
-%html{ lang: I18n.locale, 'data-contrast': 'auto', 'data-color-scheme': 'light' }
+%html{ lang: I18n.locale, 'data-contrast': 'auto', 'data-color-scheme': 'dark' }
   %head
     %meta{ charset: 'utf-8' }/
     %meta{ name: 'robots', content: 'noindex' }/
@@ -21,7 +21,7 @@
     = vite_typescript_tag 'embed.tsx', integrity: true, crossorigin: 'anonymous'
 
     %meta{ name: 'style-nonce', content: request.content_security_policy_nonce, property: 'csp-nonce', nonce: request.content_security_policy_nonce }
-  %body.embed
+  %body.embed.app-body.theme-default.no-reduce-motion.layout-single-column
     = yield
 
     .logo-resources{ 'tabindex' => '-1', 'inert' => true, 'aria-hidden' => 'true' }
