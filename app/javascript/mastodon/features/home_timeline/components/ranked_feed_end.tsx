@@ -29,7 +29,7 @@ export const RankedFeedEnd: React.FC = () => {
       />
 
       {!discoverEnabled && (
-        <Button variant='solid' onClick={handleEnableDiscover}>
+        <Button variant='solid' color='accent' onClick={handleEnableDiscover}>
           <FormattedMessage
             id='home.ranked_feed_end.enable_discover'
             defaultMessage="Show posts from people you don't follow"
