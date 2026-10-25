@@ -56,6 +56,30 @@
   }
 }
 
+// An open composer sits near the top of the main column like a dialog,
+// while the minimized bar stays docked at the bottom
+.rootTop[data-fullscreen='false'] {
+  @media (width >= #{variables.$mobile-menu-breakpoint}) {
+    top: var(--space-10);
+    bottom: auto;
+    align-items: start;
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: auto;
+      background: rgb(0 0 0 / 50%);
+    }
+
+    .composer {
+      max-height: calc(100vh - var(--space-10) - var(--space-4));
+      border-bottom: var(--border-default);
+      border-radius: var(--radius-6);
+    }
+  }
+}
+
 .composer,
 .composerMinimized {
   [data-fullscreen='false'] & {

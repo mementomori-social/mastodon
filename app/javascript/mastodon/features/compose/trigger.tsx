@@ -138,11 +138,18 @@ export const ComposeButton: React.FC<{
   if (displayState === 'showing') {
     return (
       <div
-        className={classes.root}
+        className={classNames(classes.root, classes.rootTop)}
         style={style}
         ref={trackComposerHeight}
         data-fullscreen={isFullscreen}
       >
+        {!isFullscreen && (
+          <div
+            className={classes.backdrop}
+            onClick={toggleMinimize}
+            role='presentation'
+          />
+        )}
         <ComposeForm autoFocus className={classes.composer} />
       </div>
     );
