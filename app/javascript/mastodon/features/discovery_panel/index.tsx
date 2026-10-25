@@ -29,11 +29,30 @@ const ROUTES_WITHOUT_SEARCH_BAR = includeMultiColumnPaths([
   '/collections/:id/edit/details',
 ]);
 
+/**
+ * Editing flows keep the sidebar quiet; everywhere else shows trends and
+ * suggestions, including the explore pages without the search bar.
+ */
+const ROUTES_WITHOUT_DISCOVERY = includeMultiColumnPaths([
+  '/start',
+  '/start/profile',
+  '/profile/edit',
+  '/lists/new',
+  '/lists/:id/edit',
+  '/collections/new',
+  '/collections/:id/edit',
+  '/collections/:id/edit/details',
+]);
+
 export const DiscoveryPanel: React.FC = () => {
   const { signedIn } = useIdentity();
 
   const isRouteWithSearchBar = !useRouteMatch({
     path: ROUTES_WITHOUT_SEARCH_BAR,
+    exact: true,
+  });
+  const isRouteWithDiscovery = !useRouteMatch({
+    path: ROUTES_WITHOUT_DISCOVERY,
     exact: true,
   });
 
@@ -43,8 +62,8 @@ export const DiscoveryPanel: React.FC = () => {
         <Search singleColumn context='sidebar' />
       )}
 
-      {isRouteWithSearchBar && <TrendingTags />}
-      {signedIn && isRouteWithSearchBar && <WhoToFollow />}
+      {isRouteWithDiscovery && <TrendingTags />}
+      {signedIn && isRouteWithDiscovery && <WhoToFollow />}
 
       <footer className={classes.footer}>
         <FooterLinks context='search' />
