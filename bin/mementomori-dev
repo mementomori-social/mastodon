@@ -1,0 +1,205 @@
+#!/usr/bin/env bash
+# mementomori.test in Podman or Docker. See dev/README.md.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+DOMAIN=mementomori.test
+CERT=dev/certs/$DOMAIN.pem
+KEY=dev/certs/$DOMAIN-key.pem
+PORT_FILE=dev/https-port
+PUBLIC_PORT_FILE=dev/public-port
+HTTPS_PORT=${HTTPS_PORT:-$(cat "$PORT_FILE" 2>/dev/null || echo 443)}
+# Port in the site's address. Differs from HTTPS_PORT when a local web server
+# on 443 forwards mementomori.test to this stack.
+PUBLIC_PORT=${PUBLIC_PORT:-$(cat "$PUBLIC_PORT_FILE" 2>/dev/null || echo "$HTTPS_PORT")}
+READY_TIMEOUT=1200
+MODE_FILE=dev/mode
+LIVE_ENV=dev/live.env
+LIVE_SERVICES="web streaming sidekiq"
+ENGINE_FILE=dev/engine
+
+export HTTPS_PORT PUBLIC_PORT
+if [ "$PUBLIC_PORT" = 443 ]; then
+  export DEV_PORT_SUFFIX=
+else
+  export DEV_PORT_SUFFIX=":$PUBLIC_PORT"
+fi
+URL="https://$DOMAIN$DEV_PORT_SUFFIX"
+
+# dev runs your checkout, live runs CI's production image. See dev/README.md.
+MODE=$(cat "$MODE_FILE" 2>/dev/null || echo dev)
+export COMPOSE_PROFILES=$MODE
+
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+case "$branch" in
+  mementomods-*) export LIVE_TAG=${LIVE_TAG:-$branch} ;;
+esac
+
+# DEV_ENGINE, then dev/engine, then whichever of Podman and Docker is running
+pick_engine() {
+  local engine=${DEV_ENGINE:-$(cat "$ENGINE_FILE" 2>/dev/null || true)}
+  if [ -z "$engine" ]; then
+    for candidate in podman docker; do
+      if command -v "$candidate" >/dev/null && "$candidate" info >/dev/null 2>&1; then
+        engine=$candidate
+        break
+      fi
+    done
+  fi
+  echo "${engine:-podman}"
+}
+ENGINE=$(pick_engine)
+
+COMPOSE_FILES=(-f .devcontainer/compose.yaml -f dev/compose.yaml -f dev/live.yaml)
+if [ "$ENGINE" = podman ] && [ "$(podman info --format '{{.Host.Security.Rootless}}' 2>/dev/null)" = true ]; then
+  COMPOSE_FILES+=(-f dev/podman-rootless.yaml)
+fi
+
+# Podman's VM on macOS passes no file change events, so Vite polls
+if [ "$ENGINE" = podman ] && [ "$(uname -s)" = Darwin ]; then
+  export DEV_WATCH_POLLING=1
+fi
+
+compose() {
+  "$ENGINE" compose "${COMPOSE_FILES[@]}" "$@"
+}
+
+b64url() {
+  base64 | tr '+/' '-_' | tr -d '=\n'
+}
+
+# Local secrets for production mode, made once and never committed.
+make_live_env() {
+  [ -f "$LIVE_ENV" ] && return
+  local key
+  key=$(mktemp)
+  openssl ecparam -name prime256v1 -genkey -noout -out "$key"
+  {
+    echo "SECRET_KEY_BASE=$(openssl rand -hex 64)"
+    echo "VAPID_PRIVATE_KEY=$(openssl ec -in "$key" -outform DER 2>/dev/null | tail -c +8 | head -c 32 | b64url)"
+    echo "VAPID_PUBLIC_KEY=$(openssl ec -in "$key" -pubout -outform DER 2>/dev/null | tail -c 65 | b64url)"
+  } > "$LIVE_ENV"
+  rm -f "$key"
+}
+
+need_dev() {
+  [ "$MODE" = dev ] || die "This needs dev mode: $0 up"
+}
+
+die() {
+  echo "$*" >&2
+  exit 1
+}
+
+check_host() {
+  command -v "$ENGINE" >/dev/null || die "Install Podman (or Docker) first, or run ansibles/dev.sh, see dev/README.md."
+  # Without docker-compose, podman compose falls back to podman-compose,
+  # which lacks commands this script uses.
+  if [ "$ENGINE" = podman ] && ! podman compose version 2>/dev/null | grep -q "Docker Compose"; then
+    die "Install docker-compose first (dnf, apt, pacman or brew install docker-compose): podman compose needs it, see dev/README.md."
+  fi
+  command -v mkcert >/dev/null || die "Install mkcert first (brew install mkcert / pacman -S mkcert / apt install mkcert), then run: mkcert -install"
+
+  if ! grep -qE "^[^#]*[[:space:]]$DOMAIN([[:space:]]|$)" /etc/hosts; then
+    die "Add $DOMAIN to /etc/hosts first:
+  echo '127.0.0.1 $DOMAIN' | sudo tee -a /etc/hosts"
+  fi
+
+  if [ ! -f "$CERT" ]; then
+    mkdir -p dev/certs
+    mkcert -cert-file "$CERT" -key-file "$KEY" "$DOMAIN"
+  fi
+}
+
+wait_ready() {
+  echo "Waiting for $URL (first start installs gems and packages, takes a while)..."
+  local waited=0
+  until curl -fsS -o /dev/null --resolve "$DOMAIN:$PUBLIC_PORT:127.0.0.1" "$URL/health" 2>/dev/null; do
+    sleep 5
+    waited=$((waited + 5))
+    [ "$waited" -lt "$READY_TIMEOUT" ] || die "Not up after ${READY_TIMEOUT}s. See: $0 logs"
+  done
+  echo "Up: $URL"
+}
+
+seed() {
+  compose exec app bash -lc "bin/rails mementomori:seed SCALE=${1:-default}"
+}
+
+case "${1:-}" in
+  up)
+    shift
+    mode=dev
+    profiles=
+    for profile in "$@"; do
+      case "$profile" in
+        live) mode=live; continue ;;
+        search) export ES_ENABLED=true ;;
+        translate) export LIBRE_TRANSLATE_ENDPOINT=http://libretranslate:5000 ;;
+        *) die "Unknown option $profile, use: up [live] [search] [translate]" ;;
+      esac
+      profiles="$profiles,$profile"
+    done
+    check_host
+    if [ "$mode" = live ]; then
+      make_live_env
+      export WEB_UPSTREAM=web:3000 STREAMING_UPSTREAM=streaming:4000
+      COMPOSE_PROFILES=dev compose rm -sf app
+      # shellcheck disable=SC2086
+      COMPOSE_PROFILES=live compose pull $LIVE_SERVICES
+      # The image runs as uid 991, dev mode wrote the media as uid 1000. Only
+      # root can open it up on Linux, so do it inside the container.
+      mkdir -p public/system
+      COMPOSE_PROFILES=live compose run --rm --no-deps -u root --entrypoint chmod web -R a+rwX /opt/mastodon/public/system
+    else
+      # shellcheck disable=SC2086
+      COMPOSE_PROFILES=live compose rm -sf $LIVE_SERVICES
+    fi
+    echo "$mode" > "$MODE_FILE"
+    export COMPOSE_PROFILES=$mode$profiles
+    compose up -d --build
+    # A running Caddy keeps its old config otherwise
+    compose exec -T caddy caddy reload --config /srv/dev/Caddyfile --adapter caddyfile
+    wait_ready
+    ;;
+  seed)
+    need_dev
+    seed "${2:-default}"
+    ;;
+  reset)
+    need_dev
+    if [ "${RESET_YES:-}" != 1 ]; then
+      read -r -p "Wipe this dev stack's database, uploads and Redis (not any other setup)? [y/N] " answer
+      [ "$answer" = y ] || exit 1
+    fi
+    compose exec -T app bash -lc 'DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:schema:load db:seed && rm -rf public/system/*'
+    compose exec -T redis redis-cli flushall
+    compose restart app
+    wait_ready
+    seed "${2:-default}"
+    ;;
+  check)
+    dev/check.sh "$URL" "$MODE"
+    ;;
+  shell)
+    if [ "$MODE" = live ]; then
+      compose exec web bash -l
+    else
+      compose exec app bash -l
+    fi
+    ;;
+  logs)
+    compose logs -f --tail 100 "${@:2}"
+    ;;
+  down)
+    COMPOSE_PROFILES=dev,live,search,translate compose down
+    ;;
+  compose)
+    compose "${@:2}"
+    ;;
+  *)
+    echo "Usage: $0 up [live] [search] [translate] | seed [small|default|large] | check | reset [scale] | shell | logs [service] | down | compose <args>"
+    exit 1
+    ;;
+esac

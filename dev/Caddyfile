@@ -1,0 +1,14 @@
+:443 {
+	tls /certs/mementomori.test.pem /certs/mementomori.test-key.pem
+	encode gzip
+
+	# Production builds load analytics for mementomori.social; the browser must not run it here
+	header >Content-Security-Policy "\s*analytics\.dude\.fi" ""
+
+	@streaming path /api/v1/streaming*
+	reverse_proxy @streaming {$STREAMING_UPSTREAM}
+
+	# Vite's files and live-reload socket, see dev/vite.config.mts
+	reverse_proxy /packs-dev/* app:3036
+	reverse_proxy {$WEB_UPSTREAM}
+}
