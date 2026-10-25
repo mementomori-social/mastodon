@@ -7,7 +7,6 @@ import classNames from 'classnames';
 import {
   BellIcon,
   ChatCircleDotsIcon,
-  HouseIcon,
   InfoIcon,
   MagnifyingGlassIcon,
 } from '@phosphor-icons/react';
@@ -37,11 +36,13 @@ import {
 } from '.';
 import { AccountMenuItems } from './account_card_and_menu';
 import { LogoLockup } from './header';
+import { useHomeLink } from './home_link';
 import classes from './mobile_nav.module.scss';
 import { MobileNavLink, MobileNavProfileButton } from './navigation_link';
 
 export const RedesignMobileNavigation: React.FC = () => {
   const dispatch = useAppDispatch();
+  const homeLink = useHomeLink();
   const { accountId, signedIn } = useIdentity();
   const account = useAccount(accountId);
 
@@ -64,8 +65,12 @@ export const RedesignMobileNavigation: React.FC = () => {
       {signedIn ? (
         <nav className={classes.root}>
           <ul className={classNames(classes.floatingCard, classes.list)}>
-            <MobileNavLink to='/home' iconComponent={HouseIcon}>
-              <FormattedMessage id='tabs_bar.home' defaultMessage='Home' />
+            <MobileNavLink
+              to='/home'
+              iconComponent={homeLink.iconComponent}
+              onClick={homeLink.onClick}
+            >
+              {homeLink.label}
             </MobileNavLink>
             <MobileNavLink
               to={{
