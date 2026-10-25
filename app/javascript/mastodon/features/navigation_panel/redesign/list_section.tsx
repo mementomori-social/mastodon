@@ -1,6 +1,9 @@
 import { useCallback } from 'react';
 import type { ReactNode } from 'react';
 
+import classNames from 'classnames';
+import { Link } from 'react-router-dom';
+
 import { CaretDownIcon } from '@phosphor-icons/react';
 
 import { useStorageState } from '@/mastodon/hooks/useStorage';
@@ -53,3 +56,13 @@ export const ListSection: React.FC<{
     </li>
   );
 };
+
+export const ListSectionViewAll: React.FC<{
+  to: string;
+  align?: 'start' | 'end';
+  children: ReactNode;
+}> = ({ to, align = 'start', children }) => (
+  <li className={classNames(classes.viewAll, align === 'end' && classes.end)}>
+    <Link to={to}>{children}</Link>
+  </li>
+);

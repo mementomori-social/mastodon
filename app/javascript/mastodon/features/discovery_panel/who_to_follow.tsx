@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import { ListSection } from '@/mastodon/features/navigation_panel/redesign/list_section';
-import { NavigationLink } from '@/mastodon/features/navigation_panel/redesign/navigation_link';
+import {
+  ListSection,
+  ListSectionViewAll,
+} from '@/mastodon/features/navigation_panel/redesign/list_section';
 import { fetchSuggestions } from 'mastodon/actions/suggestions';
 import { Avatar } from 'mastodon/components/avatar';
 import { useAccountHandle } from 'mastodon/components/display_name/default';
@@ -87,14 +89,16 @@ export const WhoToFollow: React.FC = () => {
             accountId={suggestion.account_id}
           />
         ))}
-        <NavigationLink key='view-all' to='/explore/suggestions'>
-          <span className={classes.more}>
-            <FormattedMessage
-              id='follow_suggestions.view_all'
-              defaultMessage='View all'
-            />
-          </span>
-        </NavigationLink>
+        <ListSectionViewAll
+          key='view-all'
+          to='/explore/suggestions'
+          align='end'
+        >
+          <FormattedMessage
+            id='follow_suggestions.view_all'
+            defaultMessage='View all'
+          />
+        </ListSectionViewAll>
       </ListSection>
     </ul>
   );

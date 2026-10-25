@@ -47,3 +47,24 @@
 
   padding-inline: var(--space-2);
 }
+
+.viewAll {
+  padding: var(--space-1) var(--space-2) var(--space-2);
+
+  @include mixins.type-meta;
+
+  :any-link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-text-primary);
+      text-decoration: underline;
+    }
+  }
+}
+
+.end {
+  text-align: end;
+}

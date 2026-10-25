@@ -4,8 +4,10 @@ import { FormattedMessage } from 'react-intl';
 
 import type { List as ImmutableList, Map as ImmutableMap } from 'immutable';
 
-import { ListSection } from '@/mastodon/features/navigation_panel/redesign/list_section';
-import { NavigationLink } from '@/mastodon/features/navigation_panel/redesign/navigation_link';
+import {
+  ListSection,
+  ListSectionViewAll,
+} from '@/mastodon/features/navigation_panel/redesign/list_section';
 import { fetchTrendingHashtags } from 'mastodon/actions/trends';
 import { ImmutableHashtag as Hashtag } from 'mastodon/components/hashtag';
 import { showTrends } from 'mastodon/initial_state';
@@ -61,14 +63,12 @@ export const TrendingTags: React.FC = () => {
             <Hashtag hashtag={tag} />
           </li>
         ))}
-        <NavigationLink key='view-all' to='/explore/tags'>
-          <span className={classes.more}>
-            <FormattedMessage
-              id='tabs_bar.followed_tags_view_all'
-              defaultMessage='View all'
-            />
-          </span>
-        </NavigationLink>
+        <ListSectionViewAll key='view-all' to='/explore/tags' align='end'>
+          <FormattedMessage
+            id='tabs_bar.followed_tags_view_all'
+            defaultMessage='View all'
+          />
+        </ListSectionViewAll>
       </ListSection>
     </ul>
   );

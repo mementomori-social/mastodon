@@ -51,7 +51,7 @@ import { FooterLinks } from '../../discovery_panel/footer_links';
 import { NavigationAccountCardAndMenu } from './account_card_and_menu';
 import { NavigationHeader } from './header';
 import { useHomeLink } from './home_link';
-import { ListSection } from './list_section';
+import { ListSection, ListSectionViewAll } from './list_section';
 import { DisabledAccountBanner, LoggedOutInfo } from './logged_out_info';
 import { NavigationLink } from './navigation_link';
 import classes from './styles.module.scss';
@@ -270,12 +270,12 @@ export const RedesignNavigationPanel: React.FC<{
                   </NavigationLink>
                 ))}
                 {followedHashtags.length > MAX_HASHTAG_COUNT && (
-                  <NavigationLink key='view-all' to='/followed_tags'>
+                  <ListSectionViewAll key='view-all' to='/followed_tags'>
                     <FormattedMessage
                       id='tabs_bar.followed_tags_view_all'
                       defaultMessage='View all'
                     />
-                  </NavigationLink>
+                  </ListSectionViewAll>
                 )}
               </ListSection>
             )}
