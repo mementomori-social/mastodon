@@ -12,6 +12,7 @@ RSpec.describe FetchLinkCardService do
     stub_request(:get, 'http://example.com/html').to_return(headers: { 'Content-Type' => 'text/html' }, body: html)
     stub_request(:get, 'http://example.com/not-found').to_return(status: 404, headers: { 'Content-Type' => 'text/html' }, body: html)
     stub_request(:get, 'http://example.com/text').to_return(status: 404, headers: { 'Content-Type' => 'text/plain' }, body: 'Hello')
+    stub_request(:get, 'http://example.com/limited.png').to_return(status: 429)
     stub_request(:get, 'http://example.com/redirect').to_return(status: 302, headers: { 'Location' => 'http://example.com/html' })
     stub_request(:get, 'http://example.com/redirect-to-404').to_return(status: 302, headers: { 'Location' => 'http://example.com/not-found' })
     stub_request(:get, 'http://example.com/oembed?url=http://example.com/html').to_return(headers: { 'Content-Type' => 'application/json' }, body: '{ "version": "1.0", "type": "link", "title": "oEmbed title" }')
@@ -47,6 +48,16 @@ RSpec.describe FetchLinkCardService do
         expect(status.preview_card).to_not be_nil
         expect(status.preview_card.url).to eq 'http://example.com/html'
         expect(status.preview_card.title).to eq 'Hello world'
+      end
+    end
+
+    context 'with an image that is rate limited' do
+      let(:status) { Fabricate(:status, text: 'http://example.com/html') }
+      let(:html) { '<!doctype html><title>Hello world</title><meta property="og:image" content="http://example.com/limited.png">' }
+
+      it 'creates the card without an image and retries the image later' do
+        expect(status.preview_card.image_file_name).to be_nil
+        expect(PreviewCardImageRetryWorker).to have_enqueued_sidekiq_job(status.preview_card.id, 'http://example.com/limited.png')
       end
     end
 

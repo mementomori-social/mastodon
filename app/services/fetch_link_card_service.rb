@@ -181,5 +181,12 @@ class FetchLinkCardService < BaseService
     end
 
     @card.save_with_optional_image! unless @card.title.blank? && @card.html.blank?
+    retry_missing_image(link_details_extractor.image)
+  end
+
+  def retry_missing_image(image_url)
+    return if image_url.blank? || !@card.persisted? || @card.image_file_name.present?
+
+    PreviewCardImageRetryWorker.perform_in(PreviewCardImageRetryWorker::DELAY, @card.id, image_url)
   end
 end
