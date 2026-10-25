@@ -7,6 +7,8 @@ import { Menu, MenuList, MenuTrigger } from '@/mastodon/components/menu';
 
 import type { IconButtonProps } from '../button';
 
+const MENU_MAX_WIDTH = 200;
+
 type ColumnSettingsMenuProps = {
   icon?: IconButtonProps['icon'];
   children: React.ReactNode;
@@ -38,7 +40,11 @@ export const ColumnSettingsMenu: React.FC<ColumnSettingsMenuProps> = ({
           />
         )}
       </MenuTrigger>
-      <MenuList placement='bottom-end' strategy='fixed'>
+      <MenuList
+        placement='bottom-end'
+        strategy='fixed'
+        maxWidth={MENU_MAX_WIDTH}
+      >
         {children}
       </MenuList>
     </Menu>
