@@ -9,13 +9,12 @@ import { AccountBio } from 'mastodon/components/account_bio';
 import { Avatar } from 'mastodon/components/avatar';
 import { Button } from 'mastodon/components/button';
 import { FollowersCounter } from 'mastodon/components/counters';
-import { DisplayName } from 'mastodon/components/display_name';
+import { useAccountHandle } from 'mastodon/components/display_name/default';
+import { DisplayNameSimple } from 'mastodon/components/display_name/simple';
 import { LoadingIndicator } from 'mastodon/components/loading_indicator';
-import {
-  ModalShell,
-  ModalTitle,
-} from 'mastodon/components/modal_shell/redesign';
+import { ModalShell } from 'mastodon/components/modal_shell/redesign';
 import { ShortNumber } from 'mastodon/components/short_number';
+import { domain } from 'mastodon/initial_state';
 import { useAppDispatch, useAppSelector } from 'mastodon/store';
 
 import type { BaseConfirmationModalProps } from './confirmation_modal';
@@ -37,6 +36,7 @@ export const ConfirmFollowModal: React.FC<
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const account = useAppSelector((state) => state.accounts.get(accountId));
+  const handle = useAccountHandle(account, domain);
 
   useEffect(() => {
     if (!account) {
@@ -55,19 +55,25 @@ export const ConfirmFollowModal: React.FC<
     : messages.follow;
 
   return (
-    <ModalShell maxWidth={380} aria-label={intl.formatMessage(followLabel)}>
+    <ModalShell
+      maxWidth={380}
+      className={classes.modal}
+      aria-label={intl.formatMessage(followLabel)}
+    >
       {account ? (
         <>
-          <ModalTitle onClose={onClose} noFocus>
+          <div className={classes.header}>
             <Link
               to={`/@${account.acct}`}
               className={classes.names}
               onClick={onClose}
             >
-              <Avatar account={account} size={64} />
-              <DisplayName account={account} />
+              <DisplayNameSimple account={account} />
+              <span className={classes.handle}>{handle}</span>
             </Link>
-          </ModalTitle>
+
+            <Avatar account={account} size={64} />
+          </div>
 
           <AccountBio accountId={account.id} className={classes.bio} />
 

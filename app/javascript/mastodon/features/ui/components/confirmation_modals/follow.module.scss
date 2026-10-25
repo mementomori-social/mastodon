@@ -1,18 +1,58 @@
+@use '@/styles/mastodon/mixins';
+
+// Repeated to keep the card shape where themes flatten every dialog
+.modal.modal.modal {
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-4);
+  background: var(--color-bg-primary);
+}
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+}
+
 .names {
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  color: inherit;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  color: var(--color-text-primary);
   text-decoration: none;
+
+  @include mixins.type-body;
+
+  font-weight: 600;
+}
+
+.handle {
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font-weight: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bio {
   display: -webkit-box;
   overflow: hidden;
+  color: var(--color-text-secondary);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+
+  a {
+    text-decoration: none;
+  }
 }
 
 .numbers {
   color: var(--color-text-secondary);
+
+  strong {
+    color: var(--color-text-primary);
+  }
 }
