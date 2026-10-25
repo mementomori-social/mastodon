@@ -52,3 +52,25 @@
   align-items: baseline;
   gap: var(--space-1) var(--space-2);
 }
+
+.sponsor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  a:hover,
+  a:focus-visible {
+    color: var(--color-text-primary);
+  }
+}
+
+.logo {
+  display: inline-block;
+  width: 87px;
+  height: 16px;
+  vertical-align: middle;
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  transition: color 0.2s;
+}
