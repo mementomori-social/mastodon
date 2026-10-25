@@ -6,6 +6,7 @@ import { includeMultiColumnPaths } from '@/mastodon/utils/react_router';
 
 import { FooterLinks } from './footer_links';
 import classes from './styles.module.scss';
+import { TrendingTags } from './trending_tags';
 
 /**
  * Don't display the search on editing flows and the search/explore
@@ -40,6 +41,8 @@ export const DiscoveryPanel: React.FC = () => {
       {signedIn && isRouteWithSearchBar && (
         <Search singleColumn context='sidebar' />
       )}
+
+      {isRouteWithSearchBar && <TrendingTags />}
 
       <footer className={classes.footer}>
         <FooterLinks context='search' />
