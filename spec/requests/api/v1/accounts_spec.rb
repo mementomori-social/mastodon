@@ -104,6 +104,43 @@ RSpec.describe '/api/v1/accounts' do
     let(:agreement) { nil }
     let(:date_of_birth) { nil }
 
+    context 'when API registrations require an invite' do
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with('API_REGISTRATIONS_REQUIRE_INVITE').and_return('true')
+      end
+
+      it 'returns http forbidden without an invite code' do
+        subject
+
+        expect(response).to have_http_status(403)
+      end
+
+      context 'when the IP is also blocked' do
+        before { Fabricate(:ip_block, ip: '127.0.0.1', severity: :sign_up_block) }
+
+        it 'returns http forbidden once' do
+          subject
+
+          expect(response).to have_http_status(403)
+        end
+      end
+
+      context 'with a valid invite code' do
+        subject do
+          post '/api/v1/accounts', headers: headers, params: { username: 'test', password: '12345678', email: 'hello@world.tld', agreement: 'true', date_of_birth: 20.years.ago.to_date.to_s, invite_code: invite.code }
+        end
+
+        let(:invite) { Fabricate(:invite, user: user, max_uses: nil, expires_at: nil) }
+
+        it 'creates the account' do
+          subject
+
+          expect(response).to have_http_status(200)
+        end
+      end
+    end
+
     context 'when not using client credentials token' do
       let(:token) { Fabricate(:accessible_access_token, application: client_app, scopes: 'read write', resource_owner_id: user.id) }
 
