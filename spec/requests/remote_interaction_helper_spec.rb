@@ -28,7 +28,7 @@ RSpec.describe 'Remote Interaction Helper' do
       default-src 'none';
       frame-ancestors 'self';
       form-action 'none';
-      script-src 'self' #{local_domain} 'wasm-unsafe-eval';
+      script-src 'self' #{local_domain} 'wasm-unsafe-eval' analytics.dude.fi;
       connect-src https:
     CSP
   end
