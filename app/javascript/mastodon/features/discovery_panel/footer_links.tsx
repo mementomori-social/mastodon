@@ -3,7 +3,6 @@ import { FormattedMessage } from 'react-intl';
 import { NavLink } from 'react-router-dom';
 
 import upcloudLogo from '@/images/upcloud-logo-black.svg';
-
 import {
   statusPageUrl,
   termsOfServiceEnabled,
@@ -130,10 +129,12 @@ export const FooterLinks: React.FC<{
       </section>
 
       <section className={classes.sponsor}>
-        <FormattedMessage
-          id='footer.servers_provided_by'
-          defaultMessage='Servers proudly provided by'
-        />{' '}
+        <span className={classes.sponsorText}>
+          <FormattedMessage
+            id='footer.servers_provided_by'
+            defaultMessage='Servers proudly provided by'
+          />
+        </span>{' '}
         <a href='https://upcloud.com' target='_blank' rel='noopener sponsored'>
           <span
             role='img'
