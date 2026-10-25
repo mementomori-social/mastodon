@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# Downloads a link card image again when the first try failed, for example
-# GitHub answering 429 with a 15 minute Retry-After.
+# Downloads a link card image again when the first try hit a temporary error,
+# for example GitHub answering 429 with a 15 minute Retry-After.
 class PreviewCardImageRetryWorker
   include Sidekiq::Worker
 
@@ -19,7 +19,7 @@ class PreviewCardImageRetryWorker
 
     if card.image_file_name.present?
       card.statuses.reorder(nil).find_each { |status| Rails.cache.delete(status) }
-    elsif attempt < ATTEMPTS
+    elsif card.image_download_retryable? && attempt < ATTEMPTS
       self.class.perform_in(DELAY * (attempt + 1), card_id, image_url, attempt + 1)
     end
   end

@@ -26,6 +26,14 @@ RSpec.describe PreviewCardImageRetryWorker do
       expect(described_class).to have_enqueued_sidekiq_job(preview_card.id, image_url, 2)
     end
 
+    it 'stops when the image is gone for good' do
+      stub_request(:get, image_url).to_return(status: 404)
+
+      worker.perform(preview_card.id, image_url)
+
+      expect(described_class).to_not have_enqueued_sidekiq_job
+    end
+
     it 'stops after the last try' do
       stub_request(:get, image_url).to_return(status: 429)
 
