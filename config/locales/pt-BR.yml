@@ -972,7 +972,7 @@ pt-BR:
         preamble: A marca do seu servidor o diferencia de outros servidores na rede. Essa informação pode ser exibida em vários ambientes, como a interface web do Mastodon, aplicativos nativos, pré-visualizações de links em outros sites, aplicativos de mensagens, etc. Por isso, é melhor manter essa informação clara, curta e concisa.
         title: Marca
       captcha_enabled:
-        desc_html: Isso é baseado em scripts externos de hCaptcha, o que pode ser uma preocupação de segurança e privacidade. Além disso, <strong>isso pode tornar o processo de registro significativamente menos acessível para algumas pessoas (especialmente deficientes)</strong>. Por estas razões, favor considerar medidas alternativas como o registro baseado em aprovação ou em convite.
+        desc_html: Isso é baseado em scripts externos de um fornecedor CAPTCHA de terceiros (hCaptcha ou Cloudflare Turnstile, configurado pela variável de ambiente CAPTCHA_PROVIDER), o que pode ser uma preocupação de segurança e privacidade. Além disso, <strong>isso pode tornar o processo de registro significativamente menos acessível para algumas pessoas (especialmente deficientes)</strong>. Por estas razões, favor considerar medidas alternativas como o registro baseado em aprovação ou em convite.
         title: Exigir que novos usuários resolvam um CAPTCHA para confirmar sua conta
       content_retention:
         danger_zone: Zona de perigo
@@ -1393,6 +1393,8 @@ pt-BR:
   auth:
     apply_for_account: Solicitar uma conta
     captcha_confirmation:
+      error_html: 'A verificação CAPTCHA falhou: %{message}'
+      error_unknown: Não foi possível verificar o CAPTCHA, tente novamente em instantes.
       help_html: Se você tiver problemas para resolver o CAPTCHA, entre em contato conosco através do %{email} e poderemos ajudá-lo.
       hint_html: Só mais uma coisa! Precisamos confirmar que você é um humano (isso é para que possamos evitar o spam!). Resolva o CAPTCHA abaixo e clique em "Continuar".
       title: Verificação de segurança
