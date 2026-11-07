@@ -65,6 +65,7 @@ fi:
         setting_display_media_hide_all: Varoita ennen kaiken mediasisällön näyttämistä
         setting_display_media_show_all: Näytä kaikki mediasisältö varoittamatta, mukaan lukien arkaluonteiseksi merkitty sisältö
         setting_emoji_style: Miten emojit näkyvät. ”Automaattinen” pyrkii käyttämään natiiveja emojeita, mutta Twemoji-emojeita käytetään varavaihtoehtoina vanhoissa selaimissa.
+        setting_hide_translate_languages: Käännösnappi piilotetaan postauksista, jotka on postattu valituilla kielillä.
         setting_quick_boosting_html: Kun käytössä, %{boost_icon} Tehosta-kuvakkeen painaminen tehostaa välittömästi sen sijaan, että Tehosta/Lainaa-pudotusvalikko avautuisi. Siirtää lainaustoiminnon %{options_icon} (Valinnat) -⁠valikkoon.
         setting_show_follow_badges: Lisää pienen seuraamispainikkeen niiden käyttäjien profiilikuvaan, joita et vielä seuraa
         setting_use_blurhash: Liukuvärit perustuvat piilotettujen kuvien väreihin mutta sumentavat yksityiskohdat
@@ -265,6 +266,7 @@ fi:
         setting_emoji_style: Emojityyli
         setting_expand_spoilers: Laajenna aina sisältövaroituksilla merkityt julkaisut
         setting_hide_network: Piilota verkostotietosi
+        setting_hide_translate_languages: Piilota käännösnappi
         setting_missing_alt_text_modal: Varoita ennen kuin julkaisen mediaa ilman tekstivastinetta
         setting_quick_boosting: Ota nopea tehostus käyttöön
         setting_reduce_motion: Vähennä animaatioiden liikettä

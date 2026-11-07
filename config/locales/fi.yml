@@ -2183,6 +2183,7 @@ fi:
     other: Muut
     posting_defaults: Julkaisun oletukset
     public_timelines: Julkiset aikajanat
+    translations: Käännökset
   privacy:
     email_subscriptions: Lähetä julkaisut sähköpostitse
     email_subscriptions_hint_html: Lisää profiiliisi sähköpostintilauslomake, joka näkyy kirjautumattomille käyttäjille. Kun vierailijat syöttävät sähköpostiosoitteensa ja hyväksyvät tilauksen, Mastodon lähettää sähköpostipäivityksiä julkisista julkaisuistasi.
