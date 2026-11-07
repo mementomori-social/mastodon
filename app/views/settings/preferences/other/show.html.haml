@@ -28,5 +28,21 @@
               required: false,
               wrapper: :with_block_label
 
+  %h2= t 'preferences.translations'
+
+  = f.simple_fields_for :settings, current_user.settings do |ff|
+    .fields-group
+      = ff.input :'web.hide_translate_languages',
+                 as: :check_boxes,
+                 collection_wrapper_tag: 'ul',
+                 collection: filterable_languages,
+                 hint: I18n.t('simple_form.hints.defaults.setting_hide_translate_languages'),
+                 include_blank: false,
+                 item_wrapper_tag: 'li',
+                 label: I18n.t('simple_form.labels.defaults.setting_hide_translate_languages'),
+                 label_method: ->(locale) { native_locale_name(locale) },
+                 required: false,
+                 wrapper: :with_block_label
+
   .actions
     = f.button :button, t('generic.save_changes'), type: :submit

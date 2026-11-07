@@ -35,6 +35,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:show_follow_badges] = object_account_user.setting_show_follow_badges
       store[:show_trends]       = Setting.trends && object_account_user.setting_trends
       store[:emoji_style]       = object_account_user.settings['web.emoji_style']
+      store[:hide_translate_languages] = object_account_user.settings['web.hide_translate_languages']
       store[:display_own_boosts] = object_account_user.setting_display_own_boosts
       store[:display_own_posts] = object_account_user.setting_display_own_posts
       store[:wrapstodon]        = wrapstodon
