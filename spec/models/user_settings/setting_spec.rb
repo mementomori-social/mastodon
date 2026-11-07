@@ -80,6 +80,14 @@ RSpec.describe UserSettings::Setting do
         expect(subject.type_cast(1)).to eq '1'
       end
     end
+
+    context 'when default value is an array' do
+      let(:default) { [] }
+
+      it 'returns the array without blank values' do
+        expect(subject.type_cast(['', 'fi', 'sv'])).to eq %w(fi sv)
+      end
+    end
   end
 
   describe '#to_a' do

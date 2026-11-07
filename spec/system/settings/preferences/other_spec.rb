@@ -13,11 +13,19 @@ RSpec.describe 'Settings preferences other page' do
     expect(page)
       .to have_private_cache_control
 
-    check language_field(:es)
-    check language_field(:fr)
+    within('.user_chosen_languages') do
+      check language_field(:es)
+      check language_field(:fr)
+    end
+
+    within('.user_settings_web\\.hide_translate_languages') do
+      check language_field(:fi)
+      check language_field(:sv)
+    end
 
     expect { save_changes }
       .to change { user.reload.chosen_languages }.to(%w(es fr))
+      .and change { user.reload.settings['web.hide_translate_languages'] }.from([]).to(%w(fi sv))
     expect(page)
       .to have_title(I18n.t('settings.preferences'))
   end

@@ -23,6 +23,7 @@ interface InitialStateMeta {
   display_media: string;
   domain: string;
   expand_spoilers?: boolean;
+  hide_translate_languages?: string[];
   limited_federation_mode: boolean;
   locale: string;
   mascot: string | null;
@@ -124,6 +125,7 @@ export const domain = getMeta('domain');
 export const emojiStyle = getMeta('emoji_style') ?? 'auto';
 export const expandSpoilers = getMeta('expand_spoilers');
 export const forceSingleColumn = !getMeta('advanced_layout');
+export const hideTranslateLanguages = getMeta('hide_translate_languages') ?? [];
 export const limitedFederationMode = getMeta('limited_federation_mode');
 export const mascot = getMeta('mascot');
 export const me = getMeta('me');

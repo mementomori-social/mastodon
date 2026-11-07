@@ -19,6 +19,6 @@ class Settings::Preferences::BaseController < Settings::BaseController
   end
 
   def user_params
-    params.expect(user: [:locale, :time_zone, chosen_languages: [], settings_attributes: UserSettings.keys])
+    params.expect(user: [:locale, :time_zone, chosen_languages: [], settings_attributes: UserSettings.permitted_keys])
   end
 end
