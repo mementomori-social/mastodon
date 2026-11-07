@@ -2,11 +2,16 @@ import { useCallback } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
+import type { IconProps } from '@phosphor-icons/react';
 import { HouseIcon, MagicWandIcon } from '@phosphor-icons/react';
 
 import { expandHomeTimeline } from '@/mastodon/actions/timelines';
 import { isRankedHomeEnabled } from '@/mastodon/selectors/settings';
 import { useAppDispatch, useAppSelector } from '@/mastodon/store';
+
+const ForYouIcon: React.FC<IconProps> = (props) => (
+  <MagicWandIcon {...props} data-for-you />
+);
 
 /**
  * The home link reads "For you" while the ranked feed is on, and clicking it
@@ -23,7 +28,7 @@ export const useHomeLink = () => {
   }, [dispatch, ranked]);
 
   return {
-    iconComponent: ranked ? MagicWandIcon : HouseIcon,
+    iconComponent: ranked ? ForYouIcon : HouseIcon,
     label: ranked ? (
       <FormattedMessage id='column.for_you' defaultMessage='For you' />
     ) : (
