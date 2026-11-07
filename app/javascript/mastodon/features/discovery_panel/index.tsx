@@ -10,14 +10,10 @@ import { TrendingTags } from './trending_tags';
 import { WhoToFollow } from './who_to_follow';
 
 /**
- * Don't display the search on editing flows and the search/explore
- * pages that have their own search field.
+ * Don't display the search on editing flows and the search page,
+ * which has its own search field.
  */
 const ROUTES_WITHOUT_SEARCH_BAR = includeMultiColumnPaths([
-  '/explore',
-  '/explore/tags',
-  '/explore/suggestions',
-  '/explore/links',
   '/search',
   '/start',
   '/start/profile',
@@ -31,7 +27,7 @@ const ROUTES_WITHOUT_SEARCH_BAR = includeMultiColumnPaths([
 
 /**
  * Editing flows keep the sidebar quiet; everywhere else shows trends and
- * suggestions, including the explore pages without the search bar.
+ * suggestions.
  */
 const ROUTES_WITHOUT_DISCOVERY = includeMultiColumnPaths([
   '/start',
