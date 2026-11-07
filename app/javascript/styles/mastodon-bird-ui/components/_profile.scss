@@ -43,6 +43,7 @@
 }
 
 ._comp_account_header__name {
+
   &,
   > h1,
   > h1 > bdi {
@@ -61,21 +62,21 @@
   h1 small {
     color: var(--color-light-purple);
   }
+}
 
-  // "Follows you"
-  > ._comp_badge__default._comp_badge__badge {
-    background-color: var(--color-dark);
-    color: var(--color-light-text);
-    font-size: 11px;
-    font-weight: 500;
-    line-height: 12px;
-    opacity: 1;
-    padding: 4px 6px;
-    transform: translate(-1px, 1px);
+// "Follows you"
+._comp_account_header__name > ._comp_badge__default._comp_badge__badge {
+  background-color: var(--color-dark);
+  color: var(--color-light-text);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 12px;
+  opacity: 1;
+  padding: 4px 6px;
+  transform: translate(-1px, 1px);
 
-    > svg {
-      display: none;
-    }
+  > svg {
+    display: none;
   }
 }
 
@@ -114,9 +115,8 @@
   }
 }
 
-// Follow, Message and Unfollow: outlined, 38px tall with 10px sides
-[class*='_comp_account_header__buttons']
-  button._comp_button_redesign__base:not(._comp_button_redesign__iconOnly) {
+// Follow, Message, Unfollow and Edit profile: outlined, 38px tall with 10px sides
+[class*='_comp_account_header__buttons'] :is(a, button)._comp_button_redesign__base:not(._comp_button_redesign__iconOnly) {
   font-size: 15px;
   height: 38px;
   line-height: 22px;
@@ -124,15 +124,16 @@
   padding-inline: 10px;
 }
 
-[class*='_comp_account_header__buttons']
-  button._comp_button_redesign__accent._comp_button_redesign__solid {
+[class*='_comp_account_header__buttons'] :is(a, button):is(
+    ._comp_button_redesign__accent._comp_button_redesign__solid,
+    ._comp_button_redesign__neutral._comp_button_redesign__tonal
+  ) {
   background: transparent;
   box-shadow: inset 0 0 0 1px var(--color-outer-space);
   color: var(--color-fg);
 }
 
-[class*='_comp_account_header__buttons']
-  button._comp_button_redesign__iconOnly {
+[class*='_comp_account_header__buttons'] button._comp_button_redesign__iconOnly {
   background: transparent;
   box-shadow: inset 0 0 0 1px var(--color-outer-space);
   color: var(--color-fg);
@@ -140,9 +141,7 @@
   width: 38px;
 }
 
-[class*='_comp_account_header__buttons']
-  button._comp_button_redesign__iconOnly[aria-haspopup='menu']
-  svg {
+[class*='_comp_account_header__buttons'] button._comp_button_redesign__iconOnly[aria-haspopup='menu'] svg {
   background: var(--icon-more) center / 18px no-repeat;
 
   path {
@@ -189,25 +188,25 @@
   flex-wrap: wrap;
   gap: 4px 6px;
   margin-bottom: 16px;
+}
 
-  ._comp_badge__badge._comp_badge__badge {
-    background: transparent;
-    border: 1px solid currentColor;
-    border-radius: 8px;
-    color: var(--color-accent);
-    font-size: 13px;
-    gap: 4px;
-    line-height: 20px;
-    padding: 4px 8px 4px 4px;
+._comp_account_header__badges ._comp_badge__badge._comp_badge__badge {
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  color: var(--color-accent);
+  font-size: 13px;
+  gap: 4px;
+  line-height: 20px;
+  padding: 4px 8px 4px 4px;
 
-    // v5 paints the shield with its own gradient
-    > svg {
-      height: 17px;
+  > svg {
+    height: 17px;
+  }
 
-      path:first-child {
-        fill: currentColor;
-      }
-    }
+  // v5 paints the shield with its own gradient
+  > svg path:first-child {
+    fill: currentColor;
   }
 }
 
@@ -222,9 +221,7 @@
 }
 
 // Only the "View all pinned posts" row carries the bottom border
-._feat_account_timeline__statusWrapper
-  > article:has(+ [data-id='pinned-view-all'])
-  ._comp_status__variantFeed {
+._feat_account_timeline__statusWrapper > article:has(+ [data-id='pinned-view-all']) ._comp_status__variantFeed {
   border-bottom: 0;
 }
 
@@ -235,20 +232,20 @@
   display: inline-flex;
   gap: 4px;
 
-  svg {
-    background-image: var(--icon-verified-smaller);
-    background-repeat: no-repeat;
-    height: 15px;
-    width: 15px;
-
-    path {
-      display: none;
-    }
-  }
-
   a {
     color: var(--color-accent);
     font-weight: 400;
+  }
+}
+
+._comp_account_list_item__verifiedBadge svg {
+  background-image: var(--icon-verified-smaller);
+  background-repeat: no-repeat;
+  height: 15px;
+  width: 15px;
+
+  path {
+    display: none;
   }
 }
 

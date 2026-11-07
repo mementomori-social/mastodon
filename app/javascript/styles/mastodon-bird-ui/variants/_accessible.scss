@@ -1,4 +1,4 @@
-@use 'accessible-base';
+@use "accessible-base";
 @include accessible-base.theme(
   $font-size: 18px,
   $font-size-smaller: 18px,

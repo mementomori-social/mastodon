@@ -1,5 +1,7 @@
-// Timeline posts: 48px avatar beside an inline name, handle and date row
-._comp_status__variantFeed {
+// Timeline posts and thread replies: 48px avatar beside an inline name,
+// handle and date row
+._comp_status__variantFeed,
+._comp_status__variantThread {
   --avatar-size: 48px;
   --col-gap: 12px;
 
@@ -40,9 +42,16 @@
     order: 1;
   }
 
+  // Like X: reply, boost and like in equal slots, bookmark and menu on the right
   ._comp_status__actions {
-    justify-content: space-between;
+    gap: 12px;
+    justify-content: flex-start;
     max-width: 100%;
+  }
+
+  ._comp_status__actions > button:nth-of-type(-n + 3) {
+    flex: 1 1 0;
+    justify-content: flex-start;
   }
 }
 
@@ -99,11 +108,11 @@ a._comp_status_header__nameLink {
   }
 }
 
-// Action bar: 19px icons with 13px counters in the dim colour, as in v4
+// Action bar: 19px icons with 13px counters in the dim colour and a round
+// grey bubble behind the icon on hover, as in v4
 ._comp_status__actions > button._comp_button_redesign__base,
-._comp_status__actions
-  .status__action-bar__button-wrapper
-  > button._comp_button_redesign__base {
+._comp_status__actions .status__action-bar__button-wrapper > button._comp_button_redesign__base {
+  --bg-hover: transparent;
   color: var(--color-dim);
   font-size: 13px;
   font-weight: 500;
@@ -112,7 +121,28 @@ a._comp_status_header__nameLink {
   line-height: 19px;
   margin: 0 !important;
   min-height: 24px;
+  overflow: visible;
   padding: 0;
+  position: relative;
+
+  &::after {
+    background-color: rgb(96 105 132 / 15%);
+    border-radius: 50%;
+    content: '';
+    height: 34px;
+    left: calc(9.5px - 17px);
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - 17px);
+    transition: opacity 150ms;
+    width: 34px;
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    opacity: 1;
+  }
 
   svg {
     height: 19px;
@@ -125,6 +155,18 @@ a._comp_status_header__nameLink {
     line-height: 19px;
     padding: 0;
   }
+}
+
+._comp_status__actions > button:nth-of-type(1):hover {
+  color: var(--color-accent);
+}
+
+._comp_status__actions > button:nth-of-type(2):hover {
+  color: var(--color-green);
+}
+
+._comp_status__actions > button:nth-of-type(2):hover svg {
+  background-image: var(--icon-boost-active);
 }
 
 // v4 had no share button in the bar
@@ -187,18 +229,6 @@ a._comp_status_header__nameLink {
   line-height: 22px;
   padding-inline-start: 34px;
 
-  ._comp_status_prepend__reblogIcon {
-    background: var(--icon-boost-status-prepend) center / 16px no-repeat;
-    height: 16px;
-    margin-inline-end: 8px;
-    padding: 0;
-    width: 16px;
-
-    path {
-      display: none;
-    }
-  }
-
   .account__avatar,
   ._comp_status_prepend__time {
     display: none;
@@ -206,6 +236,18 @@ a._comp_status_header__nameLink {
 
   ._comp_status_prepend__account {
     color: inherit;
+  }
+}
+
+._comp_status_prepend__root ._comp_status_prepend__reblogIcon {
+  background: var(--icon-boost-status-prepend) center / 16px no-repeat;
+  height: 16px;
+  margin-inline-end: 8px;
+  padding: 0;
+  width: 16px;
+
+  path {
+    display: none;
   }
 }
 
@@ -219,27 +261,27 @@ a._comp_status_header__nameLink {
   line-height: 20px;
   margin-top: 8px;
   padding: 0 16px;
+}
 
-  ._comp_status_meta__list {
-    color: var(--color-dim);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px 0;
-    width: 100%;
+._comp_status__variantPage ._comp_status_meta__meta ._comp_status_meta__list {
+  color: var(--color-dim);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+  width: 100%;
 
-    + ._comp_status_meta__list {
-      border-top: 1px solid var(--color-border);
-    }
+  + ._comp_status_meta__list {
+    border-top: 1px solid var(--color-border);
+  }
 
-    a {
-      color: inherit;
-    }
+  a {
+    color: inherit;
+  }
 
-    .animated-number {
-      color: var(--color-fg);
-      font-weight: 700;
-    }
+  .animated-number {
+    color: var(--color-fg);
+    font-weight: 700;
   }
 }
 
@@ -256,8 +298,7 @@ a._comp_status_header__nameLink {
 }
 
 // v5 buttons paint from --bg, --bg-hover and --fg, so set those instead of colours
-._comp_status__hashtags
-  > button._comp_button_redesign__base._comp_button_redesign__base {
+._comp_status__hashtags > button._comp_button_redesign__base._comp_button_redesign__base {
   --bg: var(--color-dark);
   --bg-hover: var(--color-accent-dark);
   --fg: var(--color-light-purple);
@@ -281,8 +322,7 @@ a._comp_status_header__nameLink {
   }
 }
 
-._comp_status__hashtagsWrapper
-  > button._comp_button_redesign__base._comp_button_redesign__base {
+._comp_status__hashtagsWrapper > button._comp_button_redesign__base._comp_button_redesign__base {
   --bg: transparent;
   --bg-hover: transparent;
   --fg: var(--color-accent);
@@ -311,6 +351,7 @@ a._comp_status_header__nameLink {
   margin-top: 6px;
 }
 
-._comp_status__variantFeed ._comp_status__footer {
+._comp_status__variantFeed ._comp_status__footer,
+._comp_status__variantThread ._comp_status__footer {
   margin-top: 8px;
 }

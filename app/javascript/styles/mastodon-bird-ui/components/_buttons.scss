@@ -7,13 +7,13 @@
 // Text-only buttons get v4's size; buttons with an icon keep v5's own spacing
 // :where keeps this general rule weak, so specific buttons can override it
 ._comp_button_redesign__base:where(
-  :not(
-    ._comp_button_redesign__iconOnly,
-    .media-gallery__actions__pill,
-    .media-gallery__alt__label,
-    :has(.icon-leading, .icon-trailing)
-  )
-) {
+    :not(
+      ._comp_button_redesign__iconOnly,
+      .media-gallery__actions__pill,
+      .media-gallery__alt__label,
+      :has(.icon-leading, .icon-trailing)
+    )
+  ) {
   font-size: 15px;
   line-height: 22px;
   min-height: 36px;
@@ -41,7 +41,6 @@
 .layout-single-column,
 .layout-multiple-columns {
   .button {
-    background-color: var(--color-accent-dark);
     border-radius: 9999px;
     font-size: var(--font-size);
     line-height: var(--line-height);
