@@ -58,21 +58,57 @@
 
 // Pinned posts: a dim label and a plain "View all" link
 ._comp_status_header__pinnedBadge._comp_badge__default {
+  align-items: baseline;
+  align-self: baseline;
   background-color: transparent;
   color: var(--color-dim);
   display: flex;
   flex: none;
-  order: 2;
+  font-size: 15px;
+  font-weight: 400;
+  gap: 4px;
+  margin-inline-start: auto;
+  order: 1;
   padding: 0;
+
+  .icon {
+    align-self: center;
+    height: 15px;
+    width: 15px;
+  }
 }
 
-[data-id='pinned-view-all'] {
+// Pinned posts: name, handle, then "Pinned" and the date at the right, as in v4
+div._comp_status_header__accountWrapper:has(+ ._comp_status_header__pinnedBadge) {
+  display: contents !important;
+
+  ._comp_status_header__date {
+    margin-inline-start: 8px !important;
+    order: 2;
+  }
+}
+
+._comp_status_header__root:has(._comp_status_header__pinnedBadge) {
+  align-items: baseline;
+
+  ._comp_status_header__avatar {
+    align-self: start;
+    order: -2;
+  }
+}
+
+[data-id='pinned-view-all'],
+[data-id='pinned-view-all']:hover,
+[data-id='pinned-view-all']:focus-within {
+  background-color: transparent;
   margin-top: -10px;
 }
 
 ._feat_account_timeline__pinnedViewAllButton:is(.button, ._comp_button__base) {
   --bg: transparent;
+  --bg-hover: transparent;
   --fg: var(--color-dim);
+
   align-items: center;
   background-color: transparent;
   border: 0;
@@ -81,10 +117,13 @@
   font-size: 13px;
   gap: 4px;
   margin: 0 0 0 auto;
-
   min-height: 0;
   padding: 8px 16px;
   width: auto;
+
+  .icon {
+    display: none;
+  }
 
   &:hover,
   &:focus {
