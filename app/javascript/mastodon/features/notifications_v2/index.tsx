@@ -20,7 +20,6 @@ import {
 } from '@/mastodon/actions/columns';
 import { submitMarkers } from '@/mastodon/actions/markers';
 import { openModal } from '@/mastodon/actions/modal';
-import { Button } from '@/mastodon/components/button';
 import { Column } from '@/mastodon/components/column';
 import {
   ColumnHeader,
@@ -76,37 +75,6 @@ const messages = defineMessages({
     defaultMessage: 'Mark all as read',
   },
 });
-
-const UnreadBar: React.FC<{
-  unreadCount: number;
-  onMarkAsRead: (() => void) | null;
-}> = ({ unreadCount, onMarkAsRead }) => {
-  return (
-    <div className={classes.unreadBar}>
-      <FormattedMessage
-        id='notifications.unread_with_count'
-        defaultMessage='{count} unread'
-        values={{ count: unreadCount }}
-        tagName='span'
-      />
-      {onMarkAsRead && (
-        <Button
-          size='sm'
-          color='accent'
-          variant='ghost'
-          leadingIcon={ChecksIcon}
-          clipPadding
-          onClick={onMarkAsRead}
-        >
-          <FormattedMessage
-            id='notifications.mark_all_as_read'
-            defaultMessage='Mark all as read'
-          />
-        </Button>
-      )}
-    </div>
-  );
-};
 
 export const Notifications: React.FC<{
   columnId?: string;
@@ -274,10 +242,6 @@ export const Notifications: React.FC<{
     <>
       {needsNotificationPermission && <NotificationsPermissionBanner />}
       {shouldShowAnnouncements && <Announcements />}
-      <UnreadBar
-        unreadCount={unreadNotificationsCount}
-        onMarkAsRead={canMarkAsRead ? handleMarkAsRead : null}
-      />
       <div className={classes.topLinks}>
         <FollowRequestsBanner />
         <FilteredNotificationsBanner />
@@ -319,6 +283,11 @@ export const Notifications: React.FC<{
         withBackButton={multiColumn && !pinned && 'auto'}
         extraButtons={
           <>
+            {canMarkAsRead && (
+              <ColumnHeaderButton icon={ChecksIcon} onClick={handleMarkAsRead}>
+                {intl.formatMessage(messages.markAsRead)}
+              </ColumnHeaderButton>
+            )}
             <ColumnHeaderButton
               icon={SlidersHorizontalIcon}
               onClick={openSettingsModal}
