@@ -18,6 +18,7 @@ import {
   useAppSelector,
 } from '@/mastodon/store/typed_functions';
 
+import { AnimatedNumber } from '../animated_number';
 import { Button, IconButton, ToggleButton, ToggleIconButton } from '../button';
 import { Icon } from '../icon';
 import {
@@ -49,7 +50,9 @@ interface StatusActionBarProps {
 
 // A zero is kept in the layout but not shown, so the icons stay put
 const ActionCount: React.FC<{ value?: number }> = ({ value }) => (
-  <span style={value ? undefined : { visibility: 'hidden' }}>{value ?? 0}</span>
+  <span style={value ? undefined : { visibility: 'hidden' }}>
+    <AnimatedNumber value={value ?? 0} />
+  </span>
 );
 
 export const StatusActionBar: React.FC<StatusActionBarProps> = ({
