@@ -6,6 +6,7 @@ namespace :mementomods do
     # Mastodon 4 theme => [Mastodon 5 theme, colour scheme, contrast], nil keeps the user's value
     migrations = {
       'mastodon-bird-ui-auto' => ['default', nil, nil],
+      'default-change-to-stars' => ['default', nil, nil],
       'mastodon-bird-ui-dark' => ['default', 'dark', nil],
       'mastodon-bird-ui-light' => ['default', 'light', nil],
       'mastodon-bird-ui-contrast' => %w(default dark high),
