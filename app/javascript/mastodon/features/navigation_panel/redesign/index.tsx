@@ -6,7 +6,6 @@ import type { Map as ImmutableMap } from 'immutable';
 
 import {
   PenNibIcon,
-  HouseIcon,
   MagnifyingGlassIcon,
   RssSimpleIcon,
   BellIcon,
@@ -51,6 +50,7 @@ import { FooterLinks } from '../../discovery_panel/footer_links';
 
 import { NavigationAccountCardAndMenu } from './account_card_and_menu';
 import { NavigationHeader } from './header';
+import { useHomeLink } from './home_link';
 import { ListSection } from './list_section';
 import { DisabledAccountBanner, LoggedOutInfo } from './logged_out_info';
 import { NavigationLink } from './navigation_link';
@@ -152,6 +152,7 @@ export const RedesignNavigationPanel: React.FC<{
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const { signedIn, permissions } = useIdentity();
+  const homeLink = useHomeLink();
   const notificationsCount = useNotificationsCount();
 
   const isManager = canManageReports(permissions);
@@ -187,8 +188,12 @@ export const RedesignNavigationPanel: React.FC<{
         <>
           {transientSingleColumn && <TransientSingleColumnCallout />}
           <ul className={classes.list}>
-            <NavigationLink to='/home' iconComponent={HouseIcon}>
-              <FormattedMessage id='tabs_bar.home' defaultMessage='Home' />
+            <NavigationLink
+              to='/home'
+              iconComponent={homeLink.iconComponent}
+              onClick={homeLink.onClick}
+            >
+              {homeLink.label}
             </NavigationLink>
             <ExploreLink />
             <PublicFeedsLink />
