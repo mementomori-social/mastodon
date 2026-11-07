@@ -54,9 +54,7 @@ export const DiscoveryPanel: React.FC = () => {
 
   return (
     <div className={classes.root}>
-      {signedIn && isRouteWithSearchBar && (
-        <Search singleColumn context='sidebar' />
-      )}
+      {isRouteWithSearchBar && <Search singleColumn context='sidebar' />}
 
       {isRouteWithDiscovery && <TrendingTags />}
       {signedIn && isRouteWithDiscovery && <WhoToFollow />}

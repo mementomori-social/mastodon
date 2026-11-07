@@ -10,13 +10,15 @@ import {
 } from '@/mastodon/features/navigation_panel/redesign/list_section';
 import { fetchTrendingHashtags } from 'mastodon/actions/trends';
 import { ImmutableHashtag as Hashtag } from 'mastodon/components/hashtag';
-import { showTrends } from 'mastodon/initial_state';
+import { me, showTrends, trendsEnabled } from 'mastodon/initial_state';
 import { useAppDispatch, useAppSelector } from 'mastodon/store';
 
 import classes from './panel.module.scss';
 
 const VISIBLE_TAGS = 4;
 const REFRESH_INTERVAL_MS = 15 * 60 * 1000;
+
+const trendsVisible = me ? showTrends : trendsEnabled;
 
 export const TrendingTags: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -28,7 +30,7 @@ export const TrendingTags: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!showTrends) {
+    if (!trendsVisible) {
       return;
     }
 
@@ -43,7 +45,7 @@ export const TrendingTags: React.FC = () => {
     };
   }, [dispatch]);
 
-  if (!showTrends || tags.isEmpty()) {
+  if (!trendsVisible || tags.isEmpty()) {
     return null;
   }
 
