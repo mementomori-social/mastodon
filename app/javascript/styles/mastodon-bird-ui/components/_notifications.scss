@@ -88,6 +88,12 @@
   }
 }
 
+// v4 showed no quoted post card under the notification excerpt
+.notification-group__main
+  ._comp_card__body:has(> ._comp_status_quote__nestedQuote) {
+  display: none;
+}
+
 .notification-group__main {
   gap: 8px;
 }
@@ -112,12 +118,22 @@
   }
 }
 
+// Hashtag pills share that background, so tint them to stay visible
+:is(.notification-group--unread, .notification-ungrouped--unread)
+  ._comp_status__hashtags
+  > button._comp_button__base._comp_button__base:not(:hover, :focus-visible) {
+  --bg: var(--color-bg-brand-soft);
+}
+
 // A notification about a post highlights as one row, header included
 .notification-ungrouped {
   transition: background-color 0.2s;
 }
 
-.notification-ungrouped:is(:focus, :hover) {
+.notification-ungrouped:not(.notification-ungrouped--unread):is(
+    :focus,
+    :hover
+  ) {
   background-color: var(--color-light-shade);
 }
 

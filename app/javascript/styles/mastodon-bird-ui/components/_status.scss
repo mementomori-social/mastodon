@@ -130,7 +130,9 @@ a._comp_status_header__nameLink {
 // Action bar: 19px icons with 13px counters in the dim colour and a round
 // grey bubble behind the icon on hover, as in v4
 ._comp_status__actions > button._comp_button__base,
-._comp_status__actions .status__action-bar__button-wrapper > button._comp_button__base {
+._comp_status__actions
+  .status__action-bar__button-wrapper
+  > button._comp_button__base {
   --bg-hover: transparent;
   color: var(--color-dim);
   font-size: 13px;
@@ -259,7 +261,9 @@ a._comp_status_header__nameLink {
   background-image: var(--icon-heart-hover);
 }
 
-._comp_status__actions > button._comp_status__actionsButtonGap[aria-pressed='true'] svg {
+._comp_status__actions
+  > button._comp_status__actionsButtonGap[aria-pressed='true']
+  svg {
   background-image: var(--icon-heart-active-red);
 }
 
@@ -450,12 +454,16 @@ html.no-reduce-motion ._comp_status__actions > button[data-like-burst] svg {
 }
 
 // The post above the opened one gets no thread line
-._feat_status__thread:has(~ ._feat_status__mainStatus) > article:first-child > ._comp_status__connectNextReply::after {
+._feat_status__thread:has(~ ._feat_status__mainStatus)
+  > article:first-child
+  > ._comp_status__connectNextReply::after {
   display: none;
 }
 
 // The thread line runs on to the next reply's avatar, as in v4
-._feat_status__thread > article[data-connect-next='true'] > ._comp_status__connectNextReply::after {
+._feat_status__thread
+  > article[data-connect-next='true']
+  > ._comp_status__connectNextReply::after {
   inset-block-end: -32px;
 }
 
@@ -506,7 +514,13 @@ html.no-reduce-motion ._comp_status__actions > button[data-like-burst] svg {
 }
 
 // Text and media behind a content warning stay hidden until shown, as in v4
-._comp_status__contentWarningBlurActive {
+._comp_status__contentWrapper._comp_status__contentWarningBlurActive {
+  display: none;
+}
+
+// Sensitive media shows the plain blurhash with its Show button, as in v4
+._comp_status_attachments__galleryWrapper
+  ._comp_status__contentWarningBlur::after {
   display: none;
 }
 
