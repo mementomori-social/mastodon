@@ -280,6 +280,7 @@ export const Notifications: React.FC<{
       <ColumnHeader
         title={intl.formatMessage(messages.title)}
         withUnreadMarker={isUnread}
+        onScrollToTop={handleLoadPending}
         withBackButton={multiColumn && !pinned && 'auto'}
         extraButtons={
           <>

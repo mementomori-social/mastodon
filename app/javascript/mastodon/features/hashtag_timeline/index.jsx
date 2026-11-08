@@ -11,7 +11,7 @@ import { isEqual } from 'lodash';
 
 import { addColumn, removeColumn, moveColumn } from 'mastodon/actions/columns';
 import { connectHashtagStream } from 'mastodon/actions/streaming';
-import { expandHashtagTimeline, clearTimeline } from 'mastodon/actions/timelines';
+import { expandHashtagTimeline, clearTimeline, loadPending } from 'mastodon/actions/timelines';
 import { Column } from '@/mastodon/components/column';
 import { identityContextPropShape, withIdentity } from 'mastodon/identity_context';
 import { remoteTopicFeedAccess, me, localTopicFeedAccess } from 'mastodon/initial_state';
@@ -44,6 +44,11 @@ class HashtagTimeline extends PureComponent {
     local: PropTypes.bool,
     hasFeedAccess: PropTypes.bool,
     multiColumn: PropTypes.bool,
+  };
+
+  handleScrollToTop = () => {
+    const { dispatch, params, local } = this.props;
+    dispatch(loadPending(`hashtag:${params.id}${local ? ':local' : ''}`));
   };
 
   handlePin = () => {
@@ -172,6 +177,7 @@ class HashtagTimeline extends PureComponent {
         <ColumnHeader
           title={title}
           withUnreadMarker={hasUnread}
+          onScrollToTop={this.handleScrollToTop}
           withBackButton={multiColumn && !pinned && 'auto'}
           extraButtons={
             <HashtagColumnMenu

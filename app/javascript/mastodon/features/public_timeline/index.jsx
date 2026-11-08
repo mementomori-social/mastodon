@@ -18,7 +18,7 @@ import { canViewFeed } from 'mastodon/permissions';
 
 import { addColumn, removeColumn, moveColumn } from '../../actions/columns';
 import { connectPublicStream } from '../../actions/streaming';
-import { expandPublicTimeline } from '../../actions/timelines';
+import { expandPublicTimeline, loadPending } from '../../actions/timelines';
 import StatusListContainer from '../ui/containers/status_list_container';
 
 import ColumnSettingsContainer from './containers/column_settings_container';
@@ -61,6 +61,11 @@ class PublicTimeline extends PureComponent {
     hasUnread: PropTypes.bool,
     onlyMedia: PropTypes.bool,
     onlyRemote: PropTypes.bool,
+  };
+
+  handleScrollToTop = () => {
+    const { dispatch, onlyMedia, onlyRemote } = this.props;
+    dispatch(loadPending(`public${onlyRemote ? ':remote' : ''}${onlyMedia ? ':media' : ''}`));
   };
 
   handlePin = () => {
@@ -145,6 +150,7 @@ class PublicTimeline extends PureComponent {
           <ColumnHeader
             title={title}
             withUnreadMarker={hasUnread}
+            onScrollToTop={this.handleScrollToTop}
             extraButtons={
               <ColumnSettingsMenu
                 labelPrefix={title}

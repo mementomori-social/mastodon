@@ -23,7 +23,7 @@ import { withBreakpoint } from 'mastodon/features/ui/hooks/useBreakpoint';
 import { Announcements } from '@/mastodon/features/announcements';
 
 import { addColumn, removeColumn, moveColumn } from '../../actions/columns';
-import { expandHomeTimeline } from '../../actions/timelines';
+import { expandHomeTimeline, loadPending } from '../../actions/timelines';
 import StatusListContainer from '../ui/containers/status_list_container';
 
 import { ColumnSettings } from './components/column_settings';
@@ -80,6 +80,10 @@ class HomeTimeline extends PureComponent {
   handleMove = (dir) => {
     const { columnId, dispatch } = this.props;
     dispatch(moveColumn(columnId, dir));
+  };
+
+  handleScrollToTop = () => {
+    this.props.dispatch(loadPending('home'));
   };
 
   handleHeaderClick = () => {
@@ -169,6 +173,7 @@ class HomeTimeline extends PureComponent {
             title={title}
             withBackButton={multiColumn && !pinned && 'auto'}
             withUnreadMarker={hasUnread}
+            onScrollToTop={this.handleScrollToTop}
             extraButtons={
               <HomeColumnSettings>
                 {multiColumn &&
