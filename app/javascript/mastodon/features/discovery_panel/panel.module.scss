@@ -22,7 +22,8 @@
   }
 }
 
-.item {
+// Doubled so the lockup's own padding never wins on load order
+.item.item {
   --lockup-padding: var(--space-2);
   --lockup-padding-block: var(--space-2);
 
