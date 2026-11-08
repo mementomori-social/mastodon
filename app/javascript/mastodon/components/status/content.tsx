@@ -18,7 +18,9 @@ import { EmojiHTML } from '../emoji/html';
 import classes from './content.module.scss';
 import { useHandlersForStatus } from './hooks';
 
-const MAX_LINES = 35;
+// As in v4: posts over 32 lines collapse to their first 15, then Read more and media
+const MAX_LINES = 32;
+const COLLAPSED_LINES = 15;
 
 export const StatusContent: React.FC<
   {
@@ -67,34 +69,30 @@ export const StatusContent: React.FC<
   const isCollapsed = !!onReadMore && collapsible && collapsed;
 
   const style = {
-    '--max-height': `${MAX_LINES}lh`,
+    '--max-height': `${COLLAPSED_LINES}lh`,
     ...props.style,
   } as React.CSSProperties;
 
   return (
-    <>
-      <div
-        {...props}
-        className={classNames(
-          className,
-          classes.root,
-          isCollapsed && classes.collapsed,
-        )}
-        style={style}
-      >
-        {text.trim().length > 0 && (
-          <EmojiHTML
-            className={classes.text}
-            ref={onRef}
-            lang={language}
-            htmlString={text}
-            extraEmojis={status.emojis}
-            {...htmlHandlers}
-          />
-        )}
-
-        {children}
-      </div>
+    <div
+      {...props}
+      className={classNames(
+        className,
+        classes.root,
+        isCollapsed && classes.collapsed,
+      )}
+      style={style}
+    >
+      {text.trim().length > 0 && (
+        <EmojiHTML
+          className={classes.text}
+          ref={onRef}
+          lang={language}
+          htmlString={text}
+          extraEmojis={status.emojis}
+          {...htmlHandlers}
+        />
+      )}
 
       {isCollapsed && (
         <Button
@@ -109,7 +107,9 @@ export const StatusContent: React.FC<
           />
         </Button>
       )}
-    </>
+
+      {children}
+    </div>
   );
 };
 
@@ -118,5 +118,6 @@ function isElementOverflowing(node: Element) {
   const lineHeightPx = parseFloat(lineHeight);
   const maxHeight = lineHeightPx * MAX_LINES;
 
-  return node.clientHeight > maxHeight || node.scrollWidth > node.clientWidth;
+  // scrollHeight keeps the full height while the text is cut short
+  return node.scrollHeight > maxHeight || node.scrollWidth > node.clientWidth;
 }

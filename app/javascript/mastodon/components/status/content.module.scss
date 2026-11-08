@@ -27,7 +27,8 @@
     }
   }
 
-  &.collapsed {
+  // Only the text is cut short, media below it stays visible
+  &.collapsed > .text {
     max-height: var(--max-height); // Set via JS.
     overflow-y: clip;
     mask-image: linear-gradient(
