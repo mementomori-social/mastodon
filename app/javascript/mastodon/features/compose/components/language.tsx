@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector } from '@/mastodon/store';
 
 import classes from '../styles.module.scss';
 
-import { useLanguageList } from './hooks';
+import { useLanguageGuess, useLanguageList } from './hooks';
 
 const messages = defineMessages({
   searchPlaceholder: {
@@ -36,6 +36,8 @@ export const LanguageButton: React.FC = () => {
   const langCode = useAppSelector(
     (state) => state.compose.get('language') as string,
   );
+  const guess = useLanguageGuess();
+  const isMismatch = !!guess && !!langCode && guess !== langCode;
 
   const [isOpen, { onToggle: toggle, onFalse: close }] = useToggle(false);
   const [triggerElement, setTriggerElement] =
@@ -46,6 +48,8 @@ export const LanguageButton: React.FC = () => {
       <Button
         ref={setTriggerElement}
         size='sm'
+        className={isMismatch ? classes.languageMismatch : undefined}
+        data-language-mismatch={isMismatch || undefined}
         leadingIcon={TranslateIcon}
         aria-expanded={isOpen}
         tooltip={{

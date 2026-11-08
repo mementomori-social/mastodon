@@ -263,6 +263,13 @@ textarea.textarea {
 
 // Language selector
 
+.languageMismatch.languageMismatch {
+  --fg: var(--color-text-warning);
+
+  color: var(--color-text-warning);
+  box-shadow: inset 0 0 0 1px var(--color-text-warning);
+}
+
 .languageMenu {
   padding: var(--space-2);
   height: 400px;

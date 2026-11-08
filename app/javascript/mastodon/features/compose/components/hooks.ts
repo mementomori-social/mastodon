@@ -23,15 +23,24 @@ export function useLanguageGuess() {
   );
   const [guess, setGuess] = useState('');
 
+  // Debounced per component, so the language button and the hint can both guess
+  const debouncedGuess = useDebouncedCallback(
+    (value: string) => {
+      void import('../util/language_detection').then(({ guessLanguage }) => {
+        setGuess(guessLanguage(value) as string);
+      });
+    },
+    500,
+    { maxWait: 1500, leading: true, trailing: true },
+  );
+
   useEffect(() => {
-    void import('../util/language_detection').then(({ debouncedGuess }) => {
-      if (text.length > 20) {
-        debouncedGuess(text, setGuess);
-      } else {
-        debouncedGuess.cancel();
-      }
-    });
-  }, [text]);
+    if (text.length > 20) {
+      debouncedGuess(text);
+    } else {
+      debouncedGuess.cancel();
+    }
+  }, [text, debouncedGuess]);
 
   // Keeping track of the previous render's text length here
   // to be able to reset the guess when the text length drops
