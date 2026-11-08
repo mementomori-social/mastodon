@@ -75,6 +75,10 @@ module User::HasSettings
     settings['web.direct_hashtag_links']
   end
 
+  def setting_notifications_in_menu
+    settings['web.notifications_in_menu']
+  end
+
   def setting_noindex
     settings['noindex']
   end

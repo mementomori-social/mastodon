@@ -30,6 +30,7 @@ import { useIdentity } from '@/mastodon/identity_context';
 import {
   disabledAccountId,
   localLiveFeedAccess,
+  notificationsInMenu,
   remoteLiveFeedAccess,
   trendsEnabled,
 } from '@/mastodon/initial_state';
@@ -195,6 +196,18 @@ export const RedesignNavigationPanel: React.FC<{
             >
               {homeLink.label}
             </NavigationLink>
+            {notificationsInMenu && (
+              <NavigationLink
+                to='/notifications'
+                iconComponent={BellIcon}
+                badgeCount={notificationsCount}
+              >
+                <FormattedMessage
+                  id='tabs_bar.notifications'
+                  defaultMessage='Notifications'
+                />
+              </NavigationLink>
+            )}
             <ExploreLink />
             <PublicFeedsLink />
 
@@ -300,17 +313,19 @@ export const RedesignNavigationPanel: React.FC<{
             {mode !== 'slide-out' && (
               <>
                 <ul className={classes.footerNav}>
-                  <NavigationLink
-                    stacked
-                    to='/notifications'
-                    iconComponent={BellIcon}
-                    badgeCount={notificationsCount}
-                  >
-                    <FormattedMessage
-                      id='tabs_bar.notifications'
-                      defaultMessage='Notifications'
-                    />
-                  </NavigationLink>
+                  {!notificationsInMenu && (
+                    <NavigationLink
+                      stacked
+                      to='/notifications'
+                      iconComponent={BellIcon}
+                      badgeCount={notificationsCount}
+                    >
+                      <FormattedMessage
+                        id='tabs_bar.notifications'
+                        defaultMessage='Notifications'
+                      />
+                    </NavigationLink>
+                  )}
                   <NavigationLink
                     stacked
                     to='/conversations'
