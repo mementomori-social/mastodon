@@ -1,9 +1,15 @@
 // stylelint-disable plugin/no-unused-custom-properties
 // Ultra accessible themes: black background, white text, larger type and
 // links, mentions and hashtags in their own colours
-@use "../variables/icons";
+@use '../variables/icons';
 
-@mixin theme($font-size, $font-size-smaller, $font-size-heading, $line-height, $root-scale) {
+@mixin theme(
+  $font-size,
+  $font-size-smaller,
+  $font-size-heading,
+  $line-height,
+  $root-scale
+) {
   // Three :root outrank the colour scheme blocks, so these stay dark in light mode too
   :root:root:root {
     @include icons.white;
@@ -112,9 +118,6 @@
     ._comp_account_header__handleHelpButton,
     ._navigation_panel_redesign_list_section__title,
     ._navigation_panel_redesign_list_section__viewAll,
-    ._feat_discovery_panel_footer_links__heading,
-    ._feat_discovery_panel_footer_links__list,
-    ._feat_discovery_panel_footer_links__sponsor,
     ._feat_followers__subtitle,
     ._feat_status__threadEnd,
     ._account_featured_components_subheading__subheading h2,
@@ -134,11 +137,17 @@
     .load-more,
     ._comp_card__title,
     ._comp_card__title a,
-    ._ui_components_link_footer__heading,
-    ._ui_components_link_footer__list a,
-    ._ui_components_link_footer__version,
     .button {
       font-size: $font-size-smaller !important;
+    }
+
+    // Footer meta stays tiny, it would otherwise fill the sidebar
+    ._feat_discovery_panel_footer_links__root,
+    ._feat_discovery_panel_footer_links__root *,
+    ._ui_components_link_footer__wrapper,
+    ._ui_components_link_footer__wrapper * {
+      font-size: 13px !important;
+      line-height: 18px !important;
     }
 
     // The stacked footer links share a narrow row
