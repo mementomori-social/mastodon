@@ -255,6 +255,7 @@ fi:
         setting_default_sensitive: Merkitse media aina arkaluonteiseksi
         setting_default_spoiler_field: Käytä sisältövaroituksia oletuksena
         setting_delete_modal: Varoita ennen kuin poistan julkaisun
+        setting_direct_hashtag_links: Avaa hashtagit suoraan
         setting_disable_hover_cards: Poista käytöstä profiilin esikatselu osoitettaessa
         setting_disable_swiping: Poista pyyhkäisyeleet käytöstä
         setting_display_media: Median näkyminen
@@ -268,6 +269,7 @@ fi:
         setting_hide_network: Piilota verkostotietosi
         setting_hide_translate_languages: Piilota käännösnappi
         setting_missing_alt_text_modal: Varoita ennen kuin julkaisen mediaa ilman tekstivastinetta
+        setting_notifications_in_menu: Näytä ilmoitukset päävalikossa
         setting_quick_boosting: Ota nopea tehostus käyttöön
         setting_reduce_motion: Vähennä animaatioiden liikettä
         setting_show_follow_badges: Näytä seuraamispainikkeet profiilikuvissa
