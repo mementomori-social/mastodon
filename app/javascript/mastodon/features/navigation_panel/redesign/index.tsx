@@ -313,19 +313,18 @@ export const RedesignNavigationPanel: React.FC<{
             {mode !== 'slide-out' && (
               <>
                 <ul className={classes.footerNav}>
-                  {!notificationsInMenu && (
-                    <NavigationLink
-                      stacked
-                      to='/notifications'
-                      iconComponent={BellIcon}
-                      badgeCount={notificationsCount}
-                    >
-                      <FormattedMessage
-                        id='tabs_bar.notifications'
-                        defaultMessage='Notifications'
-                      />
-                    </NavigationLink>
-                  )}
+                  <NavigationLink
+                    stacked
+                    to='/notifications'
+                    iconComponent={BellIcon}
+                    // The count shows on the menu item instead when that is on
+                    badgeCount={notificationsInMenu ? 0 : notificationsCount}
+                  >
+                    <FormattedMessage
+                      id='tabs_bar.notifications'
+                      defaultMessage='Notifications'
+                    />
+                  </NavigationLink>
                   <NavigationLink
                     stacked
                     to='/conversations'
