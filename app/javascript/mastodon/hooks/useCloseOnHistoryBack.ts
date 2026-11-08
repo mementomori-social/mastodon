@@ -52,8 +52,11 @@ export function useCloseOnHistoryBack(
       );
     }
 
-    const unlisten = history.listen((_, action) => {
-      if (action === 'POP') {
+    const unlisten = history.listen((location, action) => {
+      // Back from a modal opened on top lands on our own entry; stay open
+      const landedKey = (location as MastodonLocation).state?.mastodonModalKey;
+
+      if (action === 'POP' && landedKey !== key) {
         close();
       }
     });
