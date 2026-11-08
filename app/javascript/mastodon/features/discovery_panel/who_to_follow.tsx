@@ -33,7 +33,7 @@ const SuggestedAccount: React.FC<{ accountId: string }> = ({ accountId }) => {
     <li>
       <LockupWrapper
         className={classes.item}
-        icon={<Avatar account={account} size={40} />}
+        icon={<Avatar account={account} size={32} />}
         sideContent={
           <FollowButton
             accountId={accountId}
