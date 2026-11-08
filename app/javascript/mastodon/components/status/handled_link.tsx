@@ -7,6 +7,7 @@ import { mergeProps } from '@react-aria/utils';
 
 import type { ApiMentionJSON } from '@/mastodon/api_types/statuses';
 import { getCollectionPath } from '@/mastodon/features/collections/utils';
+import { directHashtagLinks } from '@/mastodon/initial_state';
 import type { OnElementHandler } from '@/mastodon/utils/html';
 
 import { HashtagMenu } from '../hashtag_menu';
@@ -46,13 +47,19 @@ export const HandledLink: React.FC<
     !text.includes('%')
   ) {
     const hashtag = text.slice(1).trim();
+    const hashtagPath = `/tags/${encodeURIComponent(hashtag)}`;
+
+    if (directHashtagLinks) {
+      return (
+        <Link className={classes.hashtag} to={hashtagPath}>
+          {children}
+        </Link>
+      );
+    }
 
     return (
       <HashtagMenu tagId={hashtag} accountId={hashtagAccountId}>
-        <MenuTriggerText
-          className={classes.hashtag}
-          href={`/tags/${encodeURIComponent(hashtag)}`}
-        >
+        <MenuTriggerText className={classes.hashtag} href={hashtagPath}>
           {children}
         </MenuTriggerText>
       </HashtagMenu>

@@ -71,6 +71,10 @@ module User::HasSettings
     settings['web.show_follow_badges']
   end
 
+  def setting_direct_hashtag_links
+    settings['web.direct_hashtag_links']
+  end
+
   def setting_noindex
     settings['noindex']
   end

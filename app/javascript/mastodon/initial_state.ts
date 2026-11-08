@@ -51,6 +51,7 @@ interface InitialStateMeta {
   use_blurhash: boolean;
   use_pending_items?: boolean;
   show_follow_badges?: boolean;
+  direct_hashtag_links?: boolean;
   version: string;
   sso_redirect: string;
   status_page_url: string;
@@ -155,6 +156,7 @@ export const landingPage = getMeta('landing_page');
 export const useBlurhash = getMeta('use_blurhash');
 export const usePendingItems = getMeta('use_pending_items');
 export const showFollowBadges = getMeta('show_follow_badges');
+export const directHashtagLinks = getMeta('direct_hashtag_links');
 export const version = getMeta('version');
 export const criticalUpdatesPending = initialState?.critical_updates_pending;
 export const statusPageUrl = getMeta('status_page_url');

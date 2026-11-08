@@ -33,6 +33,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:use_blurhash]      = object_account_user.setting_use_blurhash
       store[:use_pending_items] = object_account_user.setting_use_pending_items
       store[:show_follow_badges] = object_account_user.setting_show_follow_badges
+      store[:direct_hashtag_links] = object_account_user.setting_direct_hashtag_links
       store[:show_trends]       = Setting.trends && object_account_user.setting_trends
       store[:emoji_style]       = object_account_user.settings['web.emoji_style']
       store[:hide_translate_languages] = object_account_user.settings['web.hide_translate_languages']
