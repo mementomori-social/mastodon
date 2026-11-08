@@ -93,11 +93,13 @@
   }
 }
 
-._navigation_panel_redesign_navigation_link__link[href='/home'] svg:not([data-for-you]) {
+._navigation_panel_redesign_navigation_link__link[href='/home']
+  svg:not([data-for-you]) {
   background-image: var(--icon-home);
 }
 
-._navigation_panel_redesign_navigation_link__link[href='/home'][aria-current='page'] svg:not([data-for-you]) {
+._navigation_panel_redesign_navigation_link__link[href='/home'][aria-current='page']
+  svg:not([data-for-you]) {
   background-image: var(--icon-home-column-link-active);
 }
 
@@ -105,7 +107,8 @@
   background-image: var(--icon-hashtag);
 }
 
-._navigation_panel_redesign_navigation_link__link[href^='/explore'][aria-current='page'] svg {
+._navigation_panel_redesign_navigation_link__link[href^='/explore'][aria-current='page']
+  svg {
   background-image: var(--icon-hashtag-active);
 }
 
@@ -113,7 +116,8 @@
   background-image: var(--icon-globe);
 }
 
-._navigation_panel_redesign_navigation_link__link[href^='/public'][aria-current='page'] svg {
+._navigation_panel_redesign_navigation_link__link[href^='/public'][aria-current='page']
+  svg {
   background-image: var(--icon-globe-active);
 }
 
@@ -121,7 +125,8 @@
   background-image: var(--icon-bell);
 }
 
-._navigation_panel_redesign_navigation_link__link[href^='/notifications'][aria-current='page'] svg {
+._navigation_panel_redesign_navigation_link__link[href^='/notifications'][aria-current='page']
+  svg {
   background-image: var(--icon-bell-active);
 }
 
@@ -129,7 +134,8 @@
   background-image: var(--icon-direct-messages);
 }
 
-._navigation_panel_redesign_navigation_link__link[href^='/conversations'][aria-current='page'] svg {
+._navigation_panel_redesign_navigation_link__link[href^='/conversations'][aria-current='page']
+  svg {
   background-image: var(--icon-direct-messages-active);
 }
 
@@ -137,7 +143,8 @@
   background-image: var(--icon-bookmark-column-link);
 }
 
-._navigation_panel_redesign_navigation_link__link[href^='/bookmarks'][aria-current='page'] svg {
+._navigation_panel_redesign_navigation_link__link[href^='/bookmarks'][aria-current='page']
+  svg {
   background-image: var(--icon-bookmark-column-link-active);
 }
 
@@ -145,12 +152,14 @@
   background-image: var(--icon-heart-column-link);
 }
 
-._navigation_panel_redesign_navigation_link__link[href^='/favourites'][aria-current='page'] svg {
+._navigation_panel_redesign_navigation_link__link[href^='/favourites'][aria-current='page']
+  svg {
   background-image: var(--icon-heart-column-link-active);
 }
 
 // Links inside collapsible sections (custom feeds, followed hashtags) at v5 size
-._navigation_panel_redesign_list_section__root ._navigation_panel_redesign_navigation_link__link {
+._navigation_panel_redesign_list_section__root
+  ._navigation_panel_redesign_navigation_link__link {
   --icon-size: 20px;
   font-size: 15px;
 
@@ -163,7 +172,8 @@
 }
 
 // Text-only links (followed hashtags) get an even hover pill
-._navigation_panel_redesign_list_section__root ._navigation_panel_redesign_navigation_link__link:not(
+._navigation_panel_redesign_list_section__root
+  ._navigation_panel_redesign_navigation_link__link:not(
     :has(._navigation_panel_redesign_navigation_link__icon)
   ) {
   padding-inline: 10px;
@@ -184,24 +194,28 @@
 }
 
 // Only the left navigation indents its section headers
-._navigation_panel_redesign__root ._navigation_panel_redesign_list_section__title {
+._navigation_panel_redesign__root
+  ._navigation_panel_redesign_list_section__title {
   padding-inline: 10px 30px;
 }
 
-._navigation_panel_redesign__root ._navigation_panel_redesign_list_section__viewAll {
+._navigation_panel_redesign__root
+  ._navigation_panel_redesign_list_section__viewAll {
   padding-inline: 10px;
 }
 
 ._navigation_panel_redesign_list_section__toggleIcon {
-
   background: currentColor;
   border-radius: 50%;
   box-sizing: content-box;
   color: var(--color-dim);
   height: 24px;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E") center / 24px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E")
+    center / 24px no-repeat;
   padding: 2px;
-  transition: background-color 200ms, rotate 100ms ease-in;
+  transition:
+    background-color 200ms,
+    rotate 100ms ease-in;
   width: 24px;
 
   // v4's material chevron instead of v5's caret
@@ -216,4 +230,27 @@
   ._navigation_panel_redesign_list_section__title:hover & {
     color: var(--color-fg);
   }
+}
+
+// A menu link's unread count sits on its icon as a small round badge, as in v4
+._navigation_panel_redesign_navigation_link__link:not(
+    ._navigation_panel_redesign_navigation_link__linkStacked
+  )
+  ._comp_badge__badge {
+  align-items: center;
+  background-color: var(--color-accent-dark);
+  border: 2px solid var(--color-bg-primary);
+  border-radius: 1em;
+  box-sizing: border-box;
+  color: #fff;
+  display: flex;
+  font-size: 11px;
+  font-weight: 500;
+  height: 1.7em;
+  inset: 2px auto auto 22px;
+  justify-content: center;
+  line-height: 1;
+  min-width: 1.7em;
+  padding: 0 0.4em;
+  position: absolute;
 }
