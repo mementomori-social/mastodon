@@ -43,7 +43,6 @@
 }
 
 ._comp_account_header__name {
-
   &,
   > h1,
   > h1 > bdi {
@@ -116,7 +115,8 @@
 }
 
 // Follow, Message, Unfollow and Edit profile: outlined, 38px tall with 10px sides
-[class*='_comp_account_header__buttons'] :is(a, button)._comp_button__base:not(._comp_button__iconOnly) {
+[class*='_comp_account_header__buttons']
+  :is(a, button)._comp_button__base:not(._comp_button__iconOnly) {
   font-size: 15px;
   height: 38px;
   line-height: 22px;
@@ -124,7 +124,8 @@
   padding-inline: 10px;
 }
 
-[class*='_comp_account_header__buttons'] :is(a, button):is(
+[class*='_comp_account_header__buttons']
+  :is(a, button):is(
     ._comp_button__accent._comp_button__solid,
     ._comp_button__neutral._comp_button__tonal
   ) {
@@ -139,14 +140,6 @@
   color: var(--color-fg);
   height: 38px;
   width: 38px;
-}
-
-[class*='_comp_account_header__buttons'] button._comp_button__iconOnly[aria-haspopup='menu'] svg {
-  background: var(--icon-more) center / 18px no-repeat;
-
-  path {
-    display: none;
-  }
 }
 
 // Counts as bold numbers before dim labels
@@ -221,7 +214,9 @@
 }
 
 // Only the "View all pinned posts" row carries the bottom border
-._feat_account_timeline__statusWrapper > article:has(+ [data-id='pinned-view-all']) ._comp_status__variantFeed {
+._feat_account_timeline__statusWrapper
+  > article:has(+ [data-id='pinned-view-all'])
+  ._comp_status__variantFeed {
   border-bottom: 0;
 }
 
