@@ -71,6 +71,19 @@ describe('html', () => {
       );
     });
 
+    it('gives the same keys when the same HTML is converted again', () => {
+      const input = '<p>lorem <a href="https://example.com">ipsum</a></p>';
+      const keys = (nodes: React.ReactNode[]): unknown[] =>
+        nodes.flatMap((node) =>
+          React.isValidElement<{ children?: React.ReactNode[] }>(node)
+            ? [node.key, ...keys(node.props.children ?? [])]
+            : [],
+        );
+      expect(keys(html.htmlStringToComponents(input))).toEqual(
+        keys(html.htmlStringToComponents(input)),
+      );
+    });
+
     it('uses default parsing if onElement returns undefined', () => {
       const input = '<p>lorem ipsum</p>';
       const onElement = vi.fn(() => undefined);
