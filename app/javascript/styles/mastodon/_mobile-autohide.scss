@@ -2,7 +2,7 @@
 // down and come back when scrolling up
 body.layout-single-column {
   ._comp_column_header__root,
-  ._navigation_panel_redesign_mobile_nav__root {
+  ._feat_navigation_panel_mobile_nav__root {
     transition: transform 500ms ease-in-out;
   }
 
@@ -11,7 +11,7 @@ body.layout-single-column {
       transform: translateY(-100%);
     }
 
-    ._navigation_panel_redesign_mobile_nav__root {
+    ._feat_navigation_panel_mobile_nav__root {
       transform: translateY(100%);
     }
   }
