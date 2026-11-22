@@ -61,6 +61,7 @@ RSpec.describe FetchLinkCardService do
       it 'creates the card without an image and retries the image later' do
         expect(status.preview_card.image_file_name).to be_nil
         expect(PreviewCardImageRetryWorker).to have_enqueued_sidekiq_job(status.preview_card.id, 'http://example.com/limited.png')
+        expect(PreviewCardImageRetryWorker.jobs.last['at']).to be_within(5).of(15.seconds.from_now.to_f)
       end
     end
 

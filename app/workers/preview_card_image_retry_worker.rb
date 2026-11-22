@@ -5,8 +5,8 @@
 class PreviewCardImageRetryWorker
   include Sidekiq::Worker
 
-  DELAY = 15.minutes
-  ATTEMPTS = 3
+  DELAYS = [15.seconds, 1.minute, 5.minutes, 15.minutes, 30.minutes, 45.minutes].freeze
+  ATTEMPTS = DELAYS.size
 
   sidekiq_options queue: 'pull', retry: 0, lock: :until_executed, lock_ttl: 2.hours.to_i
 
@@ -20,7 +20,7 @@ class PreviewCardImageRetryWorker
     if card.image_file_name.present?
       card.statuses.reorder(nil).find_each { |status| Rails.cache.delete(status) }
     elsif card.image_download_retryable? && attempt < ATTEMPTS
-      self.class.perform_in(DELAY * (attempt + 1), card_id, image_url, attempt + 1)
+      self.class.perform_in(DELAYS[attempt], card_id, image_url, attempt + 1)
     end
   end
 end
