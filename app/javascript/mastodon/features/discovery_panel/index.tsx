@@ -1,6 +1,7 @@
 import { useRouteMatch } from 'react-router';
 
 import { Search } from '@/mastodon/components/search';
+import { FooterLinks } from '@/mastodon/features/navigation_panel/footer_links';
 import { useIdentity } from '@/mastodon/identity_context';
 import { includeMultiColumnPaths } from '@/mastodon/utils/react_router';
 
@@ -57,6 +58,10 @@ export const DiscoveryPanel: React.FC = () => {
 
       {isRouteWithDiscovery && <TrendingTags />}
       {signedIn && isRouteWithDiscovery && <WhoToFollow />}
+
+      <footer className={classes.footer}>
+        <FooterLinks />
+      </footer>
     </div>
   );
 };

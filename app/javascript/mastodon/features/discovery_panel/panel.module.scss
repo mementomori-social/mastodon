@@ -2,7 +2,7 @@
   flex-shrink: 0;
 
   // The search form above already leaves a wide gap
-  &:first-of-type {
+  :global(.search) + & {
     margin-top: calc(-1 * var(--space-6));
   }
 

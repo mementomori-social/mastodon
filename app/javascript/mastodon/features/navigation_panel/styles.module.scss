@@ -1,4 +1,5 @@
 @use '@/styles/mastodon/mixins';
+@use '@/styles/mastodon/variables';
 
 .root {
   position: relative;
@@ -28,6 +29,7 @@
 
 .list {
   margin-inline: var(--space-6);
+  margin-bottom: var(--space-6);
 }
 
 .loggedOutContent {
@@ -43,6 +45,18 @@
   padding-inline: var(--space-8);
   padding-bottom: var(--space-6);
   background-color: var(--navigation-background-color);
+
+  :global(body.layout-single-column) & {
+    @media (width > variables.$no-gap-breakpoint) {
+      display: none;
+    }
+  }
+
+  :global(body.layout-multiple-columns) & {
+    @media (width > variables.$mobile-breakpoint) {
+      display: none;
+    }
+  }
 }
 
 .bottomScrollFade {
