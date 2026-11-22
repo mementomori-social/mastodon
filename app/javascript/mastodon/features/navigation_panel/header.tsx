@@ -14,7 +14,12 @@ import {
 import { Button, IconButton } from '@/mastodon/components/button';
 import { IconLogo } from '@/mastodon/components/logo';
 import { useIdentity } from '@/mastodon/identity_context';
-import { customAppIcon, domain, title } from '@/mastodon/initial_state';
+import {
+  customAppIcon,
+  domain,
+  newPostAtBottom,
+  title,
+} from '@/mastodon/initial_state';
 import { openNewComposer } from '@/mastodon/reducers/slices/composer';
 import { closeMobileMenu } from '@/mastodon/reducers/slices/navigation';
 import { useAppDispatch } from '@/mastodon/store';
@@ -32,12 +37,6 @@ export const NavigationHeader: React.FC<{
   onToggleCollapsed?: () => void;
 }> = ({ siteName, multiColumn, isStuck, mode, onToggleCollapsed }) => {
   const { signedIn } = useIdentity();
-  const dispatch = useAppDispatch();
-
-  const openComposer = useCallback(() => {
-    dispatch(closeMobileMenu());
-    dispatch(openNewComposer({ type: 'post' }));
-  }, [dispatch]);
 
   return (
     <header className={classes.root} data-stuck={isStuck}>
@@ -63,19 +62,32 @@ export const NavigationHeader: React.FC<{
         <>
           <MiniNav />
 
-          <Button
-            leadingIcon={PenNibIcon}
-            onClick={openComposer}
-            variant='solid'
-            color='accent'
-            size='md'
-            className={classes.newPostButton}
-          >
-            <FormattedMessage id='tabs_bar.publish' defaultMessage='New Post' />
-          </Button>
+          {!newPostAtBottom && <NewPostButton />}
         </>
       )}
     </header>
+  );
+};
+
+export const NewPostButton: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  const openComposer = useCallback(() => {
+    dispatch(closeMobileMenu());
+    dispatch(openNewComposer({ type: 'post' }));
+  }, [dispatch]);
+
+  return (
+    <Button
+      leadingIcon={PenNibIcon}
+      onClick={openComposer}
+      variant='solid'
+      color='accent'
+      size='md'
+      className={classes.newPostButton}
+    >
+      <FormattedMessage id='tabs_bar.publish' defaultMessage='New Post' />
+    </Button>
   );
 };
 

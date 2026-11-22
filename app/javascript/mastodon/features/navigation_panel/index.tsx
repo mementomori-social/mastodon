@@ -16,6 +16,7 @@ import { useScrollSensor } from '@/mastodon/hooks/useScrollSensor';
 import { useIdentity } from '@/mastodon/identity_context';
 import {
   disabledAccountId,
+  newPostAtBottom,
   notificationsInMenu,
   trendsEnabled,
 } from '@/mastodon/initial_state';
@@ -28,7 +29,7 @@ import { invokeVirtualIosKeyboard } from '@/mastodon/utils/invoke_virtual_ios_ke
 
 import { CollapsedNavigationPanel } from './collapsed';
 import { FooterLinks } from './footer_links';
-import { NavigationHeader } from './header';
+import { NavigationHeader, NewPostButton } from './header';
 import {
   useCustomFeeds,
   useFollowedHashtags,
@@ -258,6 +259,11 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
         className={classes.bottomScrollFade}
         data-stuck={!isScrolledToBottom}
       />
+      {signedIn && mode === 'static' && newPostAtBottom && (
+        <div className={classes.newPostBottom}>
+          <NewPostButton />
+        </div>
+      )}
       {bottomSensor}
     </nav>
   );

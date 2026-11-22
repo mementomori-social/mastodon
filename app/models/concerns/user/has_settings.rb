@@ -79,6 +79,10 @@ module User::HasSettings
     settings['web.notifications_in_menu']
   end
 
+  def setting_new_post_at_bottom
+    settings['web.new_post_at_bottom']
+  end
+
   def setting_noindex
     settings['noindex']
   end

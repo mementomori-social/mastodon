@@ -26,7 +26,7 @@ import {
   MenuTrigger,
 } from '@/mastodon/components/menu';
 import { FOCUS_TARGET } from '@/mastodon/components/navigation_focus_target';
-import { trendsEnabled } from '@/mastodon/initial_state';
+import { newPostAtBottom, trendsEnabled } from '@/mastodon/initial_state';
 import { openNewComposer } from '@/mastodon/reducers/slices/composer';
 import { useAppDispatch } from '@/mastodon/store';
 
@@ -73,6 +73,19 @@ export const CollapsedNavigationPanel: React.FC<{
   }, [dispatch]);
 
   const tooltipPlacement = 'right';
+
+  const newPostButton = (
+    <IconButton
+      icon={PenNibIcon}
+      onClick={openComposer}
+      variant='solid'
+      color='accent'
+      size='md'
+      tooltipPlacement={tooltipPlacement}
+    >
+      <FormattedMessage id='tabs_bar.publish' defaultMessage='New Post' />
+    </IconButton>
+  );
 
   return (
     <nav
@@ -124,18 +137,9 @@ export const CollapsedNavigationPanel: React.FC<{
           />
         </li>
 
-        <li className={classes.itemWithBottomBorder}>
-          <IconButton
-            icon={PenNibIcon}
-            onClick={openComposer}
-            variant='solid'
-            color='accent'
-            size='md'
-            tooltipPlacement={tooltipPlacement}
-          >
-            <FormattedMessage id='tabs_bar.publish' defaultMessage='New Post' />
-          </IconButton>
-        </li>
+        {!newPostAtBottom && (
+          <li className={classes.itemWithBottomBorder}>{newPostButton}</li>
+        )}
 
         {trendsEnabled && (
           <li>
@@ -245,6 +249,9 @@ export const CollapsedNavigationPanel: React.FC<{
           </li>
         )}
       </ul>
+      {newPostAtBottom && (
+        <div className={classes.newPostBottom}>{newPostButton}</div>
+      )}
     </nav>
   );
 };
