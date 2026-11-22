@@ -38,6 +38,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:new_post_at_bottom] = object_account_user.setting_new_post_at_bottom
       store[:profile_at_bottom] = object_account_user.setting_profile_at_bottom
       store[:all_options_in_menu] = object_account_user.setting_all_options_in_menu
+      store[:hide_sidebar_search] = object_account_user.setting_hide_sidebar_search
       store[:show_trends]       = Setting.trends && object_account_user.setting_trends
       store[:emoji_style]       = object_account_user.settings['web.emoji_style']
       store[:hide_translate_languages] = object_account_user.settings['web.hide_translate_languages']

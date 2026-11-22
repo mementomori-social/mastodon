@@ -8,8 +8,10 @@ import FediIcon from '@/images/icons/icon_fediverse.svg?react';
 import { fetchFollowRequests } from '@/mastodon/actions/accounts';
 import { fetchLists } from '@/mastodon/actions/lists';
 import { fetchFollowedHashtags } from '@/mastodon/actions/tags_typed';
+import { useBreakpoint } from '@/mastodon/features/ui/hooks/useBreakpoint';
 import { useIdentity } from '@/mastodon/identity_context';
 import {
+  hideSidebarSearch,
   localLiveFeedAccess,
   remoteLiveFeedAccess,
 } from '@/mastodon/initial_state';
@@ -19,6 +21,12 @@ import { selectUnreadNotificationGroupsCount } from '@/mastodon/selectors/notifi
 import { useAppDispatch, useAppSelector } from '@/mastodon/store';
 
 import { useHasAnnouncements } from '../announcements/hooks';
+
+export function useHasSearchLink(multiColumn?: boolean) {
+  const isDiscoveryHidden = useBreakpoint('discovery');
+
+  return !hideSidebarSearch || (!multiColumn && isDiscoveryHidden);
+}
 
 export function useCustomFeeds() {
   const dispatch = useAppDispatch();

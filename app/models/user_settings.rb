@@ -35,6 +35,7 @@ class UserSettings
     setting :new_post_at_bottom, default: false
     setting :profile_at_bottom, default: false
     setting :all_options_in_menu, default: false
+    setting :hide_sidebar_search, default: false
     setting :disable_swiping, default: false
     setting :disable_hover_cards, default: false
     setting :delete_modal, default: true

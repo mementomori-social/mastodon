@@ -91,6 +91,10 @@ module User::HasSettings
     settings['web.all_options_in_menu']
   end
 
+  def setting_hide_sidebar_search
+    settings['web.hide_sidebar_search']
+  end
+
   def setting_noindex
     settings['noindex']
   end

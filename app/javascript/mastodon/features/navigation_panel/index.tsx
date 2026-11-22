@@ -40,6 +40,7 @@ import { useHomeLink } from './home_link';
 import {
   useCustomFeeds,
   useFollowedHashtags,
+  useHasSearchLink,
   useNotificationsCount,
   usePublicFeedsLink,
 } from './hooks';
@@ -118,6 +119,7 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
 
   const isStatic = mode === 'static';
   const showAllOptions = isStatic && allOptionsInMenu;
+  const hasSearchLink = useHasSearchLink(multiColumn);
   const showBottomBar =
     signedIn && isStatic && (newPostAtBottom || profileAtBottom);
 
@@ -154,7 +156,7 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
             {showAllOptions && <HomeLink />}
             {(showAllOptions || notificationsInMenu) && <NotificationsLink />}
             {explore}
-            {showAllOptions && <SearchLink />}
+            {showAllOptions && hasSearchLink && <SearchLink />}
             {showAllOptions && <MessagesLink />}
             {publicFeeds}
             <NavigationLink to='/bookmarks' icon={BookmarkSimpleIcon}>

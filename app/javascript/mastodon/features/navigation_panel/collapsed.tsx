@@ -39,6 +39,7 @@ import classes from './collapsed.module.scss';
 import {
   useCustomFeeds,
   useFollowedHashtags,
+  useHasSearchLink,
   usePublicFeedsLink,
 } from './hooks';
 import {
@@ -76,6 +77,7 @@ export const CollapsedNavigationPanel: React.FC<{
     dispatch(openNewComposer({ type: 'post' }));
   }, [dispatch]);
 
+  const hasSearchLink = useHasSearchLink(multiColumn);
   const tooltipPlacement = 'right';
 
   const newPostButton = (
@@ -119,19 +121,21 @@ export const CollapsedNavigationPanel: React.FC<{
         <li>
           <MiniHomeLink tooltipPlacement={tooltipPlacement} />
         </li>
-        <li>
-          <MiniNavigationLink
-            to={{
-              pathname: '/search',
-              state: { focusTarget: FOCUS_TARGET.SEARCH },
-            }}
-            onClick={handleSearchLinkClick}
-            icon={MagnifyingGlassIcon}
-            tooltipPlacement={tooltipPlacement}
-          >
-            <FormattedMessage id='tabs_bar.search' defaultMessage='Search' />
-          </MiniNavigationLink>
-        </li>
+        {hasSearchLink && (
+          <li>
+            <MiniNavigationLink
+              to={{
+                pathname: '/search',
+                state: { focusTarget: FOCUS_TARGET.SEARCH },
+              }}
+              onClick={handleSearchLinkClick}
+              icon={MagnifyingGlassIcon}
+              tooltipPlacement={tooltipPlacement}
+            >
+              <FormattedMessage id='tabs_bar.search' defaultMessage='Search' />
+            </MiniNavigationLink>
+          </li>
+        )}
         <li>
           <MiniMessagesLink tooltipPlacement={tooltipPlacement} />
         </li>

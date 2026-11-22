@@ -70,7 +70,7 @@ export const NavigationHeader: React.FC<{
 
       {signedIn && mode === 'static' && (
         <>
-          {!allOptionsInMenu && <MiniNav />}
+          {!allOptionsInMenu && <MiniNav multiColumn={multiColumn} />}
 
           {!newPostAtBottom && <NewPostButton />}
         </>

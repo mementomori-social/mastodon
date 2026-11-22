@@ -29,7 +29,7 @@ import {
 import { handleSearchLinkClick } from '.';
 import { AccountMenuItems } from './account_menu_items';
 import { useHomeLink } from './home_link';
-import { useNotificationsCount } from './hooks';
+import { useHasSearchLink, useNotificationsCount } from './hooks';
 import classes from './mini_nav.module.scss';
 import type { MiniNavigationLinkProps } from './navigation_link';
 import { MiniNavigationLink } from './navigation_link';
@@ -37,7 +37,10 @@ import { MiniNavigationLink } from './navigation_link';
 /**
  * The small link bar at the top of the main navigation
  */
-export const MiniNav: React.FC = () => {
+export const MiniNav: React.FC<{ multiColumn?: boolean }> = ({
+  multiColumn,
+}) => {
+  const hasSearchLink = useHasSearchLink(multiColumn);
   const dispatch = useAppDispatch();
   const shouldHandleFocusRef = useRef(false);
   const searchFieldRef = useRef<HTMLInputElement>(null);
@@ -91,16 +94,21 @@ export const MiniNav: React.FC = () => {
           <li>
             <MiniHomeLink />
           </li>
-          <li>
-            <MiniNavigationLink
-              as='button'
-              icon={MagnifyingGlassIcon}
-              onClick={openSearch}
-              ref={searchButtonRef}
-            >
-              <FormattedMessage id='tabs_bar.search' defaultMessage='Search' />
-            </MiniNavigationLink>
-          </li>
+          {hasSearchLink && (
+            <li>
+              <MiniNavigationLink
+                as='button'
+                icon={MagnifyingGlassIcon}
+                onClick={openSearch}
+                ref={searchButtonRef}
+              >
+                <FormattedMessage
+                  id='tabs_bar.search'
+                  defaultMessage='Search'
+                />
+              </MiniNavigationLink>
+            </li>
+          )}
           <li>
             <MiniMessagesLink />
           </li>

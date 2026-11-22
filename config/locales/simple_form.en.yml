@@ -74,6 +74,7 @@ en:
         setting_new_post_at_bottom: Moves the New Post button from the top of the left menu to the bottom
         setting_profile_at_bottom: Shows your profile card at the bottom of the left menu, as in Mastodon 5 beta 1
         setting_all_options_in_menu: Replaces the icon row at the top with labeled items in the left menu
+        setting_hide_sidebar_search: Uses the search at the top right, search stays in the left menu only when the right sidebar doesn't fit
         setting_use_blurhash: Gradients are based on the colors of the hidden visuals but obfuscate any details
         setting_use_pending_items: Hide timeline updates behind a click instead of automatically scrolling the feed
         username: You can use letters, numbers, and underscores
@@ -286,6 +287,7 @@ en:
         setting_new_post_at_bottom: Show New Post at the bottom of the menu
         setting_profile_at_bottom: Show profile at the bottom of the menu
         setting_all_options_in_menu: Show all options in the main menu
+        setting_hide_sidebar_search: Hide search from main sidebar
         setting_show_stats_in_feed: Show interaction statistics in feeds
         setting_split_default_privacy_discoverable: Make my posts discoverable in public feed & search results
         setting_system_font_ui: Use system's default font
