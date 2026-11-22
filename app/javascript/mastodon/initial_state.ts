@@ -54,6 +54,8 @@ interface InitialStateMeta {
   direct_hashtag_links?: boolean;
   notifications_in_menu?: boolean;
   new_post_at_bottom?: boolean;
+  profile_at_bottom?: boolean;
+  all_options_in_menu?: boolean;
   version: string;
   sso_redirect: string;
   status_page_url: string;
@@ -162,6 +164,8 @@ export const showFollowBadges = getMeta('show_follow_badges');
 export const directHashtagLinks = getMeta('direct_hashtag_links');
 export const notificationsInMenu = getMeta('notifications_in_menu');
 export const newPostAtBottom = getMeta('new_post_at_bottom');
+export const profileAtBottom = getMeta('profile_at_bottom');
+export const allOptionsInMenu = getMeta('all_options_in_menu');
 export const version = getMeta('version');
 export const criticalUpdatesPending = initialState?.critical_updates_pending;
 export const statusPageUrl = getMeta('status_page_url');

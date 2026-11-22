@@ -36,6 +36,8 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:direct_hashtag_links] = object_account_user.setting_direct_hashtag_links
       store[:notifications_in_menu] = object_account_user.setting_notifications_in_menu
       store[:new_post_at_bottom] = object_account_user.setting_new_post_at_bottom
+      store[:profile_at_bottom] = object_account_user.setting_profile_at_bottom
+      store[:all_options_in_menu] = object_account_user.setting_all_options_in_menu
       store[:show_trends]       = Setting.trends && object_account_user.setting_trends
       store[:emoji_style]       = object_account_user.settings['web.emoji_style']
       store[:hide_translate_languages] = object_account_user.settings['web.hide_translate_languages']

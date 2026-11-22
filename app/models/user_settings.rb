@@ -33,6 +33,8 @@ class UserSettings
     setting :direct_hashtag_links, default: false
     setting :notifications_in_menu, default: false
     setting :new_post_at_bottom, default: false
+    setting :profile_at_bottom, default: false
+    setting :all_options_in_menu, default: false
     setting :disable_swiping, default: false
     setting :disable_hover_cards, default: false
     setting :delete_modal, default: true

@@ -1,6 +1,8 @@
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import {
+  ChatCircleDotsIcon,
+  MagnifyingGlassIcon,
   RssSimpleIcon,
   BellIcon,
   BookmarkSimpleIcon,
@@ -12,12 +14,15 @@ import {
 } from '@phosphor-icons/react';
 
 import { Callout } from '@/mastodon/components/callout/redesign';
+import { FOCUS_TARGET } from '@/mastodon/components/navigation_focus_target';
 import { useScrollSensor } from '@/mastodon/hooks/useScrollSensor';
 import { useIdentity } from '@/mastodon/identity_context';
 import {
+  allOptionsInMenu,
   disabledAccountId,
   newPostAtBottom,
   notificationsInMenu,
+  profileAtBottom,
   trendsEnabled,
 } from '@/mastodon/initial_state';
 import { transientSingleColumn } from '@/mastodon/is_mobile';
@@ -27,9 +32,11 @@ import {
 } from '@/mastodon/permissions';
 import { invokeVirtualIosKeyboard } from '@/mastodon/utils/invoke_virtual_ios_keyboard';
 
+import { AccountCard } from './account_card';
 import { CollapsedNavigationPanel } from './collapsed';
 import { FooterLinks } from './footer_links';
 import { NavigationHeader, NewPostButton } from './header';
+import { useHomeLink } from './home_link';
 import {
   useCustomFeeds,
   useFollowedHashtags,
@@ -109,6 +116,11 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
     </NavigationLink>
   );
 
+  const isStatic = mode === 'static';
+  const showAllOptions = isStatic && allOptionsInMenu;
+  const showBottomBar =
+    signedIn && isStatic && (newPostAtBottom || profileAtBottom);
+
   const publicFeedsLink = usePublicFeedsLink();
   const publicFeeds = publicFeedsLink && (
     <NavigationLink
@@ -139,8 +151,15 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
         <>
           {transientSingleColumn && <TransientSingleColumnCallout />}
           <ul className={classes.list}>
+            {showAllOptions && (
+              <>
+                <HomeLink />
+                <SearchLink />
+              </>
+            )}
             {explore}
-            {notificationsInMenu && <NotificationsLink />}
+            {(showAllOptions || notificationsInMenu) && <NotificationsLink />}
+            {showAllOptions && <MessagesLink />}
             {publicFeeds}
             <NavigationLink to='/bookmarks' icon={BookmarkSimpleIcon}>
               <FormattedMessage
@@ -259,15 +278,49 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
         className={classes.bottomScrollFade}
         data-stuck={!isScrolledToBottom}
       />
-      {signedIn && mode === 'static' && newPostAtBottom && (
-        <div className={classes.newPostBottom}>
-          <NewPostButton />
+      {showBottomBar && (
+        <div className={classes.bottomBar}>
+          {newPostAtBottom && <NewPostButton />}
+          {profileAtBottom && <AccountCard />}
         </div>
       )}
       {bottomSensor}
     </nav>
   );
 };
+
+const HomeLink: React.FC = () => {
+  const { iconComponent, label, onClick } = useHomeLink();
+
+  return (
+    <NavigationLink to='/home' icon={iconComponent} onClick={onClick}>
+      {label}
+    </NavigationLink>
+  );
+};
+
+const SearchLink: React.FC = () => (
+  <NavigationLink
+    to={{
+      pathname: '/search',
+      state: { focusTarget: FOCUS_TARGET.SEARCH },
+    }}
+    icon={MagnifyingGlassIcon}
+    onClick={handleSearchLinkClick}
+  >
+    <FormattedMessage id='tabs_bar.search' defaultMessage='Search' />
+  </NavigationLink>
+);
+
+const MessagesLink: React.FC = () => (
+  <NavigationLink to='/conversations' icon={ChatCircleDotsIcon}>
+    <FormattedMessage
+      id='tabs_bar.messages'
+      defaultMessage='Messages'
+      description='Message refers to a direct message. For languages where this is confusing, "chat" or "direct message" can be used.'
+    />
+  </NavigationLink>
+);
 
 const NotificationsLink: React.FC = () => {
   const notificationsCount = useNotificationsCount();

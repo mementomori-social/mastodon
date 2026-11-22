@@ -15,9 +15,11 @@ import { Button, IconButton } from '@/mastodon/components/button';
 import { IconLogo } from '@/mastodon/components/logo';
 import { useIdentity } from '@/mastodon/identity_context';
 import {
+  allOptionsInMenu,
   customAppIcon,
   domain,
   newPostAtBottom,
+  profileAtBottom,
   title,
 } from '@/mastodon/initial_state';
 import { openNewComposer } from '@/mastodon/reducers/slices/composer';
@@ -27,7 +29,7 @@ import { useAppDispatch } from '@/mastodon/store';
 import { getNavigationSkipLinkId } from '../ui/components/skip_links';
 
 import classes from './header.module.scss';
-import { MiniNav } from './mini_nav';
+import { MiniAccountLink, MiniNav } from './mini_nav';
 
 export const NavigationHeader: React.FC<{
   siteName?: string;
@@ -42,6 +44,14 @@ export const NavigationHeader: React.FC<{
     <header className={classes.root} data-stuck={isStuck}>
       <div className={classes.logoLockupWrapper}>
         <LogoLockup siteName={siteName} />
+        {signedIn &&
+          mode === 'static' &&
+          allOptionsInMenu &&
+          !profileAtBottom && (
+            <div className={classes.account}>
+              <MiniAccountLink menuPlacement='bottom-end' />
+            </div>
+          )}
         {signedIn && mode === 'static' && (
           <IconButton
             icon={multiColumn ? CaretLineLeftIcon : CaretLineRightIcon}
@@ -60,7 +70,7 @@ export const NavigationHeader: React.FC<{
 
       {signedIn && mode === 'static' && (
         <>
-          <MiniNav />
+          {!allOptionsInMenu && <MiniNav />}
 
           {!newPostAtBottom && <NewPostButton />}
         </>

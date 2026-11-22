@@ -91,6 +91,11 @@
   }
 }
 
+.account {
+  flex-shrink: 0;
+  width: 44px;
+}
+
 .newPostButton {
   width: 100%;
 }

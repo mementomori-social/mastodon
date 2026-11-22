@@ -8,6 +8,11 @@
   border-radius: var(--radius-3);
   transition: background-color 200ms;
 
+  > :nth-child(2) {
+    flex: 1;
+    min-width: 0;
+  }
+
   &:has(.accountLink:hover) {
     background-color: var(--color-bg-highlight);
   }
@@ -19,6 +24,11 @@
 }
 
 .accountLink {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
   // Disable default hover & focus styles
   &:hover {
     text-decoration: none !important;

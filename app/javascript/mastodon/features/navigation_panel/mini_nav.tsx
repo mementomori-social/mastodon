@@ -16,7 +16,7 @@ import { Menu, MenuList, MenuTrigger } from '@/mastodon/components/menu';
 import { Search } from '@/mastodon/components/search';
 import { useAccount } from '@/mastodon/hooks/useAccount';
 import { useIdentity } from '@/mastodon/identity_context';
-import { notificationsInMenu } from '@/mastodon/initial_state';
+import { notificationsInMenu, profileAtBottom } from '@/mastodon/initial_state';
 import {
   closeInlineSearch,
   openInlineSearch,
@@ -109,9 +109,11 @@ export const MiniNav: React.FC = () => {
               badgeCount={notificationsInMenu ? 0 : undefined}
             />
           </li>
-          <li>
-            <MiniAccountLink />
-          </li>
+          {!profileAtBottom && (
+            <li>
+              <MiniAccountLink />
+            </li>
+          )}
         </ul>
       )}
     </div>

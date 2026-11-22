@@ -26,7 +26,11 @@ import {
   MenuTrigger,
 } from '@/mastodon/components/menu';
 import { FOCUS_TARGET } from '@/mastodon/components/navigation_focus_target';
-import { newPostAtBottom, trendsEnabled } from '@/mastodon/initial_state';
+import {
+  newPostAtBottom,
+  profileAtBottom,
+  trendsEnabled,
+} from '@/mastodon/initial_state';
 import { openNewComposer } from '@/mastodon/reducers/slices/composer';
 import { useAppDispatch } from '@/mastodon/store';
 
@@ -87,6 +91,13 @@ export const CollapsedNavigationPanel: React.FC<{
     </IconButton>
   );
 
+  const accountLink = (
+    <MiniAccountLink
+      tooltipPlacement={tooltipPlacement}
+      menuPlacement='right-start'
+    />
+  );
+
   return (
     <nav
       className={classes.root}
@@ -124,18 +135,17 @@ export const CollapsedNavigationPanel: React.FC<{
         <li>
           <MiniMessagesLink tooltipPlacement={tooltipPlacement} />
         </li>
-        <li>
+        <li
+          className={profileAtBottom ? classes.itemWithBottomBorder : undefined}
+        >
           <MiniNotificationsLink
             tooltipPlacement={tooltipPlacement}
             badgeType='dot'
           />
         </li>
-        <li className={classes.itemWithBottomBorder}>
-          <MiniAccountLink
-            tooltipPlacement={tooltipPlacement}
-            menuPlacement='right-start'
-          />
-        </li>
+        {!profileAtBottom && (
+          <li className={classes.itemWithBottomBorder}>{accountLink}</li>
+        )}
 
         {!newPostAtBottom && (
           <li className={classes.itemWithBottomBorder}>{newPostButton}</li>
@@ -249,8 +259,11 @@ export const CollapsedNavigationPanel: React.FC<{
           </li>
         )}
       </ul>
-      {newPostAtBottom && (
-        <div className={classes.newPostBottom}>{newPostButton}</div>
+      {(newPostAtBottom || profileAtBottom) && (
+        <div className={classes.bottomBar}>
+          {newPostAtBottom && newPostButton}
+          {profileAtBottom && accountLink}
+        </div>
       )}
     </nav>
   );
