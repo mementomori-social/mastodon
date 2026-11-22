@@ -153,9 +153,9 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
         <>
           {transientSingleColumn && <TransientSingleColumnCallout />}
           <ul className={classes.list}>
-            {showAllOptions && <HomeLink />}
+            {showAllOptions ? <HomeLink /> : explore}
             {(showAllOptions || notificationsInMenu) && <NotificationsLink />}
-            {explore}
+            {showAllOptions && explore}
             {showAllOptions && hasSearchLink && <SearchLink />}
             {showAllOptions && <MessagesLink />}
             {publicFeeds}
