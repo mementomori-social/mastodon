@@ -108,18 +108,7 @@ export const HashtagMenuController: React.FC = () => {
       return [];
     }
 
-    const arr: MenuItem[] = signedIn
-      ? [
-          {
-            text: intl.formatMessage(
-              tag.following ? messages.unfollow : messages.follow,
-            ),
-            action: toggleFollow,
-          },
-        ]
-      : [];
-
-    arr.push(
+    const arr: MenuItem[] = [
       {
         text: intl.formatMessage(messages.browseHashtag, {
           hashtag: tag.name,
@@ -133,16 +122,25 @@ export const HashtagMenuController: React.FC = () => {
         }),
         to: `/@${account?.acct}/tagged/${encodeURIComponent(tag.name)}`,
       },
-    );
+    ];
 
     if (signedIn) {
-      arr.push(null, {
-        text: intl.formatMessage(messages.muteHashtag, {
-          hashtag: tag.name,
-        }),
-        href: '/filters',
-        dangerous: true,
-      });
+      arr.push(
+        null,
+        {
+          text: intl.formatMessage(
+            tag.following ? messages.unfollow : messages.follow,
+          ),
+          action: toggleFollow,
+        },
+        {
+          text: intl.formatMessage(messages.muteHashtag, {
+            hashtag: tag.name,
+          }),
+          href: '/filters',
+          dangerous: true,
+        },
+      );
     }
 
     return arr;

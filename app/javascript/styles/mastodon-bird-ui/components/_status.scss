@@ -1,0 +1,659 @@
+// Posts: 48px avatar beside an inline name, handle and date
+._comp_status__variantFeed,
+._comp_status__variantThread {
+  --avatar-size: 48px;
+  --col-gap: 12px;
+
+  padding: 16px;
+  row-gap: 4px;
+
+  ._comp_status_header__avatar {
+    align-self: start;
+    height: 22px;
+  }
+
+  // No flex gap: the bullet text node between name and date would get one too
+  ._comp_status_header__root > div:not(._comp_status_header__pinnedBadge) {
+    align-items: baseline;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+  }
+
+  // font-size: 0 hides the bullet text node between name and date
+  ._comp_status_header__name {
+    display: contents;
+    font-size: 0;
+  }
+
+  a._comp_status_header__nameLink {
+    order: -1;
+  }
+
+  ._comp_status_header__handle {
+    font-size: 15px;
+    margin-inline-start: 4px;
+    white-space: nowrap;
+  }
+
+  ._comp_status_header__date {
+    font-size: 15px;
+    margin-inline-start: auto;
+    order: 1;
+  }
+
+  // Reply, boost and like together on the left, bookmark and menu on the right
+  ._comp_status__actions {
+    gap: 8px;
+    justify-content: flex-start;
+    max-width: 100%;
+  }
+
+  ._comp_status__actions > button._comp_status__actionsButtonGap {
+    margin-inline-end: auto !important;
+  }
+}
+
+a._comp_status_header__nameLink {
+  font-weight: 500;
+}
+
+._comp_status__variantPage {
+  --avatar-size: 48px;
+  --col-gap: 12px;
+
+  gap: 16px;
+  padding-bottom: 0;
+  padding-top: 16px;
+}
+
+._comp_status_content__text {
+  font-size: 15px;
+  line-height: 22px;
+}
+
+._comp_status__variantPage ._comp_status_content__text {
+  font-size: 17px;
+  line-height: 24px;
+}
+
+// Post view shows the date below the post, so drop it from the header
+._comp_status__variantPage ._comp_status_header__name {
+  font-size: 0;
+
+  ._comp_status_header__nameLink {
+    font-size: 15px;
+  }
+
+  ._comp_status_header__date {
+    display: none;
+  }
+}
+
+._comp_status__variantPage ._comp_status_header__handle {
+  font-size: 15px;
+}
+
+// Post view: stats above the action bar, which is grouped like in the feed
+._comp_status__variantPage footer {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+._comp_status__variantPage ._comp_status__actions {
+  border-top: 1px solid var(--color-border-primary);
+  gap: 8px;
+  justify-content: flex-start;
+  margin-inline: -16px;
+  padding: 10px 16px;
+
+  > button._comp_status__actionsButtonGap {
+    margin-inline-end: auto !important;
+  }
+
+  ._comp_button__label {
+    display: none;
+  }
+}
+
+// Action bar like v4: 19px icons, dim counters, round hover bubble
+._comp_status__actions > button._comp_button__base,
+._comp_status__actions
+  .status__action-bar__button-wrapper
+  > button._comp_button__base {
+  --bg-hover: transparent;
+  color: var(--color-dim);
+  font-size: 13px;
+  font-weight: 500;
+  gap: 6px;
+  height: 24px;
+  line-height: 19px;
+  margin: 0 !important;
+  min-height: 24px;
+  overflow: visible;
+  padding: 0;
+  position: relative;
+
+  &::after {
+    background-color: rgb(96 105 132 / 15%);
+    border-radius: 50%;
+    content: '';
+    height: 34px;
+    left: calc(9.5px - 17px);
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - 17px);
+    transition: opacity 150ms;
+    width: 34px;
+  }
+
+  &._comp_button__iconOnly::after {
+    left: calc(50% - 17px);
+  }
+
+  &:focus-visible::after {
+    opacity: 1;
+  }
+
+  // No inverted pill while pressed or with its menu open
+  &,
+  &:active,
+  &[aria-pressed='true'],
+  &[aria-expanded='true'] {
+    --bg: transparent;
+  }
+
+  svg {
+    height: 19px;
+    width: 19px;
+  }
+
+  ._comp_button__label {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 19px;
+    padding: 0;
+  }
+
+  // Hover effects only where there is a pointer, so a tap leaves nothing behind
+  @media (hover: hover) {
+    &:hover::after {
+      opacity: 1;
+    }
+  }
+}
+
+@media (hover: hover) {
+  ._comp_status__actions > button:nth-of-type(1):hover {
+    color: var(--color-accent);
+  }
+
+  ._comp_status__actions > button:nth-of-type(2):hover {
+    color: var(--color-green);
+  }
+
+  ._comp_status__actions > button:nth-of-type(2):hover svg {
+    background-image: var(--icon-boost-active);
+  }
+
+  ._comp_status__actions > button:nth-of-type(1):hover svg {
+    background-image: var(--icon-reply-status-hover);
+  }
+
+  ._comp_status__actions > button:nth-of-type(5):hover svg {
+    background-image: var(--icon-bookmark-status-hover);
+  }
+
+  ._comp_status__actions > button._comp_status__actionsButtonGap:hover svg {
+    background-image: var(--icon-heart-hover);
+  }
+}
+
+// v4 had no share button in the bar
+._comp_status__actions > button:nth-of-type(4) {
+  display: none;
+}
+
+// Bird UI reply, boost, bookmark and more icons
+._comp_status__actions > button:nth-of-type(1) svg,
+._comp_status__actions > button:nth-of-type(2) svg,
+._comp_status__actions > button:nth-of-type(5) svg,
+._comp_status__actions > button:last-of-type svg,
+._comp_status__actions .status__action-bar__button-wrapper svg {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 19px 19px;
+
+  path {
+    display: none;
+  }
+}
+
+._comp_status__actions > button:nth-of-type(1) svg {
+  background-image: var(--icon-reply);
+}
+
+._comp_status__actions > button:nth-of-type(2) svg {
+  background-image: var(--icon-boost-status);
+  background-size: 21px 20px;
+}
+
+._comp_status__actions > button:nth-of-type(2)[aria-pressed='true'] svg {
+  background-image: var(--icon-boost-active);
+}
+
+._comp_status__actions > button:nth-of-type(5) svg {
+  background-image: var(--icon-bookmark);
+}
+
+._comp_status__actions > button:nth-of-type(5)[aria-pressed='true'] svg {
+  background-image: var(--icon-bookmark-active);
+}
+
+._comp_status__actions > button:last-of-type svg,
+._comp_status__actions .status__action-bar__button-wrapper svg {
+  background-image: var(--icon-more-status-action-bar);
+}
+
+// The v4 heart; the ring and confetti of Mastodon's own burst stay visible
+._comp_status__actions > button._comp_status__actionsButtonGap svg {
+  background: var(--icon-heart) center / 19px 19px no-repeat;
+
+  > path {
+    display: none;
+  }
+}
+
+._comp_status__actions
+  > button._comp_status__actionsButtonGap[aria-pressed='true']
+  svg {
+  background-image: var(--icon-heart-active-red);
+}
+
+html.no-reduce-motion ._comp_status__actions > button[data-like-burst] svg {
+  animation: bird-heart-pop 0.85s cubic-bezier(0.17, 0.89, 0.32, 1.28);
+}
+
+@keyframes bird-heart-pop {
+  0%,
+  18% {
+    background-size: 19px 19px;
+  }
+
+  28% {
+    background-size: 0 0;
+  }
+
+  55% {
+    background-size: 23px 23px;
+  }
+
+  72% {
+    background-size: 17px 17px;
+  }
+
+  100% {
+    background-size: 19px 19px;
+  }
+}
+
+// Boost line: Bird UI boost icon, no avatar or time, like v4
+._comp_status__root:has(> ._comp_status_prepend__root) {
+  padding-top: 10px;
+}
+
+._comp_status_prepend__root {
+  color: var(--color-dim);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  margin-bottom: 6px;
+
+  .account__avatar,
+  ._comp_status_prepend__time,
+  ._comp_status_prepend__contents > a:has(.account__avatar) {
+    display: none;
+  }
+
+  // The name is not bold, as in v4
+  ._comp_status_prepend__account {
+    color: inherit;
+    font-weight: inherit;
+  }
+}
+
+._comp_status_prepend__root ._comp_status_prepend__reblogIcon {
+  background: var(--icon-boost-status-prepend) center / 16px no-repeat;
+  height: 16px;
+  margin-inline-end: 8px;
+  padding: 0;
+  width: 16px;
+
+  path {
+    display: none;
+  }
+}
+
+// Post view meta: date line, then counts with bold numbers, like v4
+._comp_status__variantPage ._comp_status_meta__meta {
+  border-top: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  gap: 0;
+  line-height: 20px;
+  margin-top: 8px;
+  padding: 0 16px;
+}
+
+._comp_status__variantPage ._comp_status_meta__meta ._comp_status_meta__list {
+  color: var(--color-dim);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding: 8px 0;
+  width: 100%;
+
+  li::before {
+    display: none;
+  }
+
+  + ._comp_status_meta__list {
+    border-top: 1px solid var(--color-border);
+  }
+
+  a {
+    color: inherit;
+  }
+
+  // The date is a button or link; one size for every item
+  :is(a, button, time) {
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .animated-number {
+    color: var(--color-fg);
+    font-weight: 700;
+  }
+}
+
+// Hashtag bar like v4: small pills, "and N more" as a plain link
+._comp_status__hashtagsWrapper {
+  gap: 0;
+  margin-top: 8px;
+  padding: 0;
+}
+
+._comp_status__hashtags {
+  gap: 0;
+  padding: 0;
+}
+
+// v5 buttons paint from --bg, --bg-hover and --fg, so set those instead of colours
+._comp_status__hashtags > ._comp_button__base._comp_button__base {
+  --bg: var(--color-dark);
+  --bg-hover: var(--color-accent-dark);
+  --fg: var(--color-light-purple);
+  background: var(--bg);
+  border-radius: 9999px;
+  box-shadow: none;
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px; // whole pixels, so posts below never land on half pixels and shift
+  margin: 0 4px 4px 0;
+
+  min-height: 0;
+  padding: 4px 8px;
+  text-decoration: none;
+
+  // Always light, also in light mode, as in v4
+  &:hover,
+  &:focus-visible {
+    --bg: var(--color-accent-dark);
+    --fg: #f7f9f9;
+  }
+}
+
+._comp_status__hashtagsWrapper > button._comp_button__base._comp_button__base {
+  --bg: transparent;
+  --bg-hover: transparent;
+  --fg: var(--color-accent);
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px; // whole pixels, so posts below never land on half pixels and shift
+  margin: 0 0 4px;
+
+  min-height: 0;
+  padding: 4px 2px;
+}
+
+// Feed spacing like v4: 14px above media, 12px above the action bar
+._comp_status__contentWrapper {
+  margin-inline: 0;
+}
+
+._comp_status_content__root {
+  padding-inline: 0;
+}
+
+._comp_status_attachments__galleryWrapper {
+  margin-top: 6px;
+}
+
+// 16px between the post text and a quoted post, as in v4
+._comp_status_content__root
+  > ._comp_card__root:has(._comp_status_quote__title) {
+  margin-top: 8px;
+}
+
+._comp_status__variantFeed footer,
+._comp_status__variantThread footer {
+  margin-top: 8px;
+}
+
+// Thread replies get v4's room above the author and below the actions
+._feat_status__thread > article._comp_status__variantThread {
+  padding-block-start: 16px;
+
+  &[data-connect-next='false'],
+  &:last-child {
+    padding-block-end: 20px;
+  }
+}
+
+// The thread line runs on to the next reply's avatar, as in v4
+._feat_status__thread
+  > article[data-connect-next='true']
+  > ._comp_status__connectNextReply::after {
+  inset-block-end: -32px;
+}
+
+// but stops at the divider above the opened post, which has no line in v4
+._feat_status__thread:has(+ ._feat_status__mainStatus)
+  > article[data-connect-next='true']:last-child
+  > ._comp_status__connectNextReply::after {
+  inset-block-end: -20px; // through the post's bottom padding, down to the divider
+}
+
+// Room below the opened reply, so it scrolls to the top instead of its parent
+.scrollable:has(> ._feat_status__thread + ._feat_status__mainStatus) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto auto 1fr;
+
+  > * {
+    grid-column: 1;
+  }
+
+  > ._feat_status__mainStatus {
+    grid-row: 2;
+  }
+
+  > ._feat_status__mainStatus + ._feat_status__thread {
+    grid-row: 3;
+  }
+
+  > ._feat_status__threadEnd {
+    grid-row: 4;
+  }
+
+  &::after {
+    content: '';
+    grid-column: 1;
+    grid-row: 2 / 5;
+    min-height: calc(
+      100dvh - var(--current-column-header-height, 0px) -
+        var(--scroll-fade-height, 0px)
+    );
+    pointer-events: none;
+  }
+}
+
+// The avatar sits above the thread line, so the line starts below it
+._comp_status__variantThread ._comp_status_header__avatar {
+  position: relative;
+  z-index: 1;
+}
+
+// The line starts under the avatar instead of running through it
+._feat_status__thread > article > ._comp_status__connectNextReply::after {
+  inset-block-start: 22px;
+}
+
+// Content warnings and filter notices like v4
+._comp_status__spoiler {
+  align-items: flex-start;
+  background-color: var(--color-focusable-toot);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  color: var(--color-light-purple);
+  font-size: 14px;
+  gap: 16px;
+  padding: 10px 16px;
+
+  ._comp_callout_redesign__icon {
+    display: none;
+  }
+
+  ._comp_callout_redesign__textWrapper {
+    font-size: 14px;
+  }
+
+  ._comp_button__base {
+    --bg: transparent;
+    --bg-hover: transparent;
+
+    align-self: flex-start;
+    border: 0;
+    box-shadow: none;
+    color: var(--color-fg);
+    font-size: 14px;
+    font-weight: 600;
+    min-height: 0;
+    padding: 0;
+  }
+}
+
+// Text and media behind a content warning stay hidden until shown, as in v4
+._comp_status__contentWrapper._comp_status__contentWarningBlurActive {
+  display: none;
+}
+
+// Sensitive media shows the plain blurhash with its Show button, as in v4
+._comp_status_attachments__galleryWrapper
+  ._comp_status__contentWarningBlur::after {
+  display: none;
+}
+
+// Links, mentions and hashtags in quoted posts read as links like in v4, not bold
+._comp_status_quote__body strong:has(> span) {
+  color: var(--color-text-brand);
+  font-weight: inherit;
+}
+
+// Long posts collapse only their text like v4
+._comp_status_content__root._comp_status_content__collapsed {
+  mask-image: none;
+  max-height: none;
+  overflow-y: visible;
+
+  // Last line hidden so a cut line never shows, button a paragraph gap below
+  > ._comp_status_content__text {
+    margin-block-end: -0.75lh;
+    mask-image: linear-gradient(
+      to bottom,
+      black calc(100% - 2.5lh),
+      transparent calc(100% - 1lh)
+    );
+    // stylelint-disable-next-line csstools/value-no-unknown-custom-properties
+    max-height: var(--max-height);
+    overflow-y: clip;
+  }
+}
+
+// Reply, boost and like in fixed 53px slots like core
+._comp_status__actions > button:nth-of-type(-n + 3) {
+  aspect-ratio: auto;
+  flex: 0 0 auto;
+  justify-content: flex-start;
+  min-width: 45px;
+
+  // The hover bubble stays on the icon, not the middle of the slot
+  &._comp_button__iconOnly::after {
+    left: calc(9.5px - 17px);
+  }
+}
+
+// Quoted post link as a normal one-line link like v4
+._comp_card__root:has(._comp_status_quote__title)
+  > ._comp_card__body:not(._comp_status_quote__body) {
+  font-size: inherit;
+  font-weight: 400;
+  margin-block-end: -0.2em;
+  margin-inline: -0.15em;
+  overflow: hidden;
+  padding-block-end: 0.2em;
+  padding-inline: 0.15em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  a {
+    color: var(--color-text-brand);
+    font-weight: inherit;
+  }
+}
+
+// Whole-pixel line heights keep posts from shifting on repaint
+._comp_status_content__text p,
+._comp_status_quote__body p {
+  line-height: 22px;
+}
+
+a._comp_status_header__nameLink,
+._comp_status_header__date {
+  line-height: 22px;
+}
+
+._comp_status_header__handle,
+.poll__footer {
+  line-height: 20px;
+}
+
+// Loading emoji hold the glyph's place, so likes don't nudge the feed
+.emojione.emoji-loading {
+  vertical-align: baseline;
+
+  &:not([title^=':']) {
+    margin: 0;
+
+    &::before {
+      content: attr(title);
+    }
+  }
+}

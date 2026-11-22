@@ -48,6 +48,13 @@ interface StatusActionBarProps {
   withCounters?: boolean;
 }
 
+// A zero is kept in the layout but not shown, so the icons stay put
+const ActionCount: React.FC<{ value?: number }> = ({ value }) => (
+  <span style={value ? undefined : { visibility: 'hidden' }}>
+    <AnimatedNumber value={value ?? 0} />
+  </span>
+);
+
 export const StatusActionBar: React.FC<StatusActionBarProps> = ({
   statusId,
   reblogId,
@@ -121,11 +128,11 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
         onClick={reply.action}
         tooltip={{ type: 'label', text: reply.title }}
       >
-        {withCounters && <AnimatedNumber value={reply.counter ?? 0} />}
+        {withCounters && <ActionCount value={reply.counter} />}
       </Button>
 
       <StatusReblogButton statusId={statusId}>
-        {withCounters && <AnimatedNumber value={status.reblogs_count} />}
+        {withCounters && <ActionCount value={status.reblogs_count} />}
       </StatusReblogButton>
 
       <ToggleButton
@@ -141,7 +148,7 @@ export const StatusActionBar: React.FC<StatusActionBarProps> = ({
         onAnimationEnd={handleLikeAnimationEnd}
         className={classes.actionsButtonGap}
       >
-        {withCounters && <AnimatedNumber value={like.counter ?? 0} />}
+        {withCounters && <ActionCount value={like.counter} />}
       </ToggleButton>
 
       {isPublic && (

@@ -16,7 +16,7 @@ import { canViewFeed } from 'mastodon/permissions';
 
 import { addColumn, removeColumn, moveColumn } from '../../actions/columns';
 import { connectCommunityStream } from '../../actions/streaming';
-import { expandCommunityTimeline } from '../../actions/timelines';
+import { expandCommunityTimeline, loadPending } from '../../actions/timelines';
 import StatusListContainer from '../ui/containers/status_list_container';
 
 import { ColumnHeader, ColumnSettingsMenu } from '@/mastodon/components/column_header';
@@ -54,6 +54,11 @@ class CommunityTimeline extends PureComponent {
     hasUnread: PropTypes.bool,
     multiColumn: PropTypes.bool,
     onlyMedia: PropTypes.bool,
+  };
+
+  handleScrollToTop = () => {
+    const { dispatch, onlyMedia } = this.props;
+    dispatch(loadPending(`community${onlyMedia ? ':media' : ''}`));
   };
 
   handlePin = () => {
@@ -137,6 +142,7 @@ class CommunityTimeline extends PureComponent {
           <ColumnHeader
             title={title}
             withUnreadMarker={hasUnread}
+            onScrollToTop={this.handleScrollToTop}
             extraButtons={
               <ColumnSettingsMenu
                 labelPrefix={title}
@@ -166,7 +172,7 @@ class CommunityTimeline extends PureComponent {
 
         <Helmet>
           <title>{intl.formatMessage(messages.title)}</title>
-          <meta name='robots' content='noindex' />
+          <meta name='robots' content='index' />
         </Helmet>
       </Column>
     );

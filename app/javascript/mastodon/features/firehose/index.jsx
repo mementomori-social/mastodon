@@ -11,7 +11,7 @@ import PublicIcon from '@/material-icons/400-24px/public.svg?react';
 import { addColumn } from 'mastodon/actions/columns';
 import { changeSetting } from 'mastodon/actions/settings';
 import { connectPublicStream, connectCommunityStream } from 'mastodon/actions/streaming';
-import { expandPublicTimeline, expandCommunityTimeline } from 'mastodon/actions/timelines';
+import { expandPublicTimeline, expandCommunityTimeline, loadPending } from 'mastodon/actions/timelines';
 import { Column } from '@/mastodon/components/column';
 import { DismissableBanner } from 'mastodon/components/dismissable_banner';
 import { localLiveFeedAccess, remoteLiveFeedAccess, domain } from 'mastodon/initial_state';
@@ -85,6 +85,10 @@ const Firehose = ({ feedType, multiColumn }) => {
     },
     [dispatch, onlyMedia, feedType],
   );
+
+  const handleScrollToTop = useCallback(() => {
+    dispatch(loadPending(`${feedType}${onlyMedia ? ':media' : ''}`));
+  }, [dispatch, feedType, onlyMedia]);
 
   const handleLoadMore = useCallback(
     (maxId) => {
@@ -184,6 +188,7 @@ const Firehose = ({ feedType, multiColumn }) => {
         title={title}
         withBackButton={multiColumn && 'auto'}
         withUnreadMarker={hasUnread}
+        onScrollToTop={handleScrollToTop}
         extraButtons={
           <ColumnSettingsMenu labelPrefix={intl.formatMessage(messages.title_redesign)}>
             <FirehoseSettingsMenuItems />

@@ -1,0 +1,9 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--color-text-secondary);
+}

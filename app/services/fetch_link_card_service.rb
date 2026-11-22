@@ -37,7 +37,11 @@ class FetchLinkCardService < BaseService
     headers = {
       'Accept' => 'text/html',
       'Accept-Language' => "#{I18n.default_locale}, *;q=0.5",
-      'User-Agent' => "#{Mastodon::Version.user_agent} Bot",
+      'User-Agent' => if @url.match?(/\b(youtube\.com|youtu\.be|m\.youtube\.com)\b/)
+                        'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discord.com)'
+                      else
+                        "#{Mastodon::Version.user_agent} Bot"
+                      end,
     }
 
     @html = Request.new(:get, @url).add_headers(headers).perform do |res|
@@ -162,5 +166,12 @@ class FetchLinkCardService < BaseService
     end
 
     @card.save_with_optional_image! unless @card.title.blank? && @card.html.blank?
+    retry_missing_image(link_details_extractor.image)
+  end
+
+  def retry_missing_image(image_url)
+    return if image_url.blank? || !@card.persisted? || @card.image_file_name.present? || !@card.image_download_retryable?
+
+    PreviewCardImageRetryWorker.perform_in(PreviewCardImageRetryWorker::DELAY, @card.id, image_url)
   end
 end

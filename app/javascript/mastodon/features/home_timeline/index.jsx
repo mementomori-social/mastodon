@@ -14,9 +14,10 @@ import { identityContextPropShape, withIdentity } from 'mastodon/identity_contex
 import { withBreakpoint } from 'mastodon/features/ui/hooks/useBreakpoint';
 
 import { addColumn, removeColumn, moveColumn } from '../../actions/columns';
-import { expandHomeTimeline } from '../../actions/timelines';
+import { expandHomeTimeline, loadPending } from '../../actions/timelines';
 import StatusListContainer from '../ui/containers/status_list_container';
 
+import { RankedFeedEnd } from './components/ranked_feed_end';
 import { CriticalUpdateBanner } from './components/critical_update_banner';
 import { AnnualReportTimeline } from '../annual_report/timeline';
 import { ColumnHeader } from '@/mastodon/components/column_header';
@@ -25,12 +26,14 @@ import { MultiColumnMenuItems } from '@/mastodon/components/column_header/multic
 
 const messages = defineMessages({
   title: { id: 'column.home', defaultMessage: 'Home' },
+  forYouTitle: { id: 'column.for_you', defaultMessage: 'For you' },
   show_announcements: { id: 'home.show_announcements', defaultMessage: 'Show announcements' },
   hide_announcements: { id: 'home.hide_announcements', defaultMessage: 'Hide announcements' },
 });
 
 const mapStateToProps = state => ({
   hasUnread: state.getIn(['timelines', 'home', 'unread']) > 0,
+  ranked: state.getIn(['settings', 'home', 'ranked'], false),
   isPartial: state.getIn(['timelines', 'home', 'isPartial']),
   hasAnnouncements: !state.getIn(['announcements', 'items']).isEmpty(),
   unreadAnnouncements: state.getIn(['announcements', 'items']).count(item => !item.get('read')),
@@ -50,6 +53,7 @@ class HomeTimeline extends PureComponent {
     unreadAnnouncements: PropTypes.number,
     showAnnouncements: PropTypes.bool,
     matchesBreakpoint: PropTypes.bool,
+    ranked: PropTypes.bool,
   };
 
   handlePin = () => {
@@ -67,8 +71,15 @@ class HomeTimeline extends PureComponent {
     dispatch(moveColumn(columnId, dir));
   };
 
+  handleScrollToTop = () => {
+    this.props.dispatch(loadPending('home'));
+  };
+
   handleLoadMore = maxId => {
-    this.props.dispatch(expandHomeTimeline({ maxId }));
+    // A dropped connection puts a gap at the very top, so it has no status
+    // above it to page from. Without a max id the ranked branch would decide
+    // nothing needs loading and leave the gap sitting there for good.
+    this.props.dispatch(expandHomeTimeline({ maxId, forceRefresh: !maxId }));
   };
 
   componentDidMount () {
@@ -105,8 +116,9 @@ class HomeTimeline extends PureComponent {
   }
 
   render () {
-    const { intl, hasUnread, columnId, multiColumn } = this.props;
+    const { intl, hasUnread, columnId, multiColumn, ranked } = this.props;
     const pinned = !!columnId;
+    const title = intl.formatMessage(ranked ? messages.forYouTitle : messages.title);
     const { signedIn } = this.props.identity;
     const banners = [
       <CriticalUpdateBanner key='critical-update-banner' />,
@@ -114,11 +126,12 @@ class HomeTimeline extends PureComponent {
     ];
 
     return (
-      <Column bindToDocument={!multiColumn} label={intl.formatMessage(messages.title)}>
+      <Column bindToDocument={!multiColumn} label={title}>
         <ColumnHeader
-          title={intl.formatMessage(messages.title)}
+          title={title}
           withBackButton={multiColumn && !pinned && 'auto'}
           withUnreadMarker={hasUnread}
+          onScrollToTop={this.handleScrollToTop}
           extraButtons={
             <HomeColumnSettings>
               {multiColumn &&
@@ -141,14 +154,14 @@ class HomeTimeline extends PureComponent {
             scrollKey={`home_timeline-${columnId}`}
             onLoadMore={this.handleLoadMore}
             timelineId='home'
+            append={ranked ? <RankedFeedEnd /> : undefined}
             emptyMessage={<FormattedMessage id='empty_column.home' defaultMessage='Your home timeline is empty! Follow more people to fill it up.' />}
             bindToDocument={!multiColumn}
           />
         ) : <NotSignedInIndicator />}
 
         <Helmet>
-          <title>{intl.formatMessage(messages.title)}</title>
-          <meta name='robots' content='noindex' />
+          <title>{title}</title>
         </Helmet>
       </Column>
     );

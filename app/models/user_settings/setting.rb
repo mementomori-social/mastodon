@@ -43,17 +43,25 @@ class UserSettings::Setting
     case default_value
     when TrueClass, FalseClass
       ActiveModel::Type::Boolean.new
+    when Array
+      ActiveModel::Type::Value.new
     else
       ActiveModel::Type::String.new
     end
   end
 
   def type_cast(value)
+    return Array(value).compact_blank if array?
+
     if type.respond_to?(:cast)
       type.cast(value)
     else
       value
     end
+  end
+
+  def array?
+    default_value.is_a?(Array)
   end
 
   def to_a

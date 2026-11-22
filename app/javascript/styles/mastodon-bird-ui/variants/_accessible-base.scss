@@ -1,0 +1,348 @@
+// stylelint-disable plugin/no-unused-custom-properties
+// Ultra accessible themes: black, white, large text, coloured links
+@use '../variables/icons';
+
+@mixin theme(
+  $font-size,
+  $font-size-smaller,
+  $font-size-heading,
+  $line-height,
+  $root-scale
+) {
+  // Three :root stay dark in light mode too
+  :root:root:root {
+    @include icons.white;
+    --base-color-bg: #000;
+    --base-color-bg-accent: #1a3ff9;
+    --base-color-bg-desktop: #000;
+    --base-color-fg: #fff;
+    --base-color-fg-accent: #0a9ff9;
+    --base-color-fg-on-accent: #fff;
+    --color-accent: #0a9ff9;
+    --color-accent-dark: #1a3ff9;
+    --color-bg-brand-base: #1a3ff9;
+    --color-bg-brand-base-hover: #0a2ed9;
+    --color-bg-brand-soft: rgb(10 159 249 / 15%);
+    --color-bg-overlay: #1a1b36;
+    --color-bg-primary: #000;
+    --color-bg-secondary: #1a1b36;
+    --color-border: #343638;
+    --color-border-primary: #343638;
+    --color-column-link-hover: #ffffff36;
+    --color-dark: #1a1b36;
+    --color-dim: #fff;
+    --color-fg: #fff;
+    --color-hashtag: #ff66e3;
+    --color-light-purple: #fff;
+    --color-light-text: #fff;
+    --color-link: #0a9ff9;
+    --color-mention: #0af9b5;
+    --color-mud: #333;
+    --color-text-brand: #0a9ff9;
+    --color-text-brand-soft: #3db8ff;
+    --color-text-primary: #fff;
+    --color-text-secondary: #fff;
+    --color-text-status-links: #0a9ff9;
+    --color-text-tertiary: #fff;
+    --font-size: #{$font-size};
+    --font-size-heading: #{$font-size-heading};
+    --line-height: #{$line-height};
+
+    color-scheme: dark;
+    font-size: $root-scale;
+  }
+
+  :root {
+    // Text at the base size
+    ._comp_status_content__text,
+    ._comp_status_content__text p,
+    ._comp_status_quote__body p,
+    ._comp_status_header__nameLink,
+    ._comp_status_header__handle,
+    ._comp_status_header__date,
+    ._comp_status_prepend__root,
+    ._comp_account_bio__bio,
+    ._comp_menu__item,
+    ._navigation_panel_redesign_navigation_link__link,
+    .display-name__html,
+    .notification-group__main,
+    .notification-group__main__header__label,
+    .notification-group__main__additional-content,
+    .trends__item__name,
+    ._comp_account_list_item__displayName,
+    ._navigation_panel_redesign_account_card_and_menu__accountLink,
+    ._feat_account_timeline__filterSelectButton,
+    ._feat_notifications_v2__unreadBar,
+    .inline-follow-suggestions__title,
+    .hover-card__numbers,
+    .account-card__bio,
+    ._comp_lockup__title,
+    ._comp_card__body,
+    ._comp_card__primaryCardLink,
+    .story__details__title,
+    ._comp_account_header__fieldItem dt,
+    ._comp_account_header__fieldItem dd,
+    ._comp_account_header__fieldItem dd *,
+    .about__header p,
+    .about__footer p,
+    .about__meta__column h4,
+    .about__mail,
+    .prose,
+    .prose *,
+    [role='dialog'] textarea,
+    .notification-ungrouped__header,
+    .notification-ungrouped__header *,
+    .poll__option,
+    .poll__footer,
+    .poll__footer *,
+    ._comp_account_header__handleHelp,
+    ._comp_account_header__handleHelp * {
+      font-size: var(--font-size) !important;
+      line-height: var(--line-height) !important;
+    }
+
+    // Secondary text a little smaller
+    ._comp_status__actions button,
+    ._comp_status__actions ._comp_button__label,
+    ._comp_status__hashtags > ._comp_button__base,
+    ._comp_status_meta__meta,
+    ._comp_number_fields__list,
+    ._comp_number_fields__list *,
+    ._comp_badge__content,
+    ._comp_tab_list__tabList ._comp_tab_list__tab,
+    .account__section-headline a,
+    .account__section-headline button,
+    .notification__filter-bar button,
+    .inline-follow-suggestions__body *,
+    ._comp_button__label,
+    ._feat_compose__counter,
+    ._comp_status__spoiler ._comp_callout_redesign__textWrapper,
+    ._comp_status__spoiler ._comp_callout_redesign__textWrapper *,
+    ._comp_lockup__subtitle,
+    ._comp_lockup__subtitle *,
+    ._comp_mini_card__card,
+    ._comp_tags__tag,
+    ._comp_familiar_followers__wrapper,
+    ._comp_menu__itemDescription,
+    ._comp_status_meta__editedButton,
+    ._comp_account_list_item__handle,
+    ._comp_account_header__handleHelpButton,
+    ._navigation_panel_redesign_list_section__title,
+    ._navigation_panel_redesign_list_section__viewAll,
+    ._feat_followers__subtitle,
+    ._feat_status__threadEnd,
+    ._account_featured_components_subheading__subheading h2,
+    .display-name__account,
+    .account-card__counters__item,
+    .account-card__counters__item small,
+    .account__details,
+    .explore-suggestions-card__source,
+    .story__details__publisher,
+    .story__details__shared,
+    .story__details__shared__pill,
+    .search-results__section__header h3,
+    .search-results__section__header button,
+    .empty-column-indicator,
+    .follow_requests-unlocked_explanation,
+    .radio-button,
+    .load-more,
+    ._comp_card__title,
+    ._comp_card__title a,
+    .button {
+      font-size: $font-size-smaller !important;
+    }
+
+    // Footer meta stays tiny, it would otherwise fill the sidebar
+    ._feat_discovery_panel_footer_links__root,
+    ._feat_discovery_panel_footer_links__root *,
+    ._ui_components_link_footer__wrapper,
+    ._ui_components_link_footer__wrapper * {
+      color: #a6a6a6 !important; // 8.6:1 on black, passes WCAG AAA
+      font-size: 13px !important;
+      line-height: 18px !important;
+    }
+
+    // Own account card on one line: the name is cut short, the handle hidden
+    ._navigation_panel_redesign_account_card_and_menu__root {
+      ._comp_lockup__main {
+        min-width: 0;
+      }
+
+      ._comp_lockup__title,
+      ._comp_lockup__title * {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      ._comp_lockup__subtitle {
+        display: none;
+      }
+    }
+
+    // Room for long setting labels, so the toggles stay inside the menu
+    ._comp_menu__card:has([role='menuitemcheckbox']) {
+      max-width: calc(100vw - 32px);
+      min-width: 280px;
+      width: max-content;
+    }
+
+    ._comp_menu__itemTrailingContent {
+      flex-shrink: 0;
+      margin-inline-start: auto;
+    }
+
+    // The stacked footer links share a narrow row
+    ._navigation_panel_redesign_navigation_link__linkStacked {
+      font-size: 14px !important;
+    }
+
+    ._comp_column_header__title,
+    .about__section__title,
+    ._comp_account_header__name,
+    ._comp_account_header__name h1 span {
+      font-size: var(--font-size-heading) !important;
+    }
+
+    ._comp_account_header__handleHelp {
+      max-width: 560px;
+    }
+
+    ._comp_column_header__title {
+      line-height: 1.3 !important;
+    }
+
+    // Hidden link parts like https:// stay hidden despite the size rules above
+    &:root .invisible {
+      font-size: 0 !important;
+      line-height: 0 !important;
+    }
+
+    // Badge text grows the pill instead of clipping, level with the name
+    ._comp_badge__content {
+      line-height: 1.2;
+    }
+
+    ._comp_account_list_item__badge {
+      vertical-align: baseline;
+    }
+
+    // Two full lines of the larger bio text on account cards
+    .account-card__bio {
+      max-height: calc(var(--line-height) * 2);
+    }
+
+    // Links, mentions and hashtags each in their own colour
+    ._comp_status_content__text a {
+      color: var(--color-link) !important;
+
+      &.mention:not(.hashtag),
+      &.mention:not(.hashtag) * {
+        color: var(--color-mention) !important;
+      }
+
+      &.hashtag,
+      &.hashtag *,
+      &._comp_status_handled_link__hashtag,
+      &._comp_status_handled_link__hashtag * {
+        color: var(--color-hashtag) !important;
+      }
+    }
+
+    // Inputs, search and composer on a visible background
+    input._comp_search__search,
+    textarea,
+    input[type='text'],
+    input[type='search'] {
+      background-color: var(--color-mud);
+      border-color: var(--color-mud);
+      color: var(--color-fg);
+    }
+
+    // Active tab on a background, not only the underline
+    ._comp_tab_list__tabList ._comp_tab_list__tab.active,
+    .account__section-headline a.active,
+    .notification__filter-bar button.active {
+      background-color: var(--color-mud);
+    }
+
+    // Outlined buttons with clearly visible borders
+    [class*='_comp_account_header__buttons'] button._comp_button__base,
+    ._comp_button__neutral._comp_button__tonal {
+      box-shadow: inset 0 0 0 1px var(--color-light-text);
+    }
+
+    // New post filled with solid blue, the soft tint vanishes on black
+    ._navigation_panel_redesign__newPostButton
+      ._comp_button__base._comp_button__base {
+      --bg: var(--color-accent-dark);
+      color: var(--color-fg);
+
+      &:hover,
+      &:focus-visible {
+        --bg: var(--color-accent);
+        --bg-hover: var(--color-accent);
+        color: #000;
+      }
+    }
+
+    ._comp_status__spoiler ._comp_button__base {
+      padding: 6px 14px;
+    }
+
+    // Handles a step dimmer than names, still 10:1 on black
+    ._comp_status_header__handle,
+    ._comp_account_list_item__handle,
+    .display-name__account {
+      color: #b3b3b3;
+    }
+
+    // Wide scrollbar and a glow on the edge with more items
+    ._comp_menu__scrollableInnerCard {
+      background:
+        linear-gradient(var(--color-dark) 30%, transparent) top / 100% 48px
+          no-repeat local,
+        linear-gradient(transparent, var(--color-dark) 70%) bottom / 100% 48px
+          no-repeat local,
+        radial-gradient(
+            farthest-side at 50% 0,
+            rgb(255 255 255 / 70%),
+            transparent
+          )
+          top / 100% 20px no-repeat scroll,
+        radial-gradient(
+            farthest-side at 50% 100%,
+            rgb(255 255 255 / 70%),
+            transparent
+          )
+          bottom / 100% 20px no-repeat scroll;
+      scrollbar-width: auto;
+    }
+
+    .media-gallery__alt__popover p {
+      color: var(--color-fg);
+      font-size: var(--font-size);
+      line-height: 1.2;
+      white-space: pre-line;
+    }
+  }
+
+  // Short windows scroll the whole left column
+  @media (height < 900px) {
+    :root ._navigation_panel_redesign__footer {
+      flex: 0 0 auto;
+      position: relative;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+
+  @media (width <= 700px) {
+    :root:root:root {
+      --font-size: 24px;
+      --line-height: 30px;
+    }
+  }
+}

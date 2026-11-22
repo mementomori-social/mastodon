@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { cloneElement, Component } from 'react';
 
-import getRectFromEntry from '../../features/ui/util/get_rect_from_entry';
 import scheduleIdleTask from '../../features/ui/util/schedule_idle_task';
 import { Article } from './components';
 
@@ -62,7 +61,11 @@ export default class IntersectionObserverArticle extends Component {
   handleIntersection = (entry) => {
     this.entry = entry;
 
-    scheduleIdleTask(this.calculateHeight);
+    if (!entry.isIntersecting) {
+      this.height = entry.boundingClientRect.height;
+      scheduleIdleTask(this.saveHeight);
+    }
+
     this.setState(this.updateStateAfterIntersection);
   };
 
@@ -76,11 +79,8 @@ export default class IntersectionObserverArticle extends Component {
     };
   };
 
-  calculateHeight = () => {
+  saveHeight = () => {
     const { onHeightChange, saveHeightKey, id } = this.props;
-    // save the height of the fully-rendered element (this is expensive
-    // on Chrome, where we need to fall back to getBoundingClientRect)
-    this.height = getRectFromEntry(this.entry).height;
 
     if (onHeightChange && saveHeightKey) {
       onHeightChange(saveHeightKey, id, this.height);

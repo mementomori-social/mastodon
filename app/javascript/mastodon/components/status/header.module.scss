@@ -25,12 +25,20 @@
 }
 
 .avatar {
+  position: relative;
   padding-inline-end: var(--col-gap);
 
   > span {
     display: block;
     width: var(--avatar-size);
     height: var(--avatar-size);
+  }
+
+  // Follow badge on the avatar's bottom corner
+  > button {
+    top: calc(var(--avatar-size) - 14px);
+    bottom: auto;
+    inset-inline-end: calc(var(--col-gap) - 2px);
   }
 }
 

@@ -1,0 +1,61 @@
+// Docked composer and its minimized bar: Bird UI dark, no elevation shadow
+[data-fullscreen='false'] ._feat_compose__root {
+  box-shadow: none;
+}
+
+._feat_compose_trigger__composerMinimized {
+  background: var(--color-dark);
+  box-shadow: none;
+  padding-bottom: 8px;
+  padding-top: 8px;
+}
+
+// Composer hints styled like content warnings: bordered card, plain text actions
+._feat_compose__calloutWrapper {
+  gap: 8px;
+}
+
+._feat_compose__calloutWrapper ._comp_callout_redesign__rootLarge {
+  background-color: var(--color-focusable-toot);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  color: var(--color-light-purple);
+  gap: 12px;
+  padding: 10px 16px;
+
+  ._comp_callout_redesign__icon {
+    height: 18px;
+    width: 18px;
+  }
+
+  ._comp_callout_redesign__textWrapper {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  ._comp_button__base {
+    --bg: transparent;
+    --bg-hover: transparent;
+
+    border: 0;
+    box-shadow: none;
+    color: var(--color-fg);
+    font-size: 14px;
+    font-weight: 600;
+    min-height: 0;
+    padding: 0;
+  }
+
+  ._comp_button__base:not(._comp_button__ghost) {
+    color: var(--color-accent);
+  }
+}
+
+// Language button yellow on a likely language mismatch like v4
+._feat_compose__root ._comp_button__base[data-language-mismatch] {
+  --fg: var(--color-text-warning);
+
+  border-color: var(--color-text-warning);
+  box-shadow: inset 0 0 0 1px var(--color-text-warning);
+  color: var(--color-text-warning);
+}

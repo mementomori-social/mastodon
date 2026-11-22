@@ -1,0 +1,63 @@
+.root {
+  flex-shrink: 0;
+
+  // The search form above already leaves a wide gap
+  &:first-of-type {
+    margin-top: calc(-1 * var(--space-6));
+  }
+
+  // No dividers here, unlike the sections in the left menu
+  > li {
+    margin-top: 0;
+    padding-top: var(--space-4);
+    border-top: 0;
+  }
+}
+
+.tag {
+  padding-bottom: var(--space-1);
+
+  :global(.trends__item) {
+    padding: var(--space-2);
+    border-bottom: 0;
+    border-radius: var(--radius-3);
+    transition: background-color 200ms;
+
+    &:hover {
+      background-color: var(--color-bg-highlight);
+    }
+  }
+}
+
+// Doubled so the lockup's own padding never wins on load order
+.item.item {
+  --lockup-padding: var(--space-2);
+  --lockup-padding-block: 10px;
+  --lockup-gap: 10px;
+
+  padding-bottom: var(--space-1);
+
+  > :nth-child(2) {
+    flex: 1;
+  }
+
+  h3,
+  h3 + div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// Doubled to stay ahead of themes that restyle all buttons
+.follow.follow {
+  --bg: transparent;
+  --bg-hover: var(--color-bg-highlight);
+  --fg: var(--color-text-primary);
+
+  min-height: 28px;
+  padding: 2px 8px;
+  box-shadow: inset 0 0 0 1px var(--color-border-primary);
+  font-size: 13px;
+  line-height: 18px;
+}

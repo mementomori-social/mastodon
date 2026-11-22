@@ -24,7 +24,8 @@
   }
 
   &[data-fullscreen='false']::before {
-    background-color: var(--color-bg-overlay);
+    // Not --color-bg-overlay, which is opaque in Bird UI
+    background-color: rgb(0 0 0 / 50%);
   }
 }
 
@@ -48,12 +49,12 @@
   [data-fullscreen='false'] & {
     max-width: 500px;
     inset-inline-end: 50%;
-    inset-block-end: 50%;
-    transform: translate(50%, 50%);
+    inset-block-start: var(--space-10);
+    transform: translateX(50%);
 
     .composeForm {
       min-height: 270px;
-      max-height: calc(100vh - (var(--space-4) * 2));
+      max-height: calc(100vh - var(--space-10) - var(--space-4));
     }
   }
 

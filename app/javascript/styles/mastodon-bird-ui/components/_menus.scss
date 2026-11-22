@@ -1,0 +1,138 @@
+// Context menus like v4: compact dark purple panel with small corners
+._comp_menu__card {
+  background: var(--color-dark);
+  border: 1px solid var(--color-dark);
+  border-radius: 4px;
+  box-shadow: var(--dropdown-shadow);
+}
+
+// Mobile menus open as a bottom sheet: same dark panel, no bright top edge
+._comp_bottom_sheet__sheet {
+  background: var(--color-dark);
+  border: 0;
+  box-shadow: var(--dropdown-shadow);
+}
+
+._comp_menu__scrollableInnerCard,
+._comp_menu__card > div {
+  padding: 4px;
+}
+
+._comp_menu__item {
+  border-radius: 4px;
+  color: var(--color-light-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  padding: 10px 14px;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--color-column-link-hover);
+  }
+}
+
+// v4 kept mute, block and report in the normal text colour
+._comp_menu__itemDestructive {
+  color: var(--color-light-text);
+}
+
+._comp_menu__itemDescription {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+._comp_menu__itemDivider {
+  background-color: var(--color-border);
+  margin: 4px -4px;
+}
+
+// Text-only menus, as in v4
+._comp_menu__itemIcon {
+  display: none;
+}
+
+// The account menu by the profile card keeps its icons, small like the text
+._comp_menu__card ul ._comp_menu__item {
+  gap: 10px;
+
+  ._comp_menu__itemIcon {
+    display: block;
+    flex: 0 0 auto;
+    height: 18px;
+    width: 18px;
+  }
+}
+
+// Composer language picker: the list sits flat in the dark menu panel
+._feat_compose__languageListBox {
+  background: transparent;
+}
+
+._feat_compose__languageListBox
+  [role='option']:not(:hover, [aria-selected='true']) {
+  background: transparent;
+}
+
+// Composer suggestions as compact one-line rows
+._comp_menu__card:has(._comp_autosuggest__item) {
+  background: var(--color-suggest-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 45%);
+  max-width: min(360px, var(--popover-width-available, 360px));
+  min-width: 200px;
+  width: max-content;
+}
+
+._comp_menu__item._comp_autosuggest__item {
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  padding: 5px 8px;
+
+  > div {
+    align-items: baseline;
+    display: flex;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+  }
+}
+
+// The avatar sets its 32px size inline
+._comp_autosuggest__item ._comp_autosuggest__itemIcon {
+  height: 24px !important;
+  width: 24px !important;
+}
+
+._comp_autosuggest__itemAccountName {
+  flex-shrink: 1;
+  font-size: 14px;
+  line-height: 20px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+._comp_autosuggest__itemAccountVerified {
+  display: none;
+}
+
+._comp_autosuggest__itemAccountHandle {
+  color: var(--color-dim);
+  flex-shrink: 2;
+  font-size: 13px;
+  line-height: 20px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+._comp_autosuggest__itemHashUses {
+  color: var(--color-dim);
+  font-size: 12px;
+  padding-inline-start: 16px;
+}

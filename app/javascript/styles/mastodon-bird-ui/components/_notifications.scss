@@ -1,0 +1,168 @@
+// Icon column the width of an avatar, like v4
+.notification-group {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 48px) minmax(0, 1fr);
+  padding-inline: 16px;
+}
+
+.notification-group .notification-group__icon {
+  justify-self: end;
+  margin-right: 4px;
+
+  .icon {
+    height: 24px;
+    margin-right: 0;
+    margin-top: 2px;
+    place-self: start end;
+    width: 24px;
+  }
+}
+
+.notification-group .icon-person-add {
+  color: var(--color-accent-dark);
+}
+
+// Labels line up with the post text like v4
+.notification-ungrouped__header {
+  color: var(--color-dim);
+  font-weight: 500;
+  padding-inline-start: 52px;
+}
+
+// Mentions and replies read as plain posts, without a label on top
+.notification-ungrouped--mention {
+  padding-top: 0;
+}
+
+.notification-ungrouped--mention .notification-ungrouped__header {
+  display: none;
+}
+
+// Boosts with the Bird UI boost icon
+.notification-group--reblog .notification-group__icon .icon {
+  background: var(--icon-boost-active) center / contain no-repeat;
+
+  path {
+    display: none;
+  }
+}
+
+// Follow requests and filtered notifications banners in Bird UI dark
+._notifications_components_filtered_notifications_banner__lockup {
+  background: var(--color-dark);
+}
+
+// Favourites in Bird UI pink
+.notification-group--favourite .notification-group__icon {
+  color: var(--color-red);
+}
+
+// Notification post preview as dimmed text without a box like v4
+.notification-group__main ._comp_card__root {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+// The notification row already highlights on hover
+.notification-group__main ._comp_card__root:is(:hover, :has(a:hover)) {
+  background-color: transparent;
+}
+
+.notification-group__main ._comp_card__title,
+.notification-group__main ._comp_status_quote__reply {
+  display: none;
+}
+
+// Preview text light, links in the accent like v4
+.notification-group__main ._comp_card__body {
+  color: var(--color-light-text);
+  font-size: 15px;
+  -webkit-line-clamp: 4; // v4 showed up to four lines, not two
+  line-height: 22px;
+  padding-top: 0;
+
+  p:not(:last-child) {
+    margin-bottom: 18px;
+  }
+
+  :is(a, strong:has(> span)) {
+    color: var(--color-accent);
+    font-weight: inherit;
+  }
+
+  .emojione {
+    height: 1.3em;
+    margin: -3px 0 0;
+    width: 1.3em;
+  }
+}
+
+// Right under the label, no link card spacing
+.notification-group__main
+  ._comp_card__root
+  ._comp_card__body._comp_card__clamp._comp_status_quote__body {
+  margin-block-start: 0;
+}
+
+// v4 showed only the post text: no link, collection or quoted post line below it
+.notification-group__main ._comp_card__body:not(._comp_status_quote__body) {
+  display: none;
+}
+
+.notification-group__main {
+  gap: 8px;
+}
+
+// v4 had no message pattern
+._comp_status__isMessage::before {
+  display: none;
+}
+
+// A line between the title and the tabs
+._comp_column_header__layout + ._comp_column_header__extraStickyContent {
+  border-top: 1px solid var(--color-border-primary);
+}
+
+// Unread notifications darker instead of a left bar like v4
+.notification-group--unread,
+.notification-ungrouped--unread {
+  background-color: var(--color-dark);
+
+  &::before {
+    display: none;
+  }
+}
+
+// Hashtag pills share that background, so tint them to stay visible
+:is(.notification-group--unread, .notification-ungrouped--unread)
+  ._comp_status__hashtags
+  > ._comp_button__base._comp_button__base:not(:hover, :focus-visible) {
+  --bg: var(--color-bg-brand-soft);
+}
+
+// The feed article around the row gives the hover shade, header included
+.notification-ungrouped article:is(:focus, :hover),
+.notification-ungrouped ._comp_card__root:is(:hover, :has(a:hover)) {
+  background-color: transparent;
+}
+
+// Follow back button styled like v4, level with the avatars
+.notification-group__main__header__wrapper {
+  align-items: center;
+
+  ._comp_button__base {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    min-height: 0;
+    padding: 8px 10px;
+  }
+
+  ._comp_button__neutral._comp_button__tonal {
+    box-shadow: inset 0 0 0 1px var(--color-accent);
+    color: var(--color-accent);
+  }
+}

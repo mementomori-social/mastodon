@@ -1,0 +1,13 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  > :global(.search) {
+    margin-bottom: var(--space-8);
+
+    :global(.layout-multiple-columns) & {
+      margin-bottom: 10px;
+    }
+  }
+}

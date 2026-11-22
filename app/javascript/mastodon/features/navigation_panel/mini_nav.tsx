@@ -8,7 +8,6 @@ import type { Placement } from '@floating-ui/react-dom';
 import {
   BellIcon,
   ChatCircleDotsIcon,
-  HouseIcon,
   MagnifyingGlassIcon,
 } from '@phosphor-icons/react';
 
@@ -17,6 +16,7 @@ import { Menu, MenuList, MenuTrigger } from '@/mastodon/components/menu';
 import { Search } from '@/mastodon/components/search';
 import { useAccount } from '@/mastodon/hooks/useAccount';
 import { useIdentity } from '@/mastodon/identity_context';
+import { notificationsInMenu } from '@/mastodon/initial_state';
 import {
   closeInlineSearch,
   openInlineSearch,
@@ -28,6 +28,7 @@ import {
 
 import { handleSearchLinkClick } from '.';
 import { AccountMenuItems } from './account_menu_items';
+import { useHomeLink } from './home_link';
 import { useNotificationsCount } from './hooks';
 import classes from './mini_nav.module.scss';
 import type { MiniNavigationLinkProps } from './navigation_link';
@@ -103,9 +104,11 @@ export const MiniNav: React.FC = () => {
           <li>
             <MiniMessagesLink />
           </li>
-          <li>
-            <MiniNotificationsLink />
-          </li>
+          {!notificationsInMenu && (
+            <li>
+              <MiniNotificationsLink />
+            </li>
+          )}
           <li>
             <MiniAccountLink />
           </li>
@@ -117,15 +120,20 @@ export const MiniNav: React.FC = () => {
 
 export const MiniHomeLink: React.FC<
   Pick<MiniNavigationLinkProps, 'tooltipPlacement'>
-> = ({ tooltipPlacement }) => (
-  <MiniNavigationLink
-    to='/home'
-    icon={HouseIcon}
-    tooltipPlacement={tooltipPlacement}
-  >
-    <FormattedMessage id='tabs_bar.home' defaultMessage='Home' />
-  </MiniNavigationLink>
-);
+> = ({ tooltipPlacement }) => {
+  const { iconComponent, label, onClick } = useHomeLink();
+
+  return (
+    <MiniNavigationLink
+      to='/home'
+      icon={iconComponent}
+      onClick={onClick}
+      tooltipPlacement={tooltipPlacement}
+    >
+      {label}
+    </MiniNavigationLink>
+  );
+};
 
 export const MiniMessagesLink: React.FC<
   Pick<MiniNavigationLinkProps, 'tooltipPlacement'>

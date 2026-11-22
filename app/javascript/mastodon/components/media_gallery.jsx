@@ -15,7 +15,7 @@ import { Blurhash } from 'mastodon/components/blurhash';
 import { SpoilerButton } from 'mastodon/components/spoiler_button';
 import { formatTime } from 'mastodon/features/video';
 
-import { autoPlayGif, displayMedia, useBlurhash } from '../initial_state';
+import { autoPlayGif, autoPlayVideo, displayMedia, useBlurhash } from '../initial_state';
 import { IconButton } from './button';
 import { EyeSlashIcon } from '@phosphor-icons/react';
 
@@ -46,7 +46,7 @@ class Item extends PureComponent {
 
   handleMouseEnter = (e) => {
     if (this.hoverToPlay()) {
-      e.target.play();
+      e.target.play().catch(() => null);
     }
   };
 
@@ -58,7 +58,9 @@ class Item extends PureComponent {
   };
 
   getAutoPlay() {
-    return this.props.autoplay || autoPlayGif;
+    if (this.props.autoplay) return true;
+    const type = this.props.attachment.get('type');
+    return type === 'gifv' ? !!autoPlayGif : !!autoPlayVideo;
   }
 
   hoverToPlay () {
@@ -166,6 +168,9 @@ class Item extends PureComponent {
         badges.push(<span key='video' className='media-gallery__label'>{formatTime(Math.floor(duration))}</span>);
       }
 
+      // GIFs always loop, videos only loop if autoplay is enabled
+      const shouldLoop = attachment.get('type') === 'gifv' || autoPlay;
+
       thumbnail = (
         <div className={classNames('media-gallery__gifv', { autoplay: autoPlay })}>
           <video
@@ -180,7 +185,7 @@ class Item extends PureComponent {
             onLoadedData={this.handleImageLoad}
             autoPlay={autoPlay}
             playsInline
-            loop
+            loop={shouldLoop}
             muted
           />
         </div>

@@ -68,6 +68,10 @@ export function KeyboardShortcuts() {
   return import('../../keyboard_shortcuts');
 }
 
+export function SearchReference() {
+  return import('../../search_reference');
+}
+
 export function AccountTimeline() {
   return import('../../account_timeline');
 }

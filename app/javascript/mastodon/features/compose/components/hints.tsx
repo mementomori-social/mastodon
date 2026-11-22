@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -8,7 +8,6 @@ import { changeComposeLanguage } from '@/mastodon/actions/compose';
 import { Button } from '@/mastodon/components/button';
 import { Callout } from '@/mastodon/components/callout/redesign';
 import { Icon } from '@/mastodon/components/icon';
-import { useToggle } from '@/mastodon/hooks/useToggle';
 import { selectAccountStatus } from '@/mastodon/selectors/statuses';
 import {
   createAppSelector,
@@ -61,6 +60,15 @@ export const ComposeHints = (props: React.ComponentPropsWithRef<'div'>) => {
   const guess = useLanguageGuess();
   const isDifferentLanguage = lang && guess && lang !== guess;
 
+  // Dismiss only for the post being written, so the hint returns on the next one
+  const [dismissedGuess, setDismissedGuess] = useState<string | null>(null);
+  const isEmpty = useAppSelector(
+    (state) => (state.compose.get('text') as string).trim() === '',
+  );
+  if (isEmpty && dismissedGuess !== null) {
+    setDismissedGuess(null);
+  }
+
   const publishErrors = useAppSelector((state) => state.composer.publishErrors);
 
   const messages: React.ReactNode[] = [];
@@ -100,12 +108,11 @@ export const ComposeHints = (props: React.ComponentPropsWithRef<'div'>) => {
     );
   }
 
-  const [wasDismissed, { onTrue: onDismiss }] = useToggle();
-  if (isDifferentLanguage && !wasDismissed) {
+  if (isDifferentLanguage && dismissedGuess !== guess) {
     messages.push(
       <LanguageHint
         guess={guess}
-        onDismiss={onDismiss}
+        onDismiss={setDismissedGuess}
         key='different-language'
       />,
     );
@@ -162,18 +169,21 @@ const ComposerError: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-const LanguageHint: React.FC<{ guess: string; onDismiss: () => void }> = ({
-  guess,
-  onDismiss,
-}) => {
+const LanguageHint: React.FC<{
+  guess: string;
+  onDismiss: (guess: string) => void;
+}> = ({ guess, onDismiss }) => {
   const language = languageName(guess);
 
   const dispatch = useAppDispatch();
   const handleChange = useCallback(() => {
     dispatch(changeComposeLanguage(guess));
     // Trigger the dismiss since if the language is changed we assume the user doesn't want to be prompted again.
-    onDismiss();
+    onDismiss(guess);
   }, [dispatch, guess, onDismiss]);
+  const handleDismiss = useCallback(() => {
+    onDismiss(guess);
+  }, [onDismiss, guess]);
 
   if (!language) {
     return null;
@@ -191,7 +201,7 @@ const LanguageHint: React.FC<{ guess: string; onDismiss: () => void }> = ({
               description='Label on button to accept language change prompt'
             />
           </Button>
-          <Button size='sm' variant='ghost' onClick={onDismiss}>
+          <Button size='sm' variant='ghost' onClick={handleDismiss}>
             <FormattedMessage
               id='compose.hints.language.dismiss'
               defaultMessage='Dismiss'

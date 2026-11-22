@@ -61,14 +61,13 @@ export interface HTMLToStringOptions<
   extraArgs?: Arg;
 }
 
-let uniqueIdCounter = 0;
-
 export function htmlStringToComponents<Arg extends Record<string, unknown>>(
   htmlString: string,
   options: HTMLToStringOptions<Arg> = {},
 ) {
   const wrapper = document.createElement('template');
   wrapper.innerHTML = htmlString;
+  let uniqueIdCounter = 0;
 
   const rootChildren: Awaited<React.ReactNode>[] = [];
   const queue: QueueItem[] = [

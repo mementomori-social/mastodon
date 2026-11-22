@@ -35,6 +35,8 @@ export interface ColumnHeaderProps {
   // the `fromMastodon` location state
   withBackButton?: boolean | 'auto';
   withUnreadMarker?: boolean;
+  // Also called by the scroll to top button, e.g. to show queued posts
+  onScrollToTop?: () => void;
   extraButtons?: React.ReactNode;
   extraStickyContent?: React.ReactNode;
   className?: string;
@@ -44,6 +46,7 @@ export const ColumnHeader: React.FC<ColumnHeaderProps> = ({
   title,
   withBackButton,
   withUnreadMarker,
+  onScrollToTop,
   extraButtons,
   extraStickyContent,
   className,
@@ -90,6 +93,10 @@ export const ColumnHeader: React.FC<ColumnHeaderProps> = ({
     />
   );
 
+  const handleScrollToTopClick = useCallback(() => {
+    scrollTop();
+    onScrollToTop?.();
+  }, [scrollTop, onScrollToTop]);
   const headerRef = useTrackColumnHeaderHeight();
 
   return (
@@ -120,7 +127,7 @@ export const ColumnHeader: React.FC<ColumnHeaderProps> = ({
             {({ getTooltipProps }) => (
               <button
                 type='button'
-                {...getTooltipProps({ onClick: scrollTop })}
+                {...getTooltipProps({ onClick: handleScrollToTopClick })}
                 className={classes.scrollTopButton}
               >
                 {unreadText}

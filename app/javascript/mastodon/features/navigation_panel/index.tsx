@@ -2,6 +2,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import {
   RssSimpleIcon,
+  BellIcon,
   BookmarkSimpleIcon,
   PlusIcon,
   InfoIcon,
@@ -13,7 +14,11 @@ import {
 import { Callout } from '@/mastodon/components/callout/redesign';
 import { useScrollSensor } from '@/mastodon/hooks/useScrollSensor';
 import { useIdentity } from '@/mastodon/identity_context';
-import { disabledAccountId, trendsEnabled } from '@/mastodon/initial_state';
+import {
+  disabledAccountId,
+  notificationsInMenu,
+  trendsEnabled,
+} from '@/mastodon/initial_state';
 import { transientSingleColumn } from '@/mastodon/is_mobile';
 import {
   canManageReports,
@@ -27,9 +32,10 @@ import { NavigationHeader } from './header';
 import {
   useCustomFeeds,
   useFollowedHashtags,
+  useNotificationsCount,
   usePublicFeedsLink,
 } from './hooks';
-import { ListSection } from './list_section';
+import { ListSection, ListSectionViewAll } from './list_section';
 import { DisabledAccountBanner, LoggedOutInfo } from './logged_out_info';
 import { NavigationLink } from './navigation_link';
 import classes from './styles.module.scss';
@@ -133,6 +139,7 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
           {transientSingleColumn && <TransientSingleColumnCallout />}
           <ul className={classes.list}>
             {explore}
+            {notificationsInMenu && <NotificationsLink />}
             {publicFeeds}
             <NavigationLink to='/bookmarks' icon={BookmarkSimpleIcon}>
               <FormattedMessage
@@ -183,12 +190,12 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
                   </NavigationLink>
                 ))}
                 {followedHashtags.length > MAX_HASHTAG_COUNT && (
-                  <NavigationLink key='view-all' to='/followed_tags'>
+                  <ListSectionViewAll key='view-all' to='/followed_tags'>
                     <FormattedMessage
                       id='tabs_bar.followed_tags_view_all'
                       defaultMessage='View all'
                     />
-                  </NavigationLink>
+                  </ListSectionViewAll>
                 )}
               </ListSection>
             )}
@@ -253,6 +260,23 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
       />
       {bottomSensor}
     </nav>
+  );
+};
+
+const NotificationsLink: React.FC = () => {
+  const notificationsCount = useNotificationsCount();
+
+  return (
+    <NavigationLink
+      to='/notifications'
+      icon={BellIcon}
+      badgeCount={notificationsCount}
+    >
+      <FormattedMessage
+        id='tabs_bar.notifications'
+        defaultMessage='Notifications'
+      />
+    </NavigationLink>
   );
 };
 

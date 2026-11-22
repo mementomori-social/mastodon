@@ -54,6 +54,7 @@ export const AccountBadges: FC<{ accountId: string }> = ({ accountId }) => {
           label={role.name}
           domain={`(${domain})`}
           roleId={role.id}
+          roleColor={role.color}
         />,
       );
     } else {
@@ -64,6 +65,7 @@ export const AccountBadges: FC<{ accountId: string }> = ({ accountId }) => {
           label={role.name}
           domain={`(${domain})`}
           roleId={role.id}
+          roleColor={role.color}
         />,
       );
     }

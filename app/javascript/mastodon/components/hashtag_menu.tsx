@@ -84,6 +84,10 @@ const HashtagMenuInner: React.FC<{ tagId: string; accountId?: string }> = ({
 
   return (
     <>
+      {signedOutItems}
+
+      <MenuItemDivider />
+
       <MenuItem onClick={toggleFollow}>
         {tag.following ? (
           <FormattedMessage
@@ -97,10 +101,6 @@ const HashtagMenuInner: React.FC<{ tagId: string; accountId?: string }> = ({
           />
         )}
       </MenuItem>
-
-      {signedOutItems}
-
-      <MenuItemDivider />
 
       <MenuItemLink as='a' href='/filters' destructive>
         <FormattedMessage

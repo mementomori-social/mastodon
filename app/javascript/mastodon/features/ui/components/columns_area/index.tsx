@@ -2,7 +2,9 @@ import { useCallback } from 'react';
 
 import classNames from 'classnames';
 
+import { Column } from '@/mastodon/components/column';
 import { ComposeButton } from '@/mastodon/features/compose/trigger';
+import { DiscoveryPanel } from '@/mastodon/features/discovery_panel';
 import { NavigationPanel } from '@/mastodon/features/navigation_panel';
 import { MobileNavigation } from '@/mastodon/features/navigation_panel/mobile_nav';
 import { useScrollSensor } from '@/mastodon/hooks/useScrollSensor';
@@ -65,6 +67,10 @@ export const ColumnsArea: React.FC<{
         {isMobile ? <MobileNavigation /> : <ComposeButton />}
 
         <main className={classes.main}>{children}</main>
+
+        <div className={classes.discoveryWrapper}>
+          <DiscoveryPanel />
+        </div>
       </div>
     );
   }
@@ -88,6 +94,10 @@ export const ColumnsArea: React.FC<{
       {multiColScrollSensor.sensor}
       <ComposeButton />
       <MultiColumnContent>{children}</MultiColumnContent>
+
+      <Column className={multiColClasses.discoveryColumn}>
+        <DiscoveryPanel />
+      </Column>
     </main>
   );
 };

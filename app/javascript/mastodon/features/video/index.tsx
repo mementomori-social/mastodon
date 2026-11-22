@@ -30,7 +30,7 @@ import {
   attachFullscreenListener,
   detachFullscreenListener,
 } from 'mastodon/features/ui/util/fullscreen';
-import { useBlurhash } from 'mastodon/initial_state';
+import { autoPlayVideo, useBlurhash } from 'mastodon/initial_state';
 import { playerSettings } from 'mastodon/settings';
 
 import { HotkeyIndicator } from './components/hotkey_indicator';
@@ -232,9 +232,17 @@ export const Video: React.FC<{
     volume: '0%',
   }));
 
+  const shouldAutoPlay = !!autoPlayVideo;
+
   const handleVideoRef = useCallback(
     (c: HTMLVideoElement | null) => {
-      if (videoRef.current && !videoRef.current.paused && c === null) {
+      // Only trigger PiP for unmuted videos (user has interacted), not muted autoplay
+      if (
+        videoRef.current &&
+        !videoRef.current.paused &&
+        c === null &&
+        !videoRef.current.muted
+      ) {
         deployPictureInPicture?.('video', {
           src,
           currentTime: videoRef.current.currentTime,
@@ -246,7 +254,12 @@ export const Video: React.FC<{
       videoRef.current = c;
 
       if (videoRef.current) {
-        restoreVolume(videoRef.current);
+        // When autoplay is enabled, keep video muted to satisfy browser autoplay policy
+        if (shouldAutoPlay && !startPlaying) {
+          videoRef.current.muted = true;
+        } else {
+          restoreVolume(videoRef.current);
+        }
         setVolume(videoRef.current.volume);
         setMuted(videoRef.current.muted);
         void api.start({
@@ -254,7 +267,15 @@ export const Video: React.FC<{
         });
       }
     },
-    [api, setVolume, setMuted, src, deployPictureInPicture],
+    [
+      api,
+      setVolume,
+      setMuted,
+      src,
+      deployPictureInPicture,
+      shouldAutoPlay,
+      startPlaying,
+    ],
   );
 
   const togglePlay = useCallback(() => {
@@ -370,10 +391,38 @@ export const Video: React.FC<{
     }
   }, [revealed]);
 
+  // Check if video is in view on mount and start playing if autoplay is enabled
+  useEffect(() => {
+    if (!videoRef.current || !shouldAutoPlay || startPlaying) {
+      return;
+    }
+
+    const checkInitialVisibility = () => {
+      if (!videoRef.current) return;
+
+      const { top, height } = videoRef.current.getBoundingClientRect();
+      const inView =
+        top <= (window.innerHeight || document.documentElement.clientHeight) &&
+        top + height >= 0;
+
+      if (inView && videoRef.current.paused) {
+        void videoRef.current.play();
+      }
+    };
+
+    // Small delay to ensure video element is ready
+    const timeoutId = setTimeout(checkInitialVisibility, 100);
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [shouldAutoPlay, startPlaying, revealed]);
+
   useEffect(() => {
     const handleFullscreenChange = () => {
       setFullscreen(isFullscreen());
     };
+
+    let isPlaying = false;
 
     const handleScroll = throttle(
       () => {
@@ -387,7 +436,27 @@ export const Video: React.FC<{
             (window.innerHeight || document.documentElement.clientHeight) &&
           top + height >= 0;
 
-        if (!videoRef.current.paused && !inView) {
+        // Check if video is in autoplay mode (muted and autoplay enabled)
+        const isAutoplayMode =
+          shouldAutoPlay && !startPlaying && videoRef.current.muted;
+
+        if (isAutoplayMode) {
+          // For autoplay videos (muted): play when in view, pause when out of view (no PiP)
+          if (inView && videoRef.current.paused && !isPlaying) {
+            isPlaying = true;
+            videoRef.current
+              .play()
+              .then(() => {
+                isPlaying = false;
+              })
+              .catch(() => {
+                isPlaying = false;
+              });
+          } else if (!inView && !videoRef.current.paused && !isPlaying) {
+            videoRef.current.pause();
+          }
+        } else if (!videoRef.current.paused && !inView) {
+          // For manually played/unmuted videos: pause and show PiP when out of view
           videoRef.current.pause();
 
           deployPictureInPicture?.('video', {
@@ -409,7 +478,14 @@ export const Video: React.FC<{
       window.removeEventListener('scroll', handleScroll);
       detachFullscreenListener(handleFullscreenChange);
     };
-  }, [setPaused, setFullscreen, src, deployPictureInPicture]);
+  }, [
+    setPaused,
+    setFullscreen,
+    src,
+    deployPictureInPicture,
+    shouldAutoPlay,
+    startPlaying,
+  ]);
 
   const handleTimeUpdate = useCallback(() => {
     if (!videoRef.current) {
@@ -773,7 +849,7 @@ export const Video: React.FC<{
 
   let preload;
 
-  if (startTime || fullscreen || dragging) {
+  if (startTime || fullscreen || dragging || shouldAutoPlay) {
     preload = 'auto';
   } else if (detailed) {
     preload = 'metadata';
@@ -822,6 +898,9 @@ export const Video: React.FC<{
             aria-label={alt}
             title={fullscreen ? undefined : alt}
             lang={lang}
+            muted={shouldAutoPlay && !startPlaying}
+            loop={shouldAutoPlay}
+            playsInline
             onClick={handleClick}
             onKeyDownCapture={handleVideoKeyDown}
             onPlay={handlePlay}

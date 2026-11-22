@@ -27,6 +27,10 @@ module User::HasSettings
     settings['web.auto_play']
   end
 
+  def setting_auto_play_video
+    settings['web.auto_play_video']
+  end
+
   def setting_default_sensitive
     settings['default_sensitive']
   end
@@ -61,6 +65,18 @@ module User::HasSettings
 
   def setting_system_scrollbars_ui
     settings['web.use_system_scrollbars']
+  end
+
+  def setting_show_follow_badges
+    settings['web.show_follow_badges']
+  end
+
+  def setting_direct_hashtag_links
+    settings['web.direct_hashtag_links']
+  end
+
+  def setting_notifications_in_menu
+    settings['web.notifications_in_menu']
   end
 
   def setting_noindex

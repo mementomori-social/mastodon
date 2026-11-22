@@ -66,7 +66,11 @@ en:
         setting_display_media_hide_all: Warn before showing all media
         setting_display_media_show_all: Show all media without warning, including media marked as sensitive
         setting_emoji_style: How to display emojis. "Auto" will try using native emoji, but falls back to Twemoji for legacy browsers.
+        setting_hide_translate_languages: Posts in the selected languages will not show a Translate button.
         setting_quick_boosting_html: When enabled, clicking on the %{boost_icon} Boost icon will immediately boost instead of opening the boost/quote dropdown menu. Relocates the quoting action to the %{options_icon} (Options) menu.
+        setting_show_follow_badges: Adds a small follow button on the avatar of anyone you do not follow yet
+        setting_direct_hashtag_links: Clicking a hashtag opens its feed right away instead of a menu, as before Mastodon 5
+        setting_notifications_in_menu: Shows Notifications as the second item in the left menu instead of in the icon row at the top
         setting_use_blurhash: Gradients are based on the colors of the hidden visuals but obfuscate any details
         setting_use_pending_items: Hide timeline updates behind a click instead of automatically scrolling the feed
         username: You can use letters, numbers, and underscores
@@ -249,6 +253,7 @@ en:
         setting_aggregate_reblogs: Group boosts in timelines
         setting_always_send_emails: Always send e-mail notifications
         setting_auto_play_gif: Auto-play animated GIFs
+        setting_auto_play_video: Auto-play videos (muted)
         setting_boost_modal: Control boosting visibility
         setting_color_scheme: Mode
         setting_contrast: Contrast
@@ -268,9 +273,13 @@ en:
         setting_emoji_style: Emoji style
         setting_expand_spoilers: Always expand posts marked with content warnings
         setting_hide_network: Hide your social graph
+        setting_hide_translate_languages: Hide the Translate button
         setting_missing_alt_text_modal: Warn me before posting media without alt text
         setting_quick_boosting: Enable quick boosting
         setting_reduce_motion: Reduce motion in animations
+        setting_show_follow_badges: Show follow buttons on avatars
+        setting_direct_hashtag_links: Open hashtags directly
+        setting_notifications_in_menu: Show Notifications in the main menu
         setting_show_stats_in_feed: Show interaction statistics in feeds
         setting_split_default_privacy_discoverable: Make my posts discoverable in public feed & search results
         setting_system_font_ui: Use system's default font

@@ -1,4 +1,6 @@
 default:
+  path: styles/mastodon-bird-ui-auto.scss
+mastodon-dark:
   path: styles/application.scss
   colors:
     - indigo
@@ -6,3 +8,7 @@ default:
     - pink
     - orange
     - cyan
+mastodon-bird-ui-accessible:
+  path: styles/mastodon-bird-ui-accessible.scss
+mastodon-bird-ui-accessible-plus:
+  path: styles/mastodon-bird-ui-accessible-plus.scss

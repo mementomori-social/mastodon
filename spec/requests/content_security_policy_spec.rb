@@ -23,7 +23,7 @@ RSpec.describe 'Content-Security-Policy' do
     <<~CSP.split("\n").map(&:strip)
       base-uri 'none'
       child-src 'self' blob: #{local_domain}
-      connect-src 'self' data: blob: #{local_domain} #{Rails.configuration.x.streaming_api_base_url}
+      connect-src 'self' data: blob: #{local_domain} #{Rails.configuration.x.streaming_api_base_url} analytics.dude.fi
       default-src 'none'
       font-src 'self' #{local_domain}
       form-action 'none'
@@ -32,7 +32,7 @@ RSpec.describe 'Content-Security-Policy' do
       img-src 'self' data: blob: #{local_domain}
       manifest-src 'self' #{local_domain}
       media-src 'self' data: #{local_domain}
-      script-src 'self' #{local_domain} 'wasm-unsafe-eval' 'sha256-Z5KW83D+6/pygIQS3h9XDpF52xW3l3BHc7JL9tj3uMs='
+      script-src 'self' #{local_domain} 'wasm-unsafe-eval' analytics.dude.fi 'sha256-Z5KW83D+6/pygIQS3h9XDpF52xW3l3BHc7JL9tj3uMs='
       style-src 'self' #{local_domain} 'nonce-ZbA+JmE7+bK8F5qvADZHuQ=='
       worker-src 'self' blob: #{local_domain}
     CSP

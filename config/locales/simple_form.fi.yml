@@ -65,7 +65,9 @@ fi:
         setting_display_media_hide_all: Varoita ennen kaiken mediasisällön näyttämistä
         setting_display_media_show_all: Näytä kaikki mediasisältö varoittamatta, mukaan lukien arkaluonteiseksi merkitty sisältö
         setting_emoji_style: Miten emojit näkyvät. ”Automaattinen” pyrkii käyttämään natiiveja emojeita, mutta Twemoji-emojeita käytetään varavaihtoehtoina vanhoissa selaimissa.
+        setting_hide_translate_languages: Käännösnappi piilotetaan postauksista, jotka on postattu valituilla kielillä.
         setting_quick_boosting_html: Kun käytössä, %{boost_icon} Tehosta-kuvakkeen painaminen tehostaa välittömästi sen sijaan, että Tehosta/Lainaa-pudotusvalikko avautuisi. Siirtää lainaustoiminnon %{options_icon} (Valinnat) -⁠valikkoon.
+        setting_show_follow_badges: Lisää pienen seuraamispainikkeen niiden käyttäjien profiilikuvaan, joita et vielä seuraa
         setting_use_blurhash: Liukuvärit perustuvat piilotettujen kuvien väreihin mutta sumentavat yksityiskohdat
         setting_use_pending_items: Piilota aikajanan päivitykset napsautuksen taakse syötteen automaattisen vierityksen sijaan
         username: Voit käyttää kirjaimia, numeroita ja alaviivoja
@@ -252,6 +254,7 @@ fi:
         setting_default_quote_policy: Kuka voi lainata
         setting_default_sensitive: Merkitse media aina arkaluonteiseksi
         setting_delete_modal: Varoita ennen kuin poistan julkaisun
+        setting_direct_hashtag_links: Avaa hashtagit suoraan
         setting_disable_hover_cards: Poista käytöstä profiilin esikatselu osoitettaessa
         setting_disable_swiping: Poista pyyhkäisyeleet käytöstä
         setting_display_media: Median näkyminen
@@ -263,9 +266,12 @@ fi:
         setting_emoji_style: Emojityyli
         setting_expand_spoilers: Laajenna aina sisältövaroituksilla merkityt julkaisut
         setting_hide_network: Piilota verkostotietosi
+        setting_hide_translate_languages: Piilota käännösnappi
         setting_missing_alt_text_modal: Varoita ennen kuin julkaisen mediaa ilman tekstivastinetta
+        setting_notifications_in_menu: Näytä ilmoitukset päävalikossa
         setting_quick_boosting: Ota nopea tehostus käyttöön
         setting_reduce_motion: Vähennä animaatioiden liikettä
+        setting_show_follow_badges: Näytä seuraamispainikkeet profiilikuvissa
         setting_show_stats_in_feed: Näytä vuorovaikutustilastot syötteissä
         setting_split_default_privacy_discoverable: Muuta julkaisuni löydettäviksi julkisista syötteistä ja hakutuloksista
         setting_system_font_ui: Käytä järjestelmän oletusfonttia

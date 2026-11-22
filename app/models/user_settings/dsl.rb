@@ -26,6 +26,10 @@ module UserSettings::DSL
       @definitions.keys
     end
 
+    def permitted_keys
+      keys.map { |key| definition_for(key).array? ? { key => [] } : key }
+    end
+
     def definition_for(key)
       @definitions[key.to_sym]
     end

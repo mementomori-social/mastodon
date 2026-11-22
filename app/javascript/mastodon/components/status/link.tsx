@@ -21,6 +21,7 @@ import {
   PrimaryCardLink,
 } from '../card';
 import { DisplayName } from '../display_name';
+import { IconLogo } from '../logo';
 import { RelativeTimestamp } from '../relative_timestamp';
 
 import classes from './attachments.module.scss';
@@ -75,6 +76,23 @@ export const LinkCardAuthors: React.FC<Pick<CardShape, 'authors'>> = ({
 
   if (authorIds.length === 0) {
     return null;
+  }
+
+  // One author reads "More from {name}" with the Mastodon logo, as in v4
+  if (authorIds.length === 1) {
+    return (
+      <CardActions className={classes.cardAuthors}>
+        <IconLogo className={classes.cardAuthorLogo} />
+        <FormattedMessage
+          id='link_preview.more_from_author'
+          defaultMessage='More from {name}'
+          values={{
+            name: <LinkCardAuthor authorId={authorIds[0]} />,
+          }}
+          tagName='span'
+        />
+      </CardActions>
+    );
   }
 
   return (
