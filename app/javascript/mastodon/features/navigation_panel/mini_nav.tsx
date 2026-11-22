@@ -104,11 +104,11 @@ export const MiniNav: React.FC = () => {
           <li>
             <MiniMessagesLink />
           </li>
-          {!notificationsInMenu && (
-            <li>
-              <MiniNotificationsLink />
-            </li>
-          )}
+          <li>
+            <MiniNotificationsLink
+              badgeCount={notificationsInMenu ? 0 : undefined}
+            />
+          </li>
           <li>
             <MiniAccountLink />
           </li>
@@ -152,14 +152,14 @@ export const MiniMessagesLink: React.FC<
 );
 
 export const MiniNotificationsLink: React.FC<
-  Pick<MiniNavigationLinkProps, 'tooltipPlacement' | 'badgeType'>
-> = (props) => {
+  Pick<MiniNavigationLinkProps, 'tooltipPlacement' | 'badgeType' | 'badgeCount'>
+> = ({ badgeCount, ...props }) => {
   const notificationsCount = useNotificationsCount();
   return (
     <MiniNavigationLink
       to='/notifications'
       icon={BellIcon}
-      badgeCount={notificationsCount}
+      badgeCount={badgeCount ?? notificationsCount}
       {...props}
     >
       <FormattedMessage
