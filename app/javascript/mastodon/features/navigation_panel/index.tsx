@@ -151,14 +151,10 @@ const ExpandedNavigationPanel: React.FC<NavigationPanelProps> = ({
         <>
           {transientSingleColumn && <TransientSingleColumnCallout />}
           <ul className={classes.list}>
-            {showAllOptions && (
-              <>
-                <HomeLink />
-                <SearchLink />
-              </>
-            )}
-            {explore}
+            {showAllOptions && <HomeLink />}
             {(showAllOptions || notificationsInMenu) && <NotificationsLink />}
+            {explore}
+            {showAllOptions && <SearchLink />}
             {showAllOptions && <MessagesLink />}
             {publicFeeds}
             <NavigationLink to='/bookmarks' icon={BookmarkSimpleIcon}>
