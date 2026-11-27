@@ -234,7 +234,6 @@ textarea.textarea {
   right: 0;
   white-space: pre-wrap; // This makes the formatting match the text area.
   padding: var(--space-2); // Matches the default textarea component.
-  margin-inline: calc(-1 * var(--space-2));
 }
 
 .attachments {
